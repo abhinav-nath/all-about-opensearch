@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OpensearchApplication {
+public class EcommerceSearchServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OpensearchApplication.class, args);
+        SpringApplication.run(EcommerceSearchServiceApplication.class, args);
     }
 
 }

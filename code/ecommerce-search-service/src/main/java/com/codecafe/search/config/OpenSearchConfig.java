@@ -23,7 +23,7 @@ import java.util.Map;
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "com.codecafe.search.repository")
 @ComponentScan(basePackages = {"com.codecafe.search"})
-public class OpenSearchConfiguration {
+public class OpenSearchConfig {
 
     @Value("${app.search.index-name}")
     private String indexName;
@@ -31,7 +31,7 @@ public class OpenSearchConfiguration {
     private final OpenSearchProperties openSearchProperties;
 
     @Autowired
-    public OpenSearchConfiguration(OpenSearchProperties openSearchProperties) {
+    public OpenSearchConfig(OpenSearchProperties openSearchProperties) {
         this.openSearchProperties = openSearchProperties;
     }
 
@@ -83,7 +83,7 @@ public class OpenSearchConfiguration {
 
     @Configuration
     @EnableConfigurationProperties
-    @ConfigurationProperties(prefix = "app.search.opensearch")
+    @ConfigurationProperties(prefix = "app.search.os")
     @Getter
     @Setter
     public static class OpenSearchProperties {
