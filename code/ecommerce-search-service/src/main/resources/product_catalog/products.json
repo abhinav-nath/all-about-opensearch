@@ -1,0 +1,312 @@
+[
+  {
+    "name": "Macbook Pro 2019",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Productivity Laptops"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Macbook Pro 2019 model",
+    "color": "Silver",
+    "price": 2200,
+    "date_added": "2019-04-18",
+    "in_stock": false
+  },
+  {
+    "name": "Macbook Pro 2021",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Productivity Laptops"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Macbook Pro 2021 model with M1 Chip",
+    "color": "Grey",
+    "price": 1300,
+    "date_added": "2021-08-22",
+    "in_stock": true
+  },
+  {
+    "name": "Macbook Air 2021",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Productivity Laptops"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Macbook Air 2021 model with M1 chip",
+    "color": "Silver",
+    "price": 969,
+    "date_added": "2021-08-22",
+    "in_stock": true
+  },
+  {
+    "name": "Macbook Air 2020",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Productivity Laptops"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Macbook Air 2020 with Intel Chip",
+    "color": "Grey",
+    "price": 900,
+    "date_added": "2020-04-21",
+    "in_stock": true
+  },
+  {
+    "name": "ROG Zephyrus",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Gaming Laptops"
+      ]
+    },
+    "brand": "Asus",
+    "description": "Asus ROG Zephyrus Ryzen 9",
+    "color": "Black",
+    "price": 1500,
+    "date_added": "2021-09-22",
+    "in_stock": true
+  },
+  {
+    "name": "ROG Zephyrus",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Gaming Laptops"
+      ]
+    },
+    "brand": "Asus",
+    "description": "Asus ROG Zephyrus Ryzen 7",
+    "color": "Black",
+    "price": 1300,
+    "date_added": "2021-09-22",
+    "in_stock": true
+  },
+  {
+    "name": "ROG Zephyrus",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptops",
+        "Gaming Laptops"
+      ]
+    },
+    "brand": "Asus",
+    "description": "Asus ROG Zephyrus Ryzen 5",
+    "color": "Black",
+    "price": 1200,
+    "date_added": "2021-09-22",
+    "in_stock": false
+  },
+  {
+    "name": "Apple Pencil 1st Gen",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Tablet Accessories"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Pencil 1st Generation",
+    "color": "White",
+    "price": 120,
+    "date_added": "2016-02-23",
+    "in_stock": false
+  },
+  {
+    "name": "Apple Pencil 2nd Gen",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Tablet Accessories"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Pencil 2nd Generation",
+    "color": "White",
+    "price": 130,
+    "date_added": "2018-04-15",
+    "in_stock": true
+  },
+  {
+    "name": "Magsafe Charger",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Chargers",
+        "Wireless Chargers"
+      ]
+    },
+    "brand": "Apple",
+    "description": "Apple Magsafe Charger",
+    "color": "White",
+    "price": 80,
+    "date_added": "2020-09-20",
+    "in_stock": true
+  },
+  {
+    "name": "MX Master 2",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptop Accessories",
+        "Mice"
+      ]
+    },
+    "brand": "Logitech",
+    "description": "Logitech MX Master 2 Mouse",
+    "color": "Black",
+    "price": 95,
+    "date_added": "2019-03-27",
+    "in_stock": true
+  },
+  {
+    "name": "MX Master 3",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Laptop Accessories",
+        "Mice"
+      ]
+    },
+    "brand": "Logitech",
+    "description": "Logitech MX Master 3 Mouse",
+    "color": "Black",
+    "price": 100,
+    "date_added": "2021-05-23",
+    "in_stock": true
+  },
+  {
+    "name": "Sleeve for Apple Macbook Pro 2021",
+    "category": {
+      "super_category": "Laptop Accessories",
+      "sub_categories": [
+        "Laptop Sleeves"
+      ]
+    },
+    "brand": "AmazonBasics",
+    "description": "Laptop Sleeve for Apple Macbook Pro 2021 model",
+    "color": "Blue",
+    "price": 20,
+    "date_added": "2021-08-30",
+    "in_stock": true
+  },
+  {
+    "name": "Sleeve for Apple Ipad Pro 12.9 inch",
+    "category": {
+      "super_category": "Tablet Accessories",
+      "sub_categories": [
+        "Tablet Sleeves"
+      ]
+    },
+    "brand": "AmazonBasics",
+    "description": "Sleeve for Apple Ipad Pro 12.9 inch 2020 model",
+    "color": "Blue",
+    "price": 20,
+    "date_added": "2021-11-22",
+    "in_stock": true
+  },
+  {
+    "name": "WH-1000XM4",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Headphones"
+      ]
+    },
+    "brand": "Sony",
+    "description": "Sony WH-1000XM4 Wireless Headphones",
+    "color": "Black",
+    "price": 348,
+    "date_added": "2021-01-08",
+    "in_stock": true
+  },
+  {
+    "name": "WH-1000XM3",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Headphones"
+      ]
+    },
+    "brand": "Sony",
+    "description": "Sony WH-1000XM3 Wireless Headphones",
+    "color": "Black",
+    "price": 348,
+    "date_added": "2018-06-12",
+    "in_stock": false
+  },
+  {
+    "name": "Playstation 3",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Gaming Consoles"
+      ]
+    },
+    "brand": "Sony",
+    "description": "Sony Playstation 3",
+    "color": "Black",
+    "price": 600,
+    "date_added": "2017-02-10",
+    "in_stock": false
+  },
+  {
+    "name": "Playstation 4",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Gaming Consoles"
+      ]
+    },
+    "brand": "Sony",
+    "description": "Sony Playstation 4",
+    "color": "Black",
+    "price": 620,
+    "date_added": "2019-08-26",
+    "in_stock": true
+  },
+  {
+    "name": "Playstation 5 Digital Edition",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Gaming Consoles"
+      ]
+    },
+    "brand": "Sony",
+    "description": "Sony Playstation 5 Digital Edition",
+    "color": "Black",
+    "price": 800,
+    "date_added": "2021-09-20",
+    "in_stock": false
+  },
+  {
+    "name": "Playstation 5",
+    "category": {
+      "super_category": "Electronics",
+      "sub_categories": [
+        "Gaming Consoles"
+      ]
+    },
+    "brand": "Sony",
+    "description": "Sony Playstation 5",
+    "color": "Black",
+    "price": 950,
+    "date_added": "2021-09-19",
+    "in_stock": false
+  }
+]

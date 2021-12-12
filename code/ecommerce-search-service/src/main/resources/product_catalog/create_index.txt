@@ -1,0 +1,69 @@
+PUT /product-catalog-index
+{
+    "settings": {
+        "index": {
+            "number_of_shards": 2,
+            "number_of_replicas": 1
+        }
+    },
+    "mappings": {
+        "properties": {
+            "name": {
+                "type": "text"
+            },
+            "category": {
+                "type": "nested",
+                "properties": {
+                    "super_category": {
+                        "type": "text",
+                        "fielddata": true,
+                        "fields": {
+                            "raw": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "sub_categories": {
+                        "type": "text",
+                        "fielddata": true,
+                        "fields": {
+                            "raw": {
+                                "type": "keyword"
+                            }
+                        }
+                    }
+                }
+            },
+            "brand": {
+                "type": "text",
+                "fielddata": true,
+                "fields": {
+                    "raw": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "description": {
+                "type": "text"
+            },
+            "color": {
+                "type": "text"
+            },
+            "price": {
+                "type": "double"
+            },
+            "date_added": {
+                "type": "date"
+            },
+            "date_modified": {
+                "type": "date"
+            },
+            "in_stock": {
+                "type": "boolean"
+            }
+        }
+    },
+    "aliases": {
+        "product-catalog": {}
+    }
+}
