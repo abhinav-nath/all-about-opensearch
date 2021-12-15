@@ -322,3 +322,44 @@ POST marvel_movies/_search
   }
 }
 ```
+
+Response:
+
+```json
+{
+  "took" : 3,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 0,
+      "relation" : "eq"
+    },
+    "max_score" : null,
+    "hits" : [ ]
+  },
+  "suggest" : {
+    "completer" : [
+      {
+        "text" : "cap",
+        "offset" : 0,
+        "length" : 3,
+        "options" : [
+          {
+            "text" : "Captain",
+            "_index" : "marvel_movies",
+            "_type" : "_doc",
+            "_id" : "1",
+            "_score" : 1.0
+          }
+        ]
+      }
+    ]
+  }
+}
+```
