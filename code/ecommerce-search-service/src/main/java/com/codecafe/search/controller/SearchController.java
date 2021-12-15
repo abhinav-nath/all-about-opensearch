@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Validated
 @RestController
 @RequestMapping(value = "/v1/search")
@@ -30,6 +32,11 @@ public class SearchController {
         SearchResponse searchResponse = searchService.performTextSearch(query, from, size, sortBy, facets);
 
         return ResponseEntity.ok(searchResponse);
+    }
+
+    @GetMapping("/suggestions")
+    public ResponseEntity<List<String>> autoSuggest(@RequestParam("query") final String query) {
+        return ResponseEntity.ok(searchService.getSuggestions(query));
     }
 
 }

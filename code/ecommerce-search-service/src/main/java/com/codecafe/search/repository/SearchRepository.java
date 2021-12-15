@@ -3,6 +3,12 @@ package com.codecafe.search.repository;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.SearchResult;
 import com.codecafe.search.config.OpenSearchConfig.OpenSearchProperties;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.SuggestionBuilder;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -71,6 +77,26 @@ public class SearchRepository {
         }
 
         return searchResult;
+    }
+
+    public List<String> suggestKeywords(String query) {
+        List<String> keywords = new ArrayList<>();
+
+        SuggestionBuilder completionSuggestionFuzzyBuilder = SuggestBuilders.completionSuggestion("suggest").prefix(query,
+                Fuzziness.AUTO);
+
+        SearchResponse suggestResponse = elasticsearchTemplate.suggest(
+                new SuggestBuilder().addSuggestion("auto-suggestions", completionSuggestionFuzzyBuilder),
+                ProductDocument.class);
+
+        CompletionSuggestion completionSuggestion = suggestResponse.getSuggest().getSuggestion("auto-suggestions");
+        List<CompletionSuggestion.Entry.Option> options = completionSuggestion.getEntries().get(0).getOptions();
+
+        for(CompletionSuggestion.Entry.Option option : options) {
+            keywords.add(option.getText().string());
+        }
+
+        return keywords;
     }
 
 }

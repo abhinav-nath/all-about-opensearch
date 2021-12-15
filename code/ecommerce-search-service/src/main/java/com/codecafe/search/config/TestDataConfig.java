@@ -47,7 +47,7 @@ public class TestDataConfig {
                 .brand("Apple")
                 .categories(List.of("Laptops", "Productivity Laptops"))
                 .description("Apple Macbook Pro 2019 model")
-                .suggest(new Completion(List.of("macbook", "pro", "productivity", "laptops")))
+                .suggest(new Completion(List.of("macbook", "pro", "productivity", "laptops", "laptop")))
                 .color("Silver")
                 .price(BigDecimal.valueOf(2200))
                 .dateAdded(ZonedDateTime.now())
