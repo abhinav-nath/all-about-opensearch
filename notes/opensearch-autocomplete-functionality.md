@@ -303,6 +303,8 @@ POST marvel_movies/_bulk
 {"name":"Captain America: The First Avenger","suggest":["Captain","America","First","Avenger"]}
 {"create":{"_id":"2"}}
 {"name":"Captain America: The Winter Soldier","suggest":["Captain","America","Winter","Soldier"]}
+{"create":{"_id":"3"}}
+{"name":"Iron Man 3","suggest":["Iron Man"]}
 ```
 
 #### Search query

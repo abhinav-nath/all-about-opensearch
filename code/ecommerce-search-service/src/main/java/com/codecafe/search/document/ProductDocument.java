@@ -6,10 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.DateFormat;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.elasticsearch.core.completion.Completion;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -31,6 +29,9 @@ public class ProductDocument {
     private String name;
     private String description;
     private List<String> categories;
+
+    @CompletionField
+    private Completion suggest;
 
     @Field(type = Double)
     private BigDecimal price;
