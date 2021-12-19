@@ -60,7 +60,7 @@ public class TestDataConfig {
                 .brand("Asus")
                 .categories(List.of("Laptops", "Gaming Laptops"))
                 .description("Asus ROG Zephyrus Ryzen 9")
-                .suggest(new Completion(List.of("asus", "rog", "zephyrus", "ryzen", "gaming", "laptops")))
+                .suggest(new Completion(List.of("asus", "rog", "zephyrus", "ryzen", "gaming")))
                 .color("Black")
                 .price(BigDecimal.valueOf(1550))
                 .dateAdded(ZonedDateTime.now())

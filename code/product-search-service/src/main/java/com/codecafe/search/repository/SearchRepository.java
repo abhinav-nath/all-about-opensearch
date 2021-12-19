@@ -1,10 +1,9 @@
 package com.codecafe.search.repository;
 
+import com.codecafe.search.config.OpenSearchConfig.OpenSearchProperties;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.SearchResult;
-import com.codecafe.search.config.OpenSearchConfig.OpenSearchProperties;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
@@ -18,10 +17,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
@@ -80,23 +76,36 @@ public class SearchRepository {
     }
 
     public List<String> suggestKeywords(String query) {
-        List<String> keywords = new ArrayList<>();
-
-        SuggestionBuilder completionSuggestionFuzzyBuilder = SuggestBuilders.completionSuggestion("suggest").prefix(query,
-                Fuzziness.AUTO);
+        SuggestionBuilder suggestionBuilder = SuggestBuilders.completionSuggestion("suggest").prefix(query).skipDuplicates(true);
 
         SearchResponse suggestResponse = elasticsearchTemplate.suggest(
-                new SuggestBuilder().addSuggestion("auto-suggestions", completionSuggestionFuzzyBuilder),
-                ProductDocument.class);
+                new SuggestBuilder().addSuggestion("auto-suggestions", suggestionBuilder), ProductDocument.class);
 
-        CompletionSuggestion completionSuggestion = suggestResponse.getSuggest().getSuggestion("auto-suggestions");
-        List<CompletionSuggestion.Entry.Option> options = completionSuggestion.getEntries().get(0).getOptions();
+        return extractKeywordSuggestionsFrom(query, suggestResponse);
+    }
 
-        for(CompletionSuggestion.Entry.Option option : options) {
-            keywords.add(option.getText().string());
+    private List<String> extractKeywordSuggestionsFrom(String query, SearchResponse suggestResponse) {
+        Set<String> keywords = new LinkedHashSet<>();
+        if (suggestResponse.getSuggest() != null) {
+            CompletionSuggestion completionSuggestion = suggestResponse.getSuggest().getSuggestion("auto-suggestions");
+
+            if (completionSuggestion != null && !isEmpty(completionSuggestion.getEntries())) {
+                completionSuggestion.getEntries().forEach(e -> {
+                    if (isEmpty(e.getOptions()))
+                        return;
+
+                    e.getOptions().forEach(o -> {
+                        ((HashMap<String, List<String>>) o.getHit().getSourceAsMap().get("suggest")).get("input")
+                                .forEach(term -> {
+                                    if (term.startsWith(query))
+                                        keywords.add(term);
+                                });
+                    });
+                });
+            }
         }
 
-        return keywords;
+        return new ArrayList<>(keywords);
     }
 
 }
