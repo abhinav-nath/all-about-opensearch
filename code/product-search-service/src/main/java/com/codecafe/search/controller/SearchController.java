@@ -25,11 +25,9 @@ public class SearchController {
     @GetMapping
     public ResponseEntity<SearchResponse> textSearch(@RequestParam("query") final String query,
                                                      @RequestParam(value = "from", defaultValue = "0") final int from,
-                                                     @RequestParam(value = "size", defaultValue = "5") final int size,
-                                                     @RequestParam(value = "sortBy", required = false, defaultValue = "RELEVANCE") final String sortBy,
-                                                     @RequestParam(value = "facets", required = false) final String facets) {
+                                                     @RequestParam(value = "size", defaultValue = "5") final int size) {
 
-        SearchResponse searchResponse = searchService.performTextSearch(query, from, size, sortBy, facets);
+        SearchResponse searchResponse = searchService.performTextSearch(query, from, size);
 
         return ResponseEntity.ok(searchResponse);
     }

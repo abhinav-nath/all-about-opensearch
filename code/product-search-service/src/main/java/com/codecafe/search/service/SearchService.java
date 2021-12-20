@@ -20,9 +20,9 @@ public class SearchService {
         this.searchRepository = searchRepository;
     }
 
-    public SearchResponse performTextSearch(String query, int from, int size, String sortBy, String facets) {
+    public SearchResponse performTextSearch(String query, int from, int size) {
         try {
-            final SearchResult searchResult = searchRepository.searchProducts(query, from, size, sortBy, facets);
+            final SearchResult searchResult = searchRepository.searchProducts(query, from, size);
 
             if (searchResult != null && searchResult.getTotalResults() > 0) {
                 LOGGER.debug("Total search results returned: {}", searchResult.getTotalResults());

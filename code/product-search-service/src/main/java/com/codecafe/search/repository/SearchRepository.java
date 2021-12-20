@@ -4,6 +4,10 @@ import com.codecafe.search.config.OpenSearchConfig.OpenSearchProperties;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.SearchResult;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.FuzzyQueryBuilder;
+import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
@@ -19,7 +23,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 import static org.elasticsearch.search.sort.SortBuilders.scoreSort;
 import static org.elasticsearch.search.sort.SortOrder.DESC;
@@ -42,22 +46,23 @@ public class SearchRepository {
         this.openSearchProperties = openSearchProperties;
     }
 
-    public SearchResult searchProducts(String query, int from, int size, String sortBy, String facets) {
+    public SearchResult searchProducts(String query, int page, int size) {
 
         List<ProductDocument> matchedProducts = new ArrayList<>(1);
         SearchResult searchResult = new SearchResult();
 
-        Map<String, Float> queryFields = new HashMap<>();
-        queryFields.put("name", 3.0f);
-        queryFields.put("description", 1.0f);
+        String wildcardQuery = "*" + query + "*";
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withSort(scoreSort())
-                .withSort(fieldSort("dateModified").order(DESC))
-                .withSort(fieldSort("dateAdded").order(DESC))
-                .withQuery(multiMatchQuery(query)
-                        .fields(queryFields))
-                .withPageable(PageRequest.of(from, size))
+                .withSort(fieldSort("modifiedDate").order(DESC))
+                .withQuery(boolQuery()
+                        .should(new MatchQueryBuilder("name", query).boost(10.0f))
+                        .should(new MatchQueryBuilder("description", query).boost(1.0f))
+                        .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
+                        .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
+                        .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
+                .withPageable(PageRequest.of(page - 1, size))
                 .build();
 
         SearchHits<ProductDocument> searchHits = elasticsearchTemplate.search(searchQuery, ProductDocument.class, of(indexName));
