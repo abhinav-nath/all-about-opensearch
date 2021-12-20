@@ -18,7 +18,6 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.util.Map;
 
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "com.codecafe.search.repository")

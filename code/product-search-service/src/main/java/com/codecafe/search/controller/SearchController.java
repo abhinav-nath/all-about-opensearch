@@ -24,10 +24,10 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<SearchResponse> textSearch(@RequestParam("query") final String query,
-                                                     @RequestParam(value = "from", defaultValue = "0") final int from,
+                                                     @RequestParam(value = "page", defaultValue = "1") final int page,
                                                      @RequestParam(value = "size", defaultValue = "5") final int size) {
 
-        SearchResponse searchResponse = searchService.performTextSearch(query, from, size);
+        SearchResponse searchResponse = searchService.performTextSearch(query, page, size);
 
         return ResponseEntity.ok(searchResponse);
     }

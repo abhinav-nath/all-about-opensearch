@@ -1,6 +1,5 @@
 package com.codecafe.search.repository;
 
-import com.codecafe.search.config.OpenSearchConfig.OpenSearchProperties;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.SearchResult;
 import org.elasticsearch.action.search.SearchResponse;
@@ -36,14 +35,11 @@ public class SearchRepository {
     @Value("${app.search.index-name}")
     private String indexName;
 
-    private final OpenSearchProperties openSearchProperties;
-
     private ElasticsearchRestTemplate elasticsearchTemplate;
 
     @Autowired
-    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate, OpenSearchProperties openSearchProperties) {
+    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate) {
         this.elasticsearchTemplate = elasticsearchTemplate;
-        this.openSearchProperties = openSearchProperties;
     }
 
     public SearchResult searchProducts(String query, int page, int size) {
@@ -55,7 +51,8 @@ public class SearchRepository {
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withSort(scoreSort())
-                .withSort(fieldSort("modifiedDate").order(DESC))
+                .withSort(fieldSort("dateModified").order(DESC))
+                .withSort(fieldSort("dateAdded").order(DESC))
                 .withQuery(boolQuery()
                         .should(new MatchQueryBuilder("name", query).boost(10.0f))
                         .should(new MatchQueryBuilder("description", query).boost(1.0f))
@@ -84,7 +81,7 @@ public class SearchRepository {
         SuggestionBuilder suggestionBuilder = SuggestBuilders.completionSuggestion("suggest").prefix(query).skipDuplicates(true);
 
         SearchResponse suggestResponse = elasticsearchTemplate.suggest(
-                new SuggestBuilder().addSuggestion("auto-suggestions", suggestionBuilder), ProductDocument.class);
+                new SuggestBuilder().addSuggestion("auto-suggestions", suggestionBuilder), of(indexName));
 
         return extractKeywordSuggestionsFrom(query, suggestResponse);
     }
