@@ -166,26 +166,26 @@ Response:
 Essentially all these queries are same:
 
 1. ```json
-POST _analyze
-{
-"text": "2 guys walk into     a bar, but the third... DUCKS! :-)"
-}
-```
+   POST _analyze
+   {
+      "text": "2 guys walk into     a bar, but the third... DUCKS! :-)"
+   }
+   ```
 
 2. ```json
-POST _analyze
-{
-  "text": "2 guys walk into     a bar, but the third... DUCKS! :-)",
-  "analyzer": "standard"
-}
-```
+   POST _analyze
+   {
+      "text": "2 guys walk into     a bar, but the third... DUCKS! :-)",
+      "analyzer": "standard"
+   }
+   ```
 
 3. ```json
-POST _analyze
-{
-  "text": "2 guys walk into     a bar, but the third... DUCKS! :-)",
-  "char_filter": [],
-  "tokenizer": "standard",
-  "filter": ["lowercase"]
-}
-```
+   POST _analyze
+   {
+      "text": "2 guys walk into     a bar, but the third... DUCKS! :-)",
+      "char_filter": [],
+      "tokenizer": "standard",
+      "filter": ["lowercase"]
+   }
+   ```
