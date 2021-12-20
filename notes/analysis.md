@@ -1,6 +1,4 @@
-# Mapping and Analysis
-
-## Analysis
+# Analysis
 
 ![Analyzer](./images/analyzer.png "Analyzer")
 
@@ -10,8 +8,8 @@
 * Analyzers contain zero or more character filters
 * Character filters are applied in the order in which they are specified
 * Example (`html strip` filter)
-  - **Input: "**I&apos;m in a <em>good</em> mood&nbsp;-&nbsp;and
-    I <strong>love</strong> coffee!**"**
+  - **Input: "**`I&apos;m in a <em>good</em> mood&nbsp;-&nbsp;and
+    I <strong>love</strong> coffee!`**"**
   - **Output: "**I'm in a good mood - and I love coffee!**"**
 
 ### Tokenizers
@@ -70,3 +68,124 @@
 * The tokenizer splits the text into tokens according to the unicode segmentation algorithm
 * Essentially it breaks sentences by whitespaces, hyphens etc
 * In the process, it also throws away punctuations such as commas, periods, exclamation marks etc
+
+## Standard Analyzer (default)
+
+![Standard Analyzer](./images/default_analyzer.png "Standard Analyzer")
+
+Similarly
+
+Request:
+
+```json
+POST _analyze
+{
+  "text": "2 guys walk into     a bar, but the third... DUCKS! :-)"
+}
+```
+
+Response:
+
+```json
+{
+  "tokens" : [
+    {
+      "token" : "2",
+      "start_offset" : 0,
+      "end_offset" : 1,
+      "type" : "<NUM>",
+      "position" : 0
+    },
+    {
+      "token" : "guys",
+      "start_offset" : 2,
+      "end_offset" : 6,
+      "type" : "<ALPHANUM>",
+      "position" : 1
+    },
+    {
+      "token" : "walk",
+      "start_offset" : 7,
+      "end_offset" : 11,
+      "type" : "<ALPHANUM>",
+      "position" : 2
+    },
+    {
+      "token" : "into",
+      "start_offset" : 12,
+      "end_offset" : 16,
+      "type" : "<ALPHANUM>",
+      "position" : 3
+    },
+    {
+      "token" : "a",
+      "start_offset" : 21,
+      "end_offset" : 22,
+      "type" : "<ALPHANUM>",
+      "position" : 4
+    },
+    {
+      "token" : "bar",
+      "start_offset" : 23,
+      "end_offset" : 26,
+      "type" : "<ALPHANUM>",
+      "position" : 5
+    },
+    {
+      "token" : "but",
+      "start_offset" : 28,
+      "end_offset" : 31,
+      "type" : "<ALPHANUM>",
+      "position" : 6
+    },
+    {
+      "token" : "the",
+      "start_offset" : 32,
+      "end_offset" : 35,
+      "type" : "<ALPHANUM>",
+      "position" : 7
+    },
+    {
+      "token" : "third",
+      "start_offset" : 36,
+      "end_offset" : 41,
+      "type" : "<ALPHANUM>",
+      "position" : 8
+    },
+    {
+      "token" : "ducks",
+      "start_offset" : 45,
+      "end_offset" : 50,
+      "type" : "<ALPHANUM>",
+      "position" : 9
+    }
+  ]
+}
+```
+
+Essentially all these queries are same:
+
+1. ```json
+POST _analyze
+{
+"text": "2 guys walk into     a bar, but the third... DUCKS! :-)"
+}
+```
+
+2. ```json
+POST _analyze
+{
+  "text": "2 guys walk into     a bar, but the third... DUCKS! :-)",
+  "analyzer": "standard"
+}
+```
+
+3. ```json
+POST _analyze
+{
+  "text": "2 guys walk into     a bar, but the third... DUCKS! :-)",
+  "char_filter": [],
+  "tokenizer": "standard",
+  "filter": ["lowercase"]
+}
+```
