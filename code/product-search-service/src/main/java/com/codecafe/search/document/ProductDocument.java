@@ -13,8 +13,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.springframework.data.elasticsearch.annotations.FieldType.Boolean;
-import static org.springframework.data.elasticsearch.annotations.FieldType.Double;
+import static org.springframework.data.elasticsearch.annotations.FieldType.*;
 
 @Getter
 @Builder
@@ -28,6 +27,8 @@ public class ProductDocument {
 
     private String name;
     private String description;
+
+    @MultiField(mainField = @Field(type = Text, fielddata = true), otherFields = {@InnerField(suffix = "raw", type = Keyword)})
     private List<String> categories;
 
     @CompletionField
@@ -36,7 +37,9 @@ public class ProductDocument {
     @Field(type = Double)
     private BigDecimal price;
 
+    @MultiField(mainField = @Field(type = Text, fielddata = true), otherFields = {@InnerField(suffix = "raw", type = Keyword)})
     private String brand;
+
     private String color;
 
     @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZZ")

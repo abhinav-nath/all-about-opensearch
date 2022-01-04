@@ -5,16 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import java.util.List;
-
 @Getter
 @With
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchResponse {
+public class Facet {
 
-    private long totalResults;
-    private List<Product> products;
-    private List<Facet> facets;
+    private String name;
+    private long count;
 
 }

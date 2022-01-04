@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -18,16 +20,30 @@ public class SearchResult {
 
     private long totalResults;
     private List<ProductDocument> productDocuments;
+    private Aggregations aggregations;
 
     public SearchResponse toDto() {
         SearchResponse searchResponse = new SearchResponse();
         List<Product> products = new ArrayList<>(1);
+        List<Facet> facets = new ArrayList<>(1);
 
         if (!CollectionUtils.isEmpty(productDocuments)) {
             productDocuments.forEach(p -> products.add(p.toDto()));
         }
 
-        return searchResponse.withProducts(products).withTotalResults(totalResults);
+        if (aggregations != null) {
+            List<String> facetableFields = List.of("categories", "brand");
+
+            for (String facetableField : facetableFields) {
+                for (Terms.Bucket bucket : ((Terms) aggregations.get(facetableField)).getBuckets()) {
+                    Facet facet = new Facet().withName(bucket.getKeyAsString()).withCount(bucket.getDocCount());
+                    facets.add(facet);
+                }
+            }
+
+        }
+
+        return searchResponse.withProducts(products).withTotalResults(totalResults).withFacets(facets);
     }
 
 }

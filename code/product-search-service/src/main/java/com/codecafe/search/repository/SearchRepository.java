@@ -7,6 +7,7 @@ import org.elasticsearch.index.query.FuzzyQueryBuilder;
 import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.WildcardQueryBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
@@ -59,6 +60,8 @@ public class SearchRepository {
                         .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
                         .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
                         .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
+                .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
+                .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
                 .withPageable(PageRequest.of(page - 1, size))
                 .build();
 
@@ -71,6 +74,7 @@ public class SearchRepository {
             searchResult = SearchResult.builder()
                     .productDocuments(matchedProducts)
                     .totalResults(searchHits.getTotalHits())
+                    .aggregations(searchHits.getAggregations())
                     .build();
         }
 
