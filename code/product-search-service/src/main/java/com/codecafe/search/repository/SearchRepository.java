@@ -62,6 +62,7 @@ public class SearchRepository {
                         .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
                 .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
                 .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
+                .addAggregation(AggregationBuilders.terms("color").field("generalAttributes.colorFamily.raw"))
                 .withPageable(PageRequest.of(page - 1, size))
                 .build();
 

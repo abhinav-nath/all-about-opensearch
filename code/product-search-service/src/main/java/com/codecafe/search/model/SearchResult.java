@@ -40,7 +40,7 @@ public class SearchResult {
 
     private List<Facet> getFacets() {
         List<Facet> facets = new ArrayList<>(1);
-        List<String> facetableFields = List.of("categories", "brand");
+        List<String> facetableFields = List.of("categories", "brand", "color");
 
         for (String facetableField : facetableFields) {
             Facet facet = new Facet();

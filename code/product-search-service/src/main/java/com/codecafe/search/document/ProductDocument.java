@@ -40,7 +40,8 @@ public class ProductDocument {
     @MultiField(mainField = @Field(type = Text, fielddata = true), otherFields = {@InnerField(suffix = "raw", type = Keyword)})
     private String brand;
 
-    private String color;
+    @Field(type = Object)
+    private GeneralAttributes generalAttributes;
 
     @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZZ")
     private ZonedDateTime dateAdded;
@@ -58,7 +59,7 @@ public class ProductDocument {
                 .categories(categories)
                 .price(price)
                 .brand(brand)
-                .color(color)
+                .generalAttributes(generalAttributes)
                 .dateAdded(dateAdded)
                 .dateModified(dateModified)
                 .isInStock(isInStock)
