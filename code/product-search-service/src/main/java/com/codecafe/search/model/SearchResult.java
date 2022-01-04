@@ -25,25 +25,38 @@ public class SearchResult {
     public SearchResponse toDto() {
         SearchResponse searchResponse = new SearchResponse();
         List<Product> products = new ArrayList<>(1);
-        List<Facet> facets = new ArrayList<>(1);
+        List<Facet> facets = null;
 
         if (!CollectionUtils.isEmpty(productDocuments)) {
             productDocuments.forEach(p -> products.add(p.toDto()));
         }
 
         if (aggregations != null) {
-            List<String> facetableFields = List.of("categories", "brand");
-
-            for (String facetableField : facetableFields) {
-                for (Terms.Bucket bucket : ((Terms) aggregations.get(facetableField)).getBuckets()) {
-                    Facet facet = new Facet().withName(bucket.getKeyAsString()).withCount(bucket.getDocCount());
-                    facets.add(facet);
-                }
-            }
-
+            facets = getFacets();
         }
 
         return searchResponse.withProducts(products).withTotalResults(totalResults).withFacets(facets);
+    }
+
+    private List<Facet> getFacets() {
+        List<Facet> facets = new ArrayList<>(1);
+        List<String> facetableFields = List.of("categories", "brand");
+
+        for (String facetableField : facetableFields) {
+            Facet facet = new Facet();
+            facet.setName(facetableField);
+
+            List<FacetValue> facetValues = new ArrayList<>(1);
+
+            for (Terms.Bucket bucket : ((Terms) aggregations.get(facetableField)).getBuckets()) {
+                FacetValue facetValue = new FacetValue().withName(bucket.getKeyAsString()).withCount(bucket.getDocCount());
+                facetValues.add(facetValue);
+            }
+
+            facet.setFacetValues(facetValues);
+            facets.add(facet);
+        }
+        return facets;
     }
 
 }
