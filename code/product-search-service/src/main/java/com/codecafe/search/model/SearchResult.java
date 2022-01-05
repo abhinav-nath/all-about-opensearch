@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -40,15 +42,15 @@ public class SearchResult {
 
     private List<Facet> getFacets() {
         List<Facet> facets = new ArrayList<>(1);
-        List<String> facetableFields = List.of("categories", "brand", "color");
 
-        for (String facetableField : facetableFields) {
+        Map<String, Aggregation> aggregationMap = aggregations.getAsMap();
+
+        for (Map.Entry<String, Aggregation> entry : aggregationMap.entrySet()) {
             Facet facet = new Facet();
-            facet.setName(facetableField);
-
+            facet.setName(entry.getKey().toString());
             List<FacetValue> facetValues = new ArrayList<>(1);
 
-            for (Terms.Bucket bucket : ((Terms) aggregations.get(facetableField)).getBuckets()) {
+            for (Terms.Bucket bucket : ((Terms) entry.getValue()).getBuckets()) {
                 FacetValue facetValue = new FacetValue().withName(bucket.getKeyAsString()).withCount(bucket.getDocCount());
                 facetValues.add(facetValue);
             }
@@ -56,6 +58,7 @@ public class SearchResult {
             facet.setFacetValues(facetValues);
             facets.add(facet);
         }
+
         return facets;
     }
 
