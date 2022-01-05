@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Builder
@@ -42,20 +41,17 @@ public class SearchResult {
 
     private List<Facet> getFacets() {
         List<Facet> facets = new ArrayList<>(1);
+        List<Aggregation> aggregations = this.aggregations.asList();
 
-        Map<String, Aggregation> aggregationMap = aggregations.getAsMap();
-
-        for (Map.Entry<String, Aggregation> entry : aggregationMap.entrySet()) {
-            Facet facet = new Facet();
-            facet.setName(entry.getKey().toString());
+        for (Aggregation aggregation : aggregations) {
             List<FacetValue> facetValues = new ArrayList<>(1);
 
-            for (Terms.Bucket bucket : ((Terms) entry.getValue()).getBuckets()) {
+            for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
                 FacetValue facetValue = new FacetValue().withName(bucket.getKeyAsString()).withCount(bucket.getDocCount());
                 facetValues.add(facetValue);
             }
 
-            facet.setFacetValues(facetValues);
+            Facet facet = new Facet().withName(aggregation.getName()).withFacetValues(facetValues);
             facets.add(facet);
         }
 
