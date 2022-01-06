@@ -24,7 +24,7 @@ public class SearchResult {
     private List<ProductDocument> productDocuments;
     private Aggregations aggregations;
 
-    public SearchResponse toDto(Map<String, FacetData> facetMap) {
+    public SearchResponse toDto(Map<String, FacetInfo> facetMap) {
         SearchResponse searchResponse = new SearchResponse();
         List<Product> products = new ArrayList<>(1);
         List<Facet> facets = null;
@@ -40,7 +40,7 @@ public class SearchResult {
         return searchResponse.withProducts(products).withTotalResults(totalResults).withFacets(facets);
     }
 
-    private List<Facet> getFacets(Map<String, FacetData> facetMap) {
+    private List<Facet> getFacets(Map<String, FacetInfo> facetMap) {
         List<Facet> facets = new ArrayList<>(1);
         List<Aggregation> aggregations = this.aggregations.asList();
 

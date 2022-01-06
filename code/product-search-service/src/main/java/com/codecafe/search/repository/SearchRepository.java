@@ -1,13 +1,11 @@
 package com.codecafe.search.repository;
 
-import com.codecafe.search.model.FacetData;
 import com.codecafe.search.document.ProductDocument;
+import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.FacetInfo;
 import com.codecafe.search.model.SearchResult;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.FuzzyQueryBuilder;
-import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.WildcardQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
@@ -38,15 +36,15 @@ public class SearchRepository {
     private String indexName;
 
     private ElasticsearchRestTemplate elasticsearchTemplate;
-    private Map<String, FacetData> facetMap;
+    private Map<String, FacetInfo> facetMap;
 
     @Autowired
-    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate, Map<String, FacetData> facetMap) {
+    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate, Map<String, FacetInfo> facetMap) {
         this.elasticsearchTemplate = elasticsearchTemplate;
         this.facetMap = facetMap;
     }
 
-    public SearchResult searchProducts(String query, int page, int size) {
+    public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
 
         List<ProductDocument> matchedProducts = new ArrayList<>(1);
         SearchResult searchResult = new SearchResult();
@@ -55,19 +53,28 @@ public class SearchRepository {
 
         NativeSearchQuery searchQuery = null;
 
-        if (true) {
+        if (!isEmpty(facets)) {
+
+            BoolQueryBuilder filterQuery = new BoolQueryBuilder();
+
+            for (FacetData facet : facets) {
+                for (String filter : facet.getValues()) {
+                    filterQuery = filterQuery.must(new MatchQueryBuilder(facetMap.get(facet.getCode()).getFieldName(), filter));
+                }
+            }
+
             searchQuery = new NativeSearchQueryBuilder()
                     .withSort(scoreSort())
                     .withSort(fieldSort("dateModified").order(DESC))
                     .withSort(fieldSort("dateAdded").order(DESC))
-                    .withQuery(boolQuery()
-                            .must(new MatchQueryBuilder(facetMap.get("Categories").getFieldName(), "Laptops"))
-                            .must(boolQuery()
-                                    .should(new MatchQueryBuilder("name", query).boost(10.0f))
-                                    .should(new MatchQueryBuilder("description", query).boost(1.0f))
-                                    .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
-                                    .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
-                                    .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f))))
+                    .withQuery(
+                            filterQuery
+                                    .must(boolQuery()
+                                            .should(new MatchQueryBuilder("name", query).boost(10.0f))
+                                            .should(new MatchQueryBuilder("description", query).boost(1.0f))
+                                            .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
+                                            .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
+                                            .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f))))
                     .addAggregation(AggregationBuilders.terms("Categories").field(facetMap.get("Categories").getFieldName() + ".raw"))
                     .addAggregation(AggregationBuilders.terms("Brand").field(facetMap.get("Brand").getFieldName() + ".raw"))
                     .addAggregation(AggregationBuilders.terms("ColorFamily").field(facetMap.get("ColorFamily").getFieldName() + ".raw"))

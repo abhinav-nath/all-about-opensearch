@@ -1,6 +1,7 @@
 package com.codecafe.search.service;
 
 import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.FacetInfo;
 import com.codecafe.search.model.SearchResponse;
 import com.codecafe.search.model.SearchResult;
 import com.codecafe.search.repository.SearchRepository;
@@ -17,16 +18,16 @@ public class SearchService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchService.class);
 
     private final SearchRepository searchRepository;
-    private Map<String, FacetData> facetMap;
+    private Map<String, FacetInfo> facetMap;
 
-    public SearchService(SearchRepository searchRepository, Map<String, FacetData> facetMap) {
+    public SearchService(SearchRepository searchRepository, Map<String, FacetInfo> facetMap) {
         this.searchRepository = searchRepository;
         this.facetMap = facetMap;
     }
 
-    public SearchResponse performTextSearch(String query, int page, int size) {
+    public SearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
         try {
-            final SearchResult searchResult = searchRepository.searchProducts(query, page, size);
+            final SearchResult searchResult = searchRepository.searchProducts(query, facets, page, size);
 
             if (searchResult != null && searchResult.getTotalResults() > 0) {
                 LOGGER.debug("Total search results returned: {}", searchResult.getTotalResults());

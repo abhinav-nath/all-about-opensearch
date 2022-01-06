@@ -1,6 +1,6 @@
 package com.codecafe.search.config;
 
-import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.FacetInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -31,11 +31,11 @@ public class Config {
     }
 
     @Bean
-    public Map<String, FacetData> facetMap() {
-        Map<String, FacetData> facetMap = new HashMap<>();
-        facetMap.put("Categories", new FacetData().withDisplayName("Categories").withFieldName("categories"));
-        facetMap.put("Brand", new FacetData().withDisplayName("Brand Name").withFieldName("brand"));
-        facetMap.put("ColorFamily", new FacetData().withDisplayName("Color Family").withFieldName("generalAttributes.colorFamily"));
+    public Map<String, FacetInfo> facetMap() {
+        Map<String, FacetInfo> facetMap = new HashMap<>();
+        facetMap.put("Categories", new FacetInfo().withDisplayName("Categories").withFieldName("categories"));
+        facetMap.put("Brand", new FacetInfo().withDisplayName("Brand Name").withFieldName("brand"));
+        facetMap.put("ColorFamily", new FacetInfo().withDisplayName("Color Family").withFieldName("generalAttributes.colorFamily"));
         return facetMap;
     }
 

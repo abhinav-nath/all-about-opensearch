@@ -1,6 +1,11 @@
 package com.codecafe.search.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.With;
+
+import java.util.List;
 
 @Getter
 @With
@@ -8,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 public class FacetData {
 
-    private String displayName;
-    private String fieldName;
+    private String code;
+    private List<String> values;
 
 }

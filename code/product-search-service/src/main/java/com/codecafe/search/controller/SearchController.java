@@ -1,5 +1,6 @@
 package com.codecafe.search.controller;
 
+import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.SearchResponse;
 import com.codecafe.search.service.SearchService;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,11 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<SearchResponse> textSearch(@RequestParam("query") final String query,
+                                                     @RequestParam(value = "facets", required = false) final List<FacetData> facets,
                                                      @RequestParam(value = "page", defaultValue = "1") final int page,
                                                      @RequestParam(value = "size", defaultValue = "5") final int size) {
 
-        SearchResponse searchResponse = searchService.performTextSearch(query, page, size);
+        SearchResponse searchResponse = searchService.performTextSearch(query, facets, page, size);
 
         return ResponseEntity.ok(searchResponse);
     }
