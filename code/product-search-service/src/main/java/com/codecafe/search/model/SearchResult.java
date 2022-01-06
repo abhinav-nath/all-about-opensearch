@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -23,7 +24,7 @@ public class SearchResult {
     private List<ProductDocument> productDocuments;
     private Aggregations aggregations;
 
-    public SearchResponse toDto() {
+    public SearchResponse toDto(Map<String, FacetData> facetMap) {
         SearchResponse searchResponse = new SearchResponse();
         List<Product> products = new ArrayList<>(1);
         List<Facet> facets = null;
@@ -33,13 +34,13 @@ public class SearchResult {
         }
 
         if (aggregations != null) {
-            facets = getFacets();
+            facets = getFacets(facetMap);
         }
 
         return searchResponse.withProducts(products).withTotalResults(totalResults).withFacets(facets);
     }
 
-    private List<Facet> getFacets() {
+    private List<Facet> getFacets(Map<String, FacetData> facetMap) {
         List<Facet> facets = new ArrayList<>(1);
         List<Aggregation> aggregations = this.aggregations.asList();
 
@@ -51,7 +52,9 @@ public class SearchResult {
                 facetValues.add(facetValue);
             }
 
-            Facet facet = new Facet().withName(aggregation.getName()).withFacetValues(facetValues);
+            Facet facet = new Facet().withCode(aggregation.getName())
+                    .withName(facetMap.get(aggregation.getName()).getDisplayName())
+                    .withFacetValues(facetValues);
             facets.add(facet);
         }
 

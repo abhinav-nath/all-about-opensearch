@@ -1,5 +1,6 @@
 package com.codecafe.search.repository;
 
+import com.codecafe.search.model.FacetData;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.SearchResult;
 import org.elasticsearch.action.search.SearchResponse;
@@ -37,10 +38,12 @@ public class SearchRepository {
     private String indexName;
 
     private ElasticsearchRestTemplate elasticsearchTemplate;
+    private Map<String, FacetData> facetMap;
 
     @Autowired
-    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate) {
+    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate, Map<String, FacetData> facetMap) {
         this.elasticsearchTemplate = elasticsearchTemplate;
+        this.facetMap = facetMap;
     }
 
     public SearchResult searchProducts(String query, int page, int size) {
@@ -50,21 +53,43 @@ public class SearchRepository {
 
         String wildcardQuery = "*" + query + "*";
 
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withSort(scoreSort())
-                .withSort(fieldSort("dateModified").order(DESC))
-                .withSort(fieldSort("dateAdded").order(DESC))
-                .withQuery(boolQuery()
-                        .should(new MatchQueryBuilder("name", query).boost(10.0f))
-                        .should(new MatchQueryBuilder("description", query).boost(1.0f))
-                        .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
-                        .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
-                        .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
-                .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
-                .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
-                .addAggregation(AggregationBuilders.terms("color").field("generalAttributes.colorFamily.raw"))
-                .withPageable(PageRequest.of(page - 1, size))
-                .build();
+        NativeSearchQuery searchQuery = null;
+
+        if (true) {
+            searchQuery = new NativeSearchQueryBuilder()
+                    .withSort(scoreSort())
+                    .withSort(fieldSort("dateModified").order(DESC))
+                    .withSort(fieldSort("dateAdded").order(DESC))
+                    .withQuery(boolQuery()
+                            .must(new MatchQueryBuilder(facetMap.get("Categories").getFieldName(), "Laptops"))
+                            .must(boolQuery()
+                                    .should(new MatchQueryBuilder("name", query).boost(10.0f))
+                                    .should(new MatchQueryBuilder("description", query).boost(1.0f))
+                                    .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
+                                    .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
+                                    .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f))))
+                    .addAggregation(AggregationBuilders.terms("Categories").field(facetMap.get("Categories").getFieldName() + ".raw"))
+                    .addAggregation(AggregationBuilders.terms("Brand").field(facetMap.get("Brand").getFieldName() + ".raw"))
+                    .addAggregation(AggregationBuilders.terms("ColorFamily").field(facetMap.get("ColorFamily").getFieldName() + ".raw"))
+                    .withPageable(PageRequest.of(page - 1, size))
+                    .build();
+        } else {
+            searchQuery = new NativeSearchQueryBuilder()
+                    .withSort(scoreSort())
+                    .withSort(fieldSort("dateModified").order(DESC))
+                    .withSort(fieldSort("dateAdded").order(DESC))
+                    .withQuery(boolQuery()
+                            .should(new MatchQueryBuilder("name", query).boost(10.0f))
+                            .should(new MatchQueryBuilder("description", query).boost(1.0f))
+                            .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
+                            .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
+                            .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
+                    .addAggregation(AggregationBuilders.terms("Categories").field(facetMap.get("Categories").getFieldName() + ".raw"))
+                    .addAggregation(AggregationBuilders.terms("Brand").field(facetMap.get("Brand").getFieldName() + ".raw"))
+                    .addAggregation(AggregationBuilders.terms("ColorFamily").field(facetMap.get("ColorFamily").getFieldName() + ".raw"))
+                    .withPageable(PageRequest.of(page - 1, size))
+                    .build();
+        }
 
         SearchHits<ProductDocument> searchHits = elasticsearchTemplate.search(searchQuery, ProductDocument.class, of(indexName));
 

@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Facet {
 
+    private String code;
     private String name;
     private List<FacetValue> facetValues;
 
