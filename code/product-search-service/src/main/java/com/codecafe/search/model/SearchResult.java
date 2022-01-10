@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Getter
 @Builder
@@ -30,7 +31,7 @@ public class SearchResult {
         List<Product> products = new ArrayList<>(1);
         List<Facet> facets = null;
 
-        if (!CollectionUtils.isEmpty(productDocuments)) {
+        if (!isEmpty(productDocuments)) {
             productDocuments.forEach(p -> products.add(p.toDto()));
         }
 
@@ -53,10 +54,13 @@ public class SearchResult {
                 facetValues.add(facetValue);
             }
 
-            Facet facet = new Facet().withCode(aggregation.getName())
-                    .withName(facetsConfig.get(aggregation.getName()).getDisplayName())
-                    .withFacetValues(facetValues);
-            facets.add(facet);
+            if (!isEmpty(facetValues)) {
+                Facet facet = new Facet().withCode(aggregation.getName())
+                        .withName(facetsConfig.get(aggregation.getName()).getDisplayName())
+                        .withFacetValues(facetValues);
+
+                facets.add(facet);
+            }
         }
 
         return facets;
