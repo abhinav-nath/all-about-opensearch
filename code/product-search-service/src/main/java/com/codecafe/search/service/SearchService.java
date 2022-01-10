@@ -1,6 +1,5 @@
 package com.codecafe.search.service;
 
-import com.codecafe.search.config.Config;
 import com.codecafe.search.config.FacetsConfig;
 import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.SearchResponse;

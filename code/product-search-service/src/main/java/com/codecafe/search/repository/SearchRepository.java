@@ -1,5 +1,6 @@
 package com.codecafe.search.repository;
 
+import com.codecafe.search.config.FacetsConfig;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.SearchResult;
@@ -34,11 +35,13 @@ public class SearchRepository {
     @Value("${app.search.index-name}")
     private String indexName;
 
-    private ElasticsearchRestTemplate elasticsearchTemplate;
+    private final ElasticsearchRestTemplate elasticsearchTemplate;
+    private final FacetsConfig facetsConfig;
 
     @Autowired
-    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate) {
+    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate, FacetsConfig facetsConfig) {
         this.elasticsearchTemplate = elasticsearchTemplate;
+        this.facetsConfig = facetsConfig;
     }
 
     public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
@@ -48,7 +51,9 @@ public class SearchRepository {
 
         String wildcardQuery = "*" + query + "*";
 
-        NativeSearchQuery searchQuery = null;
+        NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder();
+
+        searchQueryBuilder = addSorting(searchQueryBuilder);
 
         if (!isEmpty(facets)) {
 
@@ -60,40 +65,14 @@ public class SearchRepository {
                 }
             }
 
-            searchQuery = new NativeSearchQueryBuilder()
-                    .withSort(scoreSort())
-                    .withSort(fieldSort("dateModified").order(DESC))
-                    .withSort(fieldSort("dateAdded").order(DESC))
-                    .withQuery(
-                            filterQuery
-                                    .must(boolQuery()
-                                            .should(new MatchQueryBuilder("name", query).boost(10.0f))
-                                            .should(new MatchQueryBuilder("description", query).boost(1.0f))
-                                            .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
-                                            .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
-                                            .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f))))
-                    .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
-                    .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
-                    .addAggregation(AggregationBuilders.terms("generalAttributes.colorFamily").field("generalAttributes.colorFamily.raw"))
-                    .withPageable(PageRequest.of(page - 1, size))
-                    .build();
+            searchQueryBuilder = searchQueryBuilder.withQuery(filterQuery.must(buildShouldClauses(query, wildcardQuery)));
         } else {
-            searchQuery = new NativeSearchQueryBuilder()
-                    .withSort(scoreSort())
-                    .withSort(fieldSort("dateModified").order(DESC))
-                    .withSort(fieldSort("dateAdded").order(DESC))
-                    .withQuery(boolQuery()
-                            .should(new MatchQueryBuilder("name", query).boost(10.0f))
-                            .should(new MatchQueryBuilder("description", query).boost(1.0f))
-                            .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
-                            .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
-                            .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
-                    .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
-                    .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
-                    .addAggregation(AggregationBuilders.terms("generalAttributes.colorFamily").field("generalAttributes.colorFamily.raw"))
-                    .withPageable(PageRequest.of(page - 1, size))
-                    .build();
+            searchQueryBuilder = searchQueryBuilder.withQuery(buildShouldClauses(query, wildcardQuery));
         }
+
+        searchQueryBuilder = buildAggregations(searchQueryBuilder);
+
+        NativeSearchQuery searchQuery = searchQueryBuilder.withPageable(PageRequest.of(page - 1, size)).build();
 
         SearchHits<ProductDocument> searchHits = elasticsearchTemplate.search(searchQuery, ProductDocument.class, of(indexName));
 
@@ -109,6 +88,31 @@ public class SearchRepository {
         }
 
         return searchResult;
+    }
+
+    private NativeSearchQueryBuilder addSorting(NativeSearchQueryBuilder searchQueryBuilder) {
+        return searchQueryBuilder
+                .withSort(scoreSort())
+                .withSort(fieldSort("dateModified").order(DESC))
+                .withSort(fieldSort("dateAdded").order(DESC));
+    }
+
+    private BoolQueryBuilder buildShouldClauses(String query, String wildcardQuery) {
+        return boolQuery()
+                .should(new MatchQueryBuilder("name", query).boost(10.0f))
+                .should(new MatchQueryBuilder("description", query).boost(1.0f))
+                .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
+                .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
+                .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f));
+    }
+
+    public NativeSearchQueryBuilder buildAggregations(NativeSearchQueryBuilder searchQueryBuilder) {
+
+        for (Map.Entry<String, FacetsConfig.FacetInfo> entry : facetsConfig.getFacets().entrySet()) {
+            searchQueryBuilder.addAggregation(AggregationBuilders.terms(entry.getKey()).field(entry.getKey() + ".raw"));
+        }
+
+        return searchQueryBuilder;
     }
 
     public List<String> suggestKeywords(String query) {
