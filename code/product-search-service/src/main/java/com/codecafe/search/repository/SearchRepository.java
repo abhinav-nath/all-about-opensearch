@@ -2,7 +2,6 @@ package com.codecafe.search.repository;
 
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.FacetData;
-import com.codecafe.search.model.FacetInfo;
 import com.codecafe.search.model.SearchResult;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.*;
@@ -36,12 +35,10 @@ public class SearchRepository {
     private String indexName;
 
     private ElasticsearchRestTemplate elasticsearchTemplate;
-    private Map<String, FacetInfo> facetMap;
 
     @Autowired
-    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate, Map<String, FacetInfo> facetMap) {
+    public SearchRepository(ElasticsearchRestTemplate elasticsearchTemplate) {
         this.elasticsearchTemplate = elasticsearchTemplate;
-        this.facetMap = facetMap;
     }
 
     public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
@@ -59,7 +56,7 @@ public class SearchRepository {
 
             for (FacetData facet : facets) {
                 for (String filter : facet.getValues()) {
-                    filterQuery = filterQuery.must(new MatchQueryBuilder(facetMap.get(facet.getCode()).getFieldName(), filter));
+                    filterQuery = filterQuery.must(new MatchQueryBuilder(facet.getCode(), filter));
                 }
             }
 
@@ -75,9 +72,9 @@ public class SearchRepository {
                                             .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
                                             .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
                                             .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f))))
-                    .addAggregation(AggregationBuilders.terms("Categories").field(facetMap.get("Categories").getFieldName() + ".raw"))
-                    .addAggregation(AggregationBuilders.terms("Brand").field(facetMap.get("Brand").getFieldName() + ".raw"))
-                    .addAggregation(AggregationBuilders.terms("ColorFamily").field(facetMap.get("ColorFamily").getFieldName() + ".raw"))
+                    .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
+                    .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
+                    .addAggregation(AggregationBuilders.terms("generalAttributes.colorFamily").field("generalAttributes.colorFamily.raw"))
                     .withPageable(PageRequest.of(page - 1, size))
                     .build();
         } else {
@@ -91,9 +88,9 @@ public class SearchRepository {
                             .should(new FuzzyQueryBuilder("name", query).boost(10.0f))
                             .should(new WildcardQueryBuilder("name", wildcardQuery).boost(10.0f))
                             .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f)))
-                    .addAggregation(AggregationBuilders.terms("Categories").field(facetMap.get("Categories").getFieldName() + ".raw"))
-                    .addAggregation(AggregationBuilders.terms("Brand").field(facetMap.get("Brand").getFieldName() + ".raw"))
-                    .addAggregation(AggregationBuilders.terms("ColorFamily").field(facetMap.get("ColorFamily").getFieldName() + ".raw"))
+                    .addAggregation(AggregationBuilders.terms("categories").field("categories.raw"))
+                    .addAggregation(AggregationBuilders.terms("brand").field("brand.raw"))
+                    .addAggregation(AggregationBuilders.terms("generalAttributes.colorFamily").field("generalAttributes.colorFamily.raw"))
                     .withPageable(PageRequest.of(page - 1, size))
                     .build();
         }

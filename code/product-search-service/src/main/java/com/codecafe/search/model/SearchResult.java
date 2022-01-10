@@ -1,5 +1,6 @@
 package com.codecafe.search.model;
 
+import com.codecafe.search.config.FacetsConfig;
 import com.codecafe.search.document.ProductDocument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class SearchResult {
     private List<ProductDocument> productDocuments;
     private Aggregations aggregations;
 
-    public SearchResponse toDto(Map<String, FacetInfo> facetMap) {
+    public SearchResponse toDto(Map<String, FacetsConfig.FacetInfo> facetsConfig) {
         SearchResponse searchResponse = new SearchResponse();
         List<Product> products = new ArrayList<>(1);
         List<Facet> facets = null;
@@ -34,13 +35,13 @@ public class SearchResult {
         }
 
         if (aggregations != null) {
-            facets = getFacets(facetMap);
+            facets = getFacets(facetsConfig);
         }
 
         return searchResponse.withProducts(products).withTotalResults(totalResults).withFacets(facets);
     }
 
-    private List<Facet> getFacets(Map<String, FacetInfo> facetMap) {
+    private List<Facet> getFacets(Map<String, FacetsConfig.FacetInfo> facetsConfig) {
         List<Facet> facets = new ArrayList<>(1);
         List<Aggregation> aggregations = this.aggregations.asList();
 
@@ -53,7 +54,7 @@ public class SearchResult {
             }
 
             Facet facet = new Facet().withCode(aggregation.getName())
-                    .withName(facetMap.get(aggregation.getName()).getDisplayName())
+                    .withName(facetsConfig.get(aggregation.getName()).getDisplayName())
                     .withFacetValues(facetValues);
             facets.add(facet);
         }
