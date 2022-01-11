@@ -60,9 +60,11 @@ public class SearchRepository {
             BoolQueryBuilder filterQuery = new BoolQueryBuilder();
 
             for (FacetData facet : facets) {
+                BoolQueryBuilder filterValuesQuery = new BoolQueryBuilder();
                 for (String filter : facet.getValues()) {
-                    filterQuery = filterQuery.must(new MatchQueryBuilder(facet.getCode(), filter));
+                    filterValuesQuery = filterValuesQuery.should(new MatchQueryBuilder(facet.getCode(), filter));
                 }
+                filterQuery = filterQuery.must(filterValuesQuery);
             }
 
             searchQueryBuilder = searchQueryBuilder.withQuery(filterQuery.must(buildShouldClauses(query, wildcardQuery)));
