@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.List;
 
 @Getter
-@With
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Facet {

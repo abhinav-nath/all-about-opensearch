@@ -27,7 +27,6 @@ public class SearchResult {
     private Aggregations aggregations;
 
     public SearchResponse toDto(Map<String, FacetsConfig.FacetInfo> facetsConfig) {
-        SearchResponse searchResponse = new SearchResponse();
         List<Product> products = new ArrayList<>(1);
         List<Facet> facets = null;
 
@@ -39,7 +38,11 @@ public class SearchResult {
             facets = getFacets(facetsConfig);
         }
 
-        return searchResponse.withProducts(products).withTotalResults(totalResults).withFacets(facets);
+        return SearchResponse.builder()
+                .products(products)
+                .totalResults(totalResults)
+                .facets(facets)
+                .build();
     }
 
     private List<Facet> getFacets(Map<String, FacetsConfig.FacetInfo> facetsConfig) {
@@ -50,14 +53,19 @@ public class SearchResult {
             List<FacetValue> facetValues = new ArrayList<>(1);
 
             for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
-                FacetValue facetValue = new FacetValue().withName(bucket.getKeyAsString()).withCount(bucket.getDocCount());
+                FacetValue facetValue = FacetValue.builder()
+                        .name(bucket.getKeyAsString())
+                        .count(bucket.getDocCount())
+                        .build();
                 facetValues.add(facetValue);
             }
 
             if (!isEmpty(facetValues)) {
-                Facet facet = new Facet().withCode(aggregation.getName())
-                        .withName(facetsConfig.get(aggregation.getName()).getDisplayName())
-                        .withFacetValues(facetValues);
+                Facet facet = Facet.builder()
+                        .code(aggregation.getName())
+                        .name(facetsConfig.get(aggregation.getName()).getDisplayName())
+                        .facetValues(facetValues)
+                        .build();
 
                 facets.add(facet);
             }

@@ -1,12 +1,9 @@
 package com.codecafe.search.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 @Getter
-@With
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FacetValue {

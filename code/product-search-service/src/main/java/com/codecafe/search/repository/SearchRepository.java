@@ -45,7 +45,6 @@ public class SearchRepository {
     }
 
     public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
-
         List<ProductDocument> matchedProducts = new ArrayList<>(1);
         SearchResult searchResult = new SearchResult();
 
@@ -55,22 +54,10 @@ public class SearchRepository {
 
         searchQueryBuilder = addSorting(searchQueryBuilder);
 
-        if (!isEmpty(facets)) {
-
-            BoolQueryBuilder filterQuery = new BoolQueryBuilder();
-
-            for (FacetData facet : facets) {
-                BoolQueryBuilder filterValuesQuery = new BoolQueryBuilder();
-                for (String filter : facet.getValues()) {
-                    filterValuesQuery = filterValuesQuery.should(new MatchQueryBuilder(facet.getCode(), filter));
-                }
-                filterQuery = filterQuery.must(filterValuesQuery);
-            }
-
-            searchQueryBuilder = searchQueryBuilder.withQuery(filterQuery.must(buildShouldClauses(query, wildcardQuery)));
-        } else {
+        if (!isEmpty(facets))
+            searchQueryBuilder = searchQueryBuilder.withQuery(buildFilterQuery(facets).must(buildShouldClauses(query, wildcardQuery)));
+        else
             searchQueryBuilder = searchQueryBuilder.withQuery(buildShouldClauses(query, wildcardQuery));
-        }
 
         searchQueryBuilder = buildAggregations(searchQueryBuilder);
 
@@ -97,6 +84,20 @@ public class SearchRepository {
                 .withSort(scoreSort())
                 .withSort(fieldSort("dateModified").order(DESC))
                 .withSort(fieldSort("dateAdded").order(DESC));
+    }
+
+    private BoolQueryBuilder buildFilterQuery(List<FacetData> facets) {
+        BoolQueryBuilder filterQuery = new BoolQueryBuilder();
+
+        for (FacetData facet : facets) {
+            BoolQueryBuilder filterValuesQuery = new BoolQueryBuilder();
+            for (String filter : facet.getValues()) {
+                filterValuesQuery = filterValuesQuery.should(new MatchQueryBuilder(facet.getCode(), filter));
+            }
+            filterQuery = filterQuery.must(filterValuesQuery);
+        }
+
+        return filterQuery;
     }
 
     private BoolQueryBuilder buildShouldClauses(String query, String wildcardQuery) {
