@@ -112,7 +112,7 @@ public class SearchRepository {
     public NativeSearchQueryBuilder buildAggregations(NativeSearchQueryBuilder searchQueryBuilder) {
 
         for (Map.Entry<String, FacetsConfig.FacetInfo> entry : facetsConfig.getFacets().entrySet()) {
-            searchQueryBuilder.addAggregation(AggregationBuilders.terms(entry.getKey()).field(entry.getKey() + ".raw"));
+            searchQueryBuilder.addAggregation(AggregationBuilders.terms(entry.getKey()).field(entry.getKey() + ".raw").minDocCount(0));
         }
 
         return searchQueryBuilder;

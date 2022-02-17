@@ -1,10 +1,7 @@
 package com.codecafe.search.document;
 
 import com.codecafe.search.model.Product;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 import org.springframework.data.elasticsearch.core.completion.Completion;
@@ -16,9 +13,7 @@ import java.util.List;
 import static org.springframework.data.elasticsearch.annotations.FieldType.*;
 
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter
 @Document(indexName = "#{@indexName}")
 public class ProductDocument {
 

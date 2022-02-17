@@ -6,12 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.elasticsearch.core.completion.Completion;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @Component
 @ConditionalOnProperty(prefix = "app.search", name = "create-test-data", matchIfMissing = true)
@@ -33,10 +36,22 @@ public class TestDataConfig {
         try {
             productRepository.deleteAll();
             List<ProductDocument> productDocuments = Arrays.asList(objectMapper.readValue(ResourceUtils.getFile("classpath:" + "product_catalog/products.json"), ProductDocument[].class));
+            productDocuments.forEach(this::addSuggestions);
             productRepository.saveAll(productDocuments);
         } catch (Exception ex) {
             logger.error("Failed to create test data. Reason : {}", ex.getMessage());
         }
+    }
+
+    private void addSuggestions(ProductDocument productDocument) {
+        List<String> suggestions = new ArrayList<>(asList(productDocument.getName().toLowerCase().split(SPACE)));
+
+        for (String category : productDocument.getCategories()) {
+            suggestions.addAll(asList(category.toLowerCase().split(SPACE)));
+        }
+
+        Set<String> distinctKeywords = new HashSet<>(suggestions);
+        productDocument.setSuggest(new Completion(new ArrayList<>(distinctKeywords)));
     }
 
 }
