@@ -1,0 +1,549 @@
+{
+	"info": {
+		"_postman_id": "ccc56dba-20bc-469f-aa6a-b5701787f2fb",
+		"name": "product-search-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "OpenSearch APIs",
+			"item": [
+				{
+					"name": "Get Index",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Single Documen",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Macbook Pro 2019\",\n    \"description\": \"Apple Macbook Pro 2019 model\",\n    \"categories\": [\n        \"Laptops\",\n        \"Productivity Laptops\"\n    ],\n    \"price\": 2200.0,\n    \"brand\": \"Apple\",\n    \"generalAttributes\": {\n        \"color\": [\n            \"Silver\"\n        ],\n        \"colorFamily\": [\n            \"Silver\",\n            \"White\"\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_doc/1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_doc",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Index",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mappings\": {\n        \"properties\": {\n            \"brand\": {\n                \"properties\": {\n                    \"code\": {\n                        \"type\": \"keyword\"\n                    },\n                    \"displayName\": {\n                        \"type\": \"keyword\"\n                    },\n                    \"value\": {\n                        \"type\": \"keyword\"\n                    }\n                }\n            },\n            \"categories\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"raw\": {\n                        \"type\": \"keyword\"\n                    }\n                },\n                \"fielddata\": true\n            },\n            \"dateAdded\": {\n                \"type\": \"date\",\n                \"format\": \"uuuu-MM-dd'T'HH:mm:ss.SSSZZ\"\n            },\n            \"dateModified\": {\n                \"type\": \"date\",\n                \"format\": \"uuuu-MM-dd'T'HH:mm:ss.SSSZZ\"\n            },\n            \"description\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"keyword\": {\n                        \"type\": \"keyword\",\n                        \"ignore_above\": 256\n                    }\n                }\n            },\n            \"generalAttributes\": {\n                \"properties\": {\n                    \"color\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    },\n                    \"colorFamily\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"raw\": {\n                                \"type\": \"keyword\"\n                            }\n                        },\n                        \"fielddata\": true\n                    }\n                }\n            },\n            \"id\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"keyword\": {\n                        \"type\": \"keyword\",\n                        \"ignore_above\": 256\n                    }\n                }\n            },\n            \"isInStock\": {\n                \"type\": \"boolean\"\n            },\n            \"name\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"keyword\": {\n                        \"type\": \"keyword\",\n                        \"ignore_above\": 256\n                    }\n                }\n            },\n            \"price\": {\n                \"type\": \"double\"\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Index",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Documents",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search?from=0&size=100",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OS AutoSuggest",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_source\": true,\n    \"suggest\": {\n        \"completer\": {\n            \"prefix\": \"pro\",\n            \"completion\": {\n                \"field\": \"suggest\",\n                \"skip_duplicates\": false,\n                \"size\": 10\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OS search query",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 5,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"apple\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"apple\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"apple\",\n                            \"fuzziness\": \"AUTO\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"transpositions\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*apple*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"apple\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"dateModified\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"dateAdded\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"categories\": {\n            \"terms\": {\n                \"field\": \"categories.raw\",\n                \"size\": 10,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        },\n        \"brand\": {\n            \"terms\": {\n                \"field\": \"brand.raw\",\n                \"size\": 10,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        },\n        \"color\": {\n            \"terms\": {\n                \"field\": \"generalAttributes.colorFamily.raw\",\n                \"size\": 10,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OS search with Facets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 5,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"apple\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"apple\",\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"apple\",\n                            \"fuzziness\": \"AUTO\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*apple*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"apple\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"dateModified\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"dateAdded\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"brand\": {\n            \"terms\": {\n                \"field\": \"brand.code\"\n            },\n            \"aggregations\": {\n                \"facets1\": {\n                    \"terms\": {\n                        \"field\": \"brand.displayName\"\n                    },\n                    \"aggregations\": {\n                        \"facets2\": {\n                            \"terms\": {\n                                \"field\": \"brand.value\"\n                            }\n                        }\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OS search [code + displayName]",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 5,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"apple\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"apple\",\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"apple\",\n                            \"fuzziness\": \"AUTO\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*apple*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"apple\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"dateModified\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"dateAdded\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"brand\": {\n            \"terms\": {\n                \"field\": \"brand.code\"\n            },\n            \"aggregations\": {\n                \"displayName\": {\n                    \"terms\": {\n                        \"field\": \"brand.displayName\"\n                    }\n                },\n                \"facetValue\": {\n                    \"terms\": {\n                        \"field\": \"brand.value\"\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search Text",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=sony&from=0&size=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "sony"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Text With Filters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=apple&facets=%5B%7B%22code%22%3A%22generalAttributes.colorFamily%22%2C%22values%22%3A%5B%22Blue%22%5D%7D%2C%7B%22code%22%3A%22brand%22%2C%22values%22%3A%5B%22AmazonBasics%22%5D%7D%5D&from=0&size=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "apple"
+						},
+						{
+							"key": "facets",
+							"value": "%5B%7B%22code%22%3A%22generalAttributes.colorFamily%22%2C%22values%22%3A%5B%22Blue%22%5D%7D%2C%7B%22code%22%3A%22brand%22%2C%22values%22%3A%5B%22AmazonBasics%22%5D%7D%5D"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Text Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"code\": \"ColorFamily\",\n        \"values\": [\n            \"Blue\"\n        ]\n    },\n    {\n        \"code\": \"Categories\",\n        \"values\": [\n            \"Laptop Accessories\"\n        ]\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=apple&from=0&size=100&facets=[{\"code\":\"Categories\",\"values\":[\"Laptops\"]}]",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "apple"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						},
+						{
+							"key": "facets",
+							"value": "[{\"code\":\"Categories\",\"values\":[\"Laptops\"]}]"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AutoSuggest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search/suggestions?query=pro",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search",
+						"suggestions"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "pro"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
