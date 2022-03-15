@@ -64,6 +64,7 @@ public class SearchResponseParser {
             for (Aggregation aggregation : aggregationList) {
                 List<FacetValue> facetValues = new ArrayList<>(1);
 
+                // check if sub-aggregation is present
                 if (aggregation instanceof ParsedFilter) {
                     for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
                         for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
