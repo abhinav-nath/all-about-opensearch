@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.aggregations.Aggregation;
+import org.opensearch.search.aggregations.bucket.filter.ParsedFilter;
 import org.opensearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.stereotype.Component;
 
@@ -63,8 +64,16 @@ public class SearchResponseParser {
             for (Aggregation aggregation : aggregationList) {
                 List<FacetValue> facetValues = new ArrayList<>(1);
 
-                for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
-                    facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+                if (aggregation instanceof ParsedFilter) {
+                    for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
+                        for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
+                            facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+                        }
+                    }
+                } else {
+                    for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
+                        facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+                    }
                 }
 
                 if (!isEmpty(facetValues)) {

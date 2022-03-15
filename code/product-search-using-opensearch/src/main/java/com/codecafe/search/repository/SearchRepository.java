@@ -33,6 +33,8 @@ public class SearchRepository {
     public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
         SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, size);
 
+        log.info("Search JSON query: {}", searchRequest.source().toString());
+
         try {
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
             return searchResponseParser.parseSearchResult(searchResponse);
