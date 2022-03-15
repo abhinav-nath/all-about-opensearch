@@ -78,4 +78,5 @@ public class SearchResponseParser {
 
         return facets;
     }
+
 }
