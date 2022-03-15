@@ -20,6 +20,7 @@ import static org.opensearch.index.query.QueryBuilders.boolQuery;
 import static org.opensearch.search.sort.SortBuilders.fieldSort;
 import static org.opensearch.search.sort.SortBuilders.scoreSort;
 import static org.opensearch.search.sort.SortOrder.DESC;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
 public class SearchRequestBuilder {
@@ -67,17 +68,7 @@ public class SearchRequestBuilder {
 
         buildAggregations(facets).forEach(sourceBuilder::aggregation);
 
-        BoolQueryBuilder postFilterQuery = QueryBuilders.boolQuery();
-
-        for (FacetData filter : facets) {
-            BoolQueryBuilder orQueryBuilder = QueryBuilders.boolQuery();
-
-            orQueryBuilder.should(QueryBuilders.termsQuery(filter.getCode() + ".raw", filter.getValues()));
-
-            postFilterQuery.filter(orQueryBuilder);
-        }
-
-        postFilterQuery = postFilterQuery.filter().isEmpty() ? null : postFilterQuery;
+        BoolQueryBuilder postFilterQuery = buildPostFilterIfApplicable(facets);
 
         searchRequest.source(sourceBuilder.postFilter(postFilterQuery));
         return searchRequest;
@@ -93,12 +84,12 @@ public class SearchRequestBuilder {
     }
 
     private AggregationBuilder createPossiblyFilteredAggregation(String facet, List<FacetData> filters) {
-        AggregationBuilder aggregationBuilder = AggregationBuilders.terms(facet).field(facet + ".raw");
+        AggregationBuilder aggregationBuilder = AggregationBuilders.terms(facet).field(String.format(AGGREGATION_FIELD, facet)).size(facetsSize);
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         filters.stream()
                 .filter(filter -> !filter.getCode().equals(facet)) // filter out itself
-                .forEach(filter -> queryBuilder.filter(QueryBuilders.termsQuery(filter.getCode() + ".raw", filter.getValues())));
+                .forEach(filter -> queryBuilder.filter(QueryBuilders.termsQuery(String.format(AGGREGATION_FIELD, filter.getCode()), filter.getValues())));
 
         if (!queryBuilder.filter().isEmpty()) {
             aggregationBuilder = AggregationBuilders.filter(facet, queryBuilder).subAggregation(aggregationBuilder);
@@ -106,6 +97,22 @@ public class SearchRequestBuilder {
         return aggregationBuilder;
     }
 
+    private BoolQueryBuilder buildPostFilterIfApplicable(List<FacetData> facets) {
+        BoolQueryBuilder postFilterQuery = QueryBuilders.boolQuery();
+
+        if (!isEmpty(facets)) {
+            for (FacetData filter : facets) {
+                BoolQueryBuilder orQueryBuilder = QueryBuilders.boolQuery();
+
+                orQueryBuilder.should(QueryBuilders.termsQuery(String.format(AGGREGATION_FIELD, filter.getCode()), filter.getValues()));
+
+                postFilterQuery.filter(orQueryBuilder);
+            }
+        }
+
+        postFilterQuery = postFilterQuery.filter().isEmpty() ? null : postFilterQuery;
+        return postFilterQuery;
+    }
 
     private void addSorting(SearchRequest searchRequest) {
         FieldSortBuilder modifiedAtSortBuilder = fieldSort("modifiedAt").order(DESC);
