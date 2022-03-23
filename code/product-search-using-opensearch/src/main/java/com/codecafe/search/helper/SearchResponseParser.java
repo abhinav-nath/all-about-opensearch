@@ -58,31 +58,33 @@ public class SearchResponseParser {
     private List<Facet> extractFacets(SearchResponse searchResponse) {
         List<Facet> facets = new ArrayList<>(1);
 
-        if (searchResponse.getAggregations() != null) {
-            List<Aggregation> aggregationList = searchResponse.getAggregations().asList();
+        if (searchResponse.getAggregations() == null) {
+            return facets;
+        }
 
-            for (Aggregation aggregation : aggregationList) {
-                List<FacetValue> facetValues = new ArrayList<>(1);
+        List<Aggregation> aggregationList = searchResponse.getAggregations().asList();
 
-                // check if sub-aggregation is present
-                if (aggregation instanceof ParsedFilter) {
-                    for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
-                        for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
-                            facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
-                        }
-                    }
-                } else {
-                    for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
+        for (Aggregation aggregation : aggregationList) {
+            List<FacetValue> facetValues = new ArrayList<>(1);
+
+            // check if sub-aggregation is present
+            if (aggregation instanceof ParsedFilter) {
+                for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
+                    for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
                         facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
                     }
                 }
-
-                if (!isEmpty(facetValues)) {
-                    facets.add(Facet.builder()
-                            .code(aggregation.getName())
-                            .name(facetsConfig.getFacets().get(aggregation.getName()).getDisplayName())
-                            .facetValues(facetValues).build());
+            } else {
+                for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
+                    facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
                 }
+            }
+
+            if (!isEmpty(facetValues)) {
+                facets.add(Facet.builder()
+                        .code(aggregation.getName())
+                        .name(facetsConfig.getFacets().get(aggregation.getName()).getDisplayName())
+                        .facetValues(facetValues).build());
             }
         }
 
