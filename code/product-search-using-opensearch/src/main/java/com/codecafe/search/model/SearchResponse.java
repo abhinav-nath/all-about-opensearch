@@ -1,6 +1,9 @@
 package com.codecafe.search.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -10,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class SearchResponse {
 
-    private long totalResults;
-    private List<ProductData> products;
-    private List<Facet> facets;
+  private long totalResults;
+  private List<ProductData> products;
+  private List<Facet> facets;
 
 }

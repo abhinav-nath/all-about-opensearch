@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ModelMapperConfig {
 
-    @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
+  @Bean
+  public ModelMapper modelMapper() {
+    ModelMapper modelMapper = new ModelMapper();
 
-        modelMapper.getConfiguration()
-                .setSkipNullEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.LOOSE);
+    modelMapper.getConfiguration()
+               .setSkipNullEnabled(true)
+               .setMatchingStrategy(MatchingStrategies.LOOSE);
 
-        return modelMapper;
-    }
+    return modelMapper;
+  }
 
 }

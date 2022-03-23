@@ -25,70 +25,70 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Component
 public class SearchResponseParser {
 
-    private final ObjectMapper objectMapper;
-    private final FacetsConfig facetsConfig;
+  private final ObjectMapper objectMapper;
+  private final FacetsConfig facetsConfig;
 
-    public SearchResponseParser(ObjectMapper objectMapper, FacetsConfig facetsConfig) {
-        this.objectMapper = objectMapper;
-        this.facetsConfig = facetsConfig;
+  public SearchResponseParser(ObjectMapper objectMapper, FacetsConfig facetsConfig) {
+    this.objectMapper = objectMapper;
+    this.facetsConfig = facetsConfig;
+  }
+
+  public SearchResult parseSearchResult(SearchResponse searchResponse) {
+    SearchResult.SearchResultBuilder searchResultBuilder = SearchResult.builder();
+
+    long totalResults = searchResponse.getHits().getTotalHits().value;
+
+    searchResultBuilder.totalResults(totalResults);
+
+    if (totalResults > 0) {
+      List<Map<String, Object>> sourceMaps = Arrays.stream(searchResponse.getHits().getHits())
+                                                   .map(SearchHit::getSourceAsMap)
+                                                   .collect(toList());
+
+      List<ProductHit> matchedProducts = objectMapper.convertValue(sourceMaps, new TypeReference<>() {
+      });
+
+      searchResultBuilder.productHits(matchedProducts)
+                         .facets(extractFacets(searchResponse));
     }
 
-    public SearchResult parseSearchResult(SearchResponse searchResponse) {
-        SearchResult.SearchResultBuilder searchResultBuilder = SearchResult.builder();
+    return searchResultBuilder.build();
+  }
 
-        long totalResults = searchResponse.getHits().getTotalHits().value;
+  private List<Facet> extractFacets(SearchResponse searchResponse) {
+    List<Facet> facets = new ArrayList<>(1);
 
-        searchResultBuilder.totalResults(totalResults);
-
-        if (totalResults > 0) {
-            List<Map<String, Object>> sourceMaps = Arrays.stream(searchResponse.getHits().getHits())
-                    .map(SearchHit::getSourceAsMap)
-                    .collect(toList());
-
-            List<ProductHit> matchedProducts = objectMapper.convertValue(sourceMaps, new TypeReference<>() {
-            });
-
-            searchResultBuilder.productHits(matchedProducts)
-                    .facets(extractFacets(searchResponse));
-        }
-
-        return searchResultBuilder.build();
+    if (searchResponse.getAggregations() == null) {
+      return facets;
     }
 
-    private List<Facet> extractFacets(SearchResponse searchResponse) {
-        List<Facet> facets = new ArrayList<>(1);
+    List<Aggregation> aggregationList = searchResponse.getAggregations().asList();
 
-        if (searchResponse.getAggregations() == null) {
-            return facets;
+    for (Aggregation aggregation : aggregationList) {
+      List<FacetValue> facetValues = new ArrayList<>(1);
+
+      // check if sub-aggregation is present
+      if (aggregation instanceof ParsedFilter) {
+        for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
+          for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
+            facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+          }
         }
+      } else {
+        for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
+          facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+        }
+      }
 
-        List<Aggregation> aggregationList = searchResponse.getAggregations().asList();
-
-        for (Aggregation aggregation : aggregationList) {
-            List<FacetValue> facetValues = new ArrayList<>(1);
-
-            // check if sub-aggregation is present
-            if (aggregation instanceof ParsedFilter) {
-                for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
-                    for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
-                        facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
-                    }
-                }
-            } else {
-                for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
-                    facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
-                }
-            }
-
-            if (!isEmpty(facetValues)) {
-                facets.add(Facet.builder()
+      if (!isEmpty(facetValues)) {
+        facets.add(Facet.builder()
                         .code(aggregation.getName())
                         .name(facetsConfig.getFacets().get(aggregation.getName()).getDisplayName())
                         .facetValues(facetValues).build());
-            }
-        }
-
-        return facets;
+      }
     }
+
+    return facets;
+  }
 
 }

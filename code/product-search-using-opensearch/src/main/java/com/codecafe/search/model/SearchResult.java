@@ -18,24 +18,24 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 public class SearchResult {
 
-    private long totalResults;
+  private long totalResults;
 
-    @Builder.Default
-    private List<ProductHit> productHits = emptyList();
+  @Builder.Default
+  private List<ProductHit> productHits = emptyList();
 
-    @Builder.Default
-    private List<Facet> facets = emptyList();
+  @Builder.Default
+  private List<Facet> facets = emptyList();
 
-    public SearchResponse toSearchResponse(ModelMapper modelMapper) {
-        SearchResponseBuilder searchResponseBuilder = SearchResponse.builder().totalResults(totalResults);
-        if (totalResults > 0) {
-            searchResponseBuilder.products(productHits.stream()
-                            .map(productHit -> modelMapper.map(productHit, ProductData.class))
-                            .collect(toList()))
-                    .facets(facets);
-        }
-
-        return searchResponseBuilder.build();
+  public SearchResponse toSearchResponse(ModelMapper modelMapper) {
+    SearchResponseBuilder searchResponseBuilder = SearchResponse.builder().totalResults(totalResults);
+    if (totalResults > 0) {
+      searchResponseBuilder.products(productHits.stream()
+                                                .map(productHit -> modelMapper.map(productHit, ProductData.class))
+                                                .collect(toList()))
+                           .facets(facets);
     }
+
+    return searchResponseBuilder.build();
+  }
 
 }

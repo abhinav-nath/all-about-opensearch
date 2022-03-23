@@ -12,19 +12,19 @@ import java.util.List;
 @Component
 public class FacetsConverter implements Converter<String, List<FacetData>> {
 
-    private ObjectMapper objectMapper;
+  private ObjectMapper objectMapper;
 
-    public FacetsConverter(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+  public FacetsConverter(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
 
-    @Override
-    public List<FacetData> convert(String source) {
-        try {
-            return Arrays.asList(objectMapper.readValue(source, FacetData[].class));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+  @Override
+  public List<FacetData> convert(String source) {
+    try {
+      return Arrays.asList(objectMapper.readValue(source, FacetData[].class));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
 }

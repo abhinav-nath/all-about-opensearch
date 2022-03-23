@@ -30,67 +30,67 @@ import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
 @Configuration
 public class OpenSearchConfig {
 
-    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{
-            new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[]{};
-                }
+  private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{
+    new X509TrustManager() {
+      public X509Certificate[] getAcceptedIssuers() {
+        return new X509Certificate[]{};
+      }
 
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                    /* trust all */
-                }
+      public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        /* trust all */
+      }
 
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    /* trust all */
-                }
-            }
-    };
-
-    private final OpenSearchProperties openSearchProperties;
-
-    @Autowired
-    public OpenSearchConfig(OpenSearchProperties openSearchProperties) {
-        this.openSearchProperties = openSearchProperties;
+      public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        /* trust all */
+      }
     }
+  };
 
-    @Bean
-    public RestHighLevelClient restHighLevelClient() {
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+  private final OpenSearchProperties openSearchProperties;
 
-        credentialsProvider.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials(openSearchProperties.getUsername(), openSearchProperties.getPassword()));
+  @Autowired
+  public OpenSearchConfig(OpenSearchProperties openSearchProperties) {
+    this.openSearchProperties = openSearchProperties;
+  }
 
-        RestClientBuilder builder = RestClient.builder(new HttpHost(openSearchProperties.getHost(), openSearchProperties.getPort(), "https"))
-                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
-                        .setDefaultCredentialsProvider(credentialsProvider)
-                        .setSSLHostnameVerifier(INSTANCE)
-                        .setSSLContext(createSSLContext()));
-        return new RestHighLevelClient(builder);
+  @Bean
+  public RestHighLevelClient restHighLevelClient() {
+    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+    credentialsProvider.setCredentials(AuthScope.ANY,
+      new UsernamePasswordCredentials(openSearchProperties.getUsername(), openSearchProperties.getPassword()));
+
+    RestClientBuilder builder = RestClient.builder(new HttpHost(openSearchProperties.getHost(), openSearchProperties.getPort(), "https"))
+                                          .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                                            .setDefaultCredentialsProvider(credentialsProvider)
+                                            .setSSLHostnameVerifier(INSTANCE)
+                                            .setSSLContext(createSSLContext()));
+    return new RestHighLevelClient(builder);
+  }
+
+  private SSLContext createSSLContext() {
+    try {
+      SSLContext sslContext = SSLContext.getInstance("TLS");
+      sslContext.init(null, TRUST_ALL_CERTS, null);
+      return sslContext;
+    } catch (KeyManagementException | NoSuchAlgorithmException generalSecurityException) {
+      log.error("failed to create ssl context", generalSecurityException);
     }
+    return null;
+  }
 
-    private SSLContext createSSLContext() {
-        try {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, TRUST_ALL_CERTS, null);
-            return sslContext;
-        } catch (KeyManagementException | NoSuchAlgorithmException generalSecurityException) {
-            log.error("failed to create ssl context", generalSecurityException);
-        }
-        return null;
-    }
-
-    @Getter
-    @Setter
-    @Configuration
-    @EnableConfigurationProperties
-    @ConfigurationProperties(prefix = "app.opensearch")
-    public static class OpenSearchProperties {
-        private String username;
-        private String password;
-        private String host;
-        private int port;
-        private String indexName;
-        private String sourcePath;
-    }
+  @Getter
+  @Setter
+  @Configuration
+  @EnableConfigurationProperties
+  @ConfigurationProperties(prefix = "app.opensearch")
+  public static class OpenSearchProperties {
+    private String username;
+    private String password;
+    private String host;
+    private int port;
+    private String indexName;
+    private String sourcePath;
+  }
 
 }

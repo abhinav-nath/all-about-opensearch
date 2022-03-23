@@ -7,13 +7,13 @@ import lombok.Setter;
 @Setter
 public class ProductDocument {
 
-    private String code;
-    private String name;
-    private String description;
-    private String brand;
-    private String color;
-    private String department;
-    private Long createdAt;
-    private Long modifiedAt;
+  private String code;
+  private String name;
+  private String description;
+  private String brand;
+  private String color;
+  private String department;
+  private Long createdAt;
+  private Long modifiedAt;
 
 }

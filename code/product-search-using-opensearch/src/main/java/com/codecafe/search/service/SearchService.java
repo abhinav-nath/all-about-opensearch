@@ -14,20 +14,20 @@ import java.util.List;
 @Service
 public class SearchService {
 
-    private final SearchRepository searchRepository;
-    private final ModelMapper modelMapper;
+  private final SearchRepository searchRepository;
+  private final ModelMapper modelMapper;
 
-    public SearchService(SearchRepository searchRepository, ModelMapper modelMapper) {
-        this.searchRepository = searchRepository;
-        this.modelMapper = modelMapper;
-    }
+  public SearchService(SearchRepository searchRepository, ModelMapper modelMapper) {
+    this.searchRepository = searchRepository;
+    this.modelMapper = modelMapper;
+  }
 
-    public SearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
-        SearchResult searchResult = searchRepository.searchProducts(query, facets, page, size);
+  public SearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
+    SearchResult searchResult = searchRepository.searchProducts(query, facets, page, size);
 
-        log.info("Total search results returned: {}", searchResult.getTotalResults());
+    log.info("Total search results returned: {}", searchResult.getTotalResults());
 
-        return searchResult.toSearchResponse(modelMapper);
-    }
+    return searchResult.toSearchResponse(modelMapper);
+  }
 
 }

@@ -19,30 +19,30 @@ import static org.opensearch.client.RequestOptions.DEFAULT;
 @Repository
 public class SearchRepository {
 
-    private final RestHighLevelClient restHighLevelClient;
-    private final SearchRequestBuilder searchRequestBuilder;
-    private final SearchResponseParser searchResponseParser;
+  private final RestHighLevelClient restHighLevelClient;
+  private final SearchRequestBuilder searchRequestBuilder;
+  private final SearchResponseParser searchResponseParser;
 
-    @Autowired
-    public SearchRepository(RestHighLevelClient restHighLevelClient, SearchRequestBuilder searchRequestBuilder, SearchResponseParser searchResponseParser) {
-        this.restHighLevelClient = restHighLevelClient;
-        this.searchRequestBuilder = searchRequestBuilder;
-        this.searchResponseParser = searchResponseParser;
+  @Autowired
+  public SearchRepository(RestHighLevelClient restHighLevelClient, SearchRequestBuilder searchRequestBuilder, SearchResponseParser searchResponseParser) {
+    this.restHighLevelClient = restHighLevelClient;
+    this.searchRequestBuilder = searchRequestBuilder;
+    this.searchResponseParser = searchResponseParser;
+  }
+
+  public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
+    SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, size);
+
+    log.info("Search JSON query: {}", searchRequest.source().toString());
+
+    try {
+      SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
+      return searchResponseParser.parseSearchResult(searchResponse);
+    } catch (Exception ex) {
+      log.error("Error in OpenSearch query", ex);
     }
 
-    public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
-        SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, size);
-
-        log.info("Search JSON query: {}", searchRequest.source().toString());
-
-        try {
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
-            return searchResponseParser.parseSearchResult(searchResponse);
-        } catch (Exception ex) {
-            log.error("Error in OpenSearch query", ex);
-        }
-
-        return null;
-    }
+    return null;
+  }
 
 }

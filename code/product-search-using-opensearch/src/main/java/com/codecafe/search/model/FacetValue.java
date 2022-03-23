@@ -1,6 +1,9 @@
 package com.codecafe.search.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -8,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class FacetValue {
 
-    private String name;
-    private long count;
+  private String name;
+  private long count;
 
 }

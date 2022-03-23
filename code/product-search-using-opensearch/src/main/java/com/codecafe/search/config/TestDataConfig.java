@@ -22,49 +22,49 @@ import static org.opensearch.common.xcontent.XContentType.JSON;
 @Component
 public class TestDataConfig {
 
-    @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
-    private Resource testDataResource;
+  @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
+  private Resource testDataResource;
 
-    private final OpenSearchService openSearchService;
-    private final ObjectMapper objectMapper;
+  private final OpenSearchService openSearchService;
+  private final ObjectMapper objectMapper;
 
-    @Autowired
-    public TestDataConfig(OpenSearchService openSearchService, ObjectMapper objectMapper) {
-        this.openSearchService = openSearchService;
-        this.objectMapper = objectMapper;
+  @Autowired
+  public TestDataConfig(OpenSearchService openSearchService, ObjectMapper objectMapper) {
+    this.openSearchService = openSearchService;
+    this.objectMapper = objectMapper;
+  }
+
+  @PostConstruct
+  public void init() {
+    try {
+      openSearchService.deleteIndexIfExists();
+
+      ProductDocument[] productDocuments = objectMapper.readValue(testDataResource.getInputStream(), ProductDocument[].class);
+
+      List<IndexRequest> indexRequests = new ArrayList<>();
+      for (ProductDocument productDocument : productDocuments) {
+        IndexRequest indexRequest = prepareIndexDocumentRequest(productDocument);
+        indexRequests.add(indexRequest);
+      }
+
+      openSearchService.createIndex();
+      openSearchService.bulkDocWrite(indexRequests);
+      log.info("Successfully ingested test data");
+    } catch (Exception ex) {
+      log.error("Failed to create test data. Reason : {}", ex.getMessage());
     }
+  }
 
-    @PostConstruct
-    public void init() {
-        try {
-            openSearchService.deleteIndexIfExists();
+  private IndexRequest prepareIndexDocumentRequest(ProductDocument productDocument) throws IOException {
+    final IndexRequest indexRequest = new IndexRequest();
+    indexRequest.id(String.valueOf(productDocument.getCode()));
 
-            ProductDocument[] productDocuments = objectMapper.readValue(testDataResource.getInputStream(), ProductDocument[].class);
+    productDocument.setCreatedAt(Instant.now().toEpochMilli());
+    productDocument.setModifiedAt(Instant.now().toEpochMilli());
+    String productDocumentStr = objectMapper.writeValueAsString(productDocument);
 
-            List<IndexRequest> indexRequests = new ArrayList<>();
-            for (ProductDocument productDocument : productDocuments) {
-                IndexRequest indexRequest = prepareIndexDocumentRequest(productDocument);
-                indexRequests.add(indexRequest);
-            }
-
-            openSearchService.createIndex();
-            openSearchService.bulkDocWrite(indexRequests);
-            log.info("Successfully ingested test data");
-        } catch (Exception ex) {
-            log.error("Failed to create test data. Reason : {}", ex.getMessage());
-        }
-    }
-
-    private IndexRequest prepareIndexDocumentRequest(ProductDocument productDocument) throws IOException {
-        final IndexRequest indexRequest = new IndexRequest();
-        indexRequest.id(String.valueOf(productDocument.getCode()));
-
-        productDocument.setCreatedAt(Instant.now().toEpochMilli());
-        productDocument.setModifiedAt(Instant.now().toEpochMilli());
-        String productDocumentStr = objectMapper.writeValueAsString(productDocument);
-
-        indexRequest.source(productDocumentStr, JSON);
-        return indexRequest;
-    }
+    indexRequest.source(productDocumentStr, JSON);
+    return indexRequest;
+  }
 
 }

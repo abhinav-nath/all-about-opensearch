@@ -17,12 +17,12 @@ import java.util.Map;
 @PropertySource("classpath:facets.properties")
 public class FacetsConfig {
 
-    private Map<String, FacetInfo> facets;
+  private Map<String, FacetInfo> facets;
 
-    @Getter
-    @Setter
-    public static class FacetInfo {
-        private String displayName;
-    }
+  @Getter
+  @Setter
+  public static class FacetInfo {
+    private String displayName;
+  }
 
 }
