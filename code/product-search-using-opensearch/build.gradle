@@ -1,7 +1,8 @@
 plugins {
+    id 'java'
+    id 'checkstyle'
     id 'org.springframework.boot' version '2.5.7'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
 }
 
 group = 'com.codecafe'
@@ -43,4 +44,26 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+//-----------------------------------------------------CHECKSTYLE-------------------------------------------------------
+checkstyle {
+    toolVersion checkstyleVersion
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        html.enabled = true
+        xml.enabled = false
+    }
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest {
+    source = 'src/test/java'
 }
