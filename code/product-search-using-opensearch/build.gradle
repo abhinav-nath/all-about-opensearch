@@ -3,6 +3,7 @@ plugins {
   id 'checkstyle'
   id 'org.springframework.boot' version "${springBootVersion}"
   id 'io.spring.dependency-management' version "${springDependencyManagementPluginVersion}"
+  id 'com.github.ben-manes.versions' version "${dependencyUpdatesPluginVersion}"
 }
 
 group = 'com.codecafe'
@@ -66,4 +67,22 @@ checkstyleMain {
 
 checkstyleTest {
   source = 'src/test/java'
+}
+
+//-----------------------------------------------------DEPENDENCY-UPDATES------------------------------------------------
+dependencyUpdates {
+  rejectVersionIf {
+    !isStable(it.candidate.version) && isStable(it.currentVersion)
+  }
+  outputFormatter = 'html'
+  outputDir = "${buildDir}/reports/dependencyUpdates"
+}
+
+static def isStable(version) {
+  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any {
+    version.toUpperCase().contains(it)
+  }
+  def otherReleasePattern = version ==~ '^[0-9,.v-]+(-r)?$'
+
+  return stableKeyword || otherReleasePattern
 }
