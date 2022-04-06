@@ -1,17 +1,12 @@
 package com.codecafe.search.helper;
 
+import com.codecafe.search.config.OpenSearchConfig;
 import com.codecafe.search.model.FacetData;
 import org.opensearch.action.search.SearchRequest;
-import org.opensearch.index.query.BoolQueryBuilder;
-import org.opensearch.index.query.FuzzyQueryBuilder;
-import org.opensearch.index.query.MatchPhrasePrefixQueryBuilder;
-import org.opensearch.index.query.MatchQueryBuilder;
-import org.opensearch.index.query.QueryBuilder;
-import org.opensearch.index.query.WildcardQueryBuilder;
+import org.opensearch.index.query.*;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.sort.FieldSortBuilder;
 import org.opensearch.search.sort.SortBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,12 +19,11 @@ import static org.opensearch.search.sort.SortOrder.DESC;
 @Component
 public class SearchRequestBuilder {
 
-  @Value("${app.opensearch.index-name}")
-  private String indexName;
-
+  private final OpenSearchConfig openSearchConfig;
   private final FacetsBuilder facetsBuilder;
 
-  public SearchRequestBuilder(FacetsBuilder facetsBuilder) {
+  public SearchRequestBuilder(OpenSearchConfig openSearchConfig, FacetsBuilder facetsBuilder) {
+    this.openSearchConfig = openSearchConfig;
     this.facetsBuilder = facetsBuilder;
   }
 
@@ -51,7 +45,7 @@ public class SearchRequestBuilder {
   }
 
   private SearchRequest buildSearchRequestFrom(QueryBuilder queryBuilder, List<FacetData> facets, int page, int size) {
-    SearchRequest searchRequest = new SearchRequest(indexName);
+    SearchRequest searchRequest = new SearchRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(0).getName());
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.version(true);
 

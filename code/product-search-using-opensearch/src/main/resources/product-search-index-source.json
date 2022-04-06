@@ -1,0 +1,45 @@
+{
+  "mappings": {
+    "properties": {
+      "code": {
+        "type": "text"
+      },
+      "name": {
+        "type": "text"
+      },
+      "brand": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "description": {
+        "type": "text"
+      },
+      "department": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "color": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "createdAt": {
+        "type": "long"
+      },
+      "modifiedAt": {
+        "type": "long"
+      }
+    }
+  }
+}

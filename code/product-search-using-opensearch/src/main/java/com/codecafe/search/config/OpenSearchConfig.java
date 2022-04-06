@@ -13,7 +13,6 @@ import org.opensearch.client.RestClientBuilder;
 import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,10 +22,13 @@ import javax.net.ssl.X509TrustManager;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
 
 @Slf4j
+@Getter
+@Setter
 @Configuration
 public class OpenSearchConfig {
 
@@ -82,15 +84,20 @@ public class OpenSearchConfig {
   @Getter
   @Setter
   @Configuration
-  @EnableConfigurationProperties
   @ConfigurationProperties(prefix = "app.opensearch")
   public static class OpenSearchProperties {
     private String username;
     private String password;
     private String host;
     private int port;
-    private String indexName;
-    private String sourcePath;
+    private List<Index> indices;
+  }
+
+  @Getter
+  @Setter
+  public static class Index {
+    private String name;
+    private String source;
   }
 
 }

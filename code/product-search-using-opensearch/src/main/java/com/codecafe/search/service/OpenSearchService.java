@@ -29,17 +29,17 @@ import static org.springframework.util.StreamUtils.copyToString;
 public class OpenSearchService {
 
   private final RestHighLevelClient restHighLevelClient;
+  private final OpenSearchConfig openSearchConfig;
   private final OpenSearchConfig.OpenSearchProperties openSearchProperties;
-  private final String indexName;
 
-  public OpenSearchService(RestHighLevelClient restHighLevelClient, OpenSearchConfig.OpenSearchProperties openSearchProperties) {
+  public OpenSearchService(RestHighLevelClient restHighLevelClient, OpenSearchConfig openSearchConfig) {
     this.restHighLevelClient = restHighLevelClient;
-    this.openSearchProperties = openSearchProperties;
-    this.indexName = openSearchProperties.getIndexName();
+    this.openSearchConfig = openSearchConfig;
+    this.openSearchProperties = openSearchConfig.getOpenSearchProperties();
   }
 
   public void bulkDocWrite(List<IndexRequest> indexRequests) {
-    BulkRequest bulkRequest = new BulkRequest(indexName);
+    BulkRequest bulkRequest = new BulkRequest(openSearchProperties.getIndices().get(0).getName());
     try {
       indexRequests.forEach(bulkRequest::add);
       restHighLevelClient.bulk(bulkRequest, DEFAULT);
@@ -51,40 +51,44 @@ public class OpenSearchService {
                 }
             }*/
     } catch (Exception ex) {
-      throw new OpenSearchException("Failed to write bulk request for index {}", ex, indexName);
+      throw new OpenSearchException("Failed to write bulk request for index {}", ex, openSearchProperties.getIndices().get(0).getName());
     }
   }
 
-  public void deleteIndexIfExists() {
-    try {
-      if (isIndexAlreadyPresent()) {
-        deleteIndex();
+  public void deleteIndicesIfAlreadyPresent() {
+    for (OpenSearchConfig.Index index : openSearchProperties.getIndices()) {
+      try {
+        if (isIndexAlreadyPresent(index.getName())) {
+          deleteIndex(index.getName());
+        }
+      } catch (IOException ioException) {
+        throw new OpenSearchException("Failed to delete index `{}`", ioException, index.getName());
       }
-    } catch (IOException ioException) {
-      throw new OpenSearchException("Failed to delete index `{}`", ioException, indexName);
     }
   }
 
-  public void deleteIndex() throws IOException {
+  public void deleteIndex(String indexName) throws IOException {
     DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
     restHighLevelClient.indices().delete(deleteIndexRequest, DEFAULT);
   }
 
-  public void createIndex() {
-    try {
-      CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
-      String source = readFileFromClasspath(openSearchProperties.getSourcePath());
-      createIndexRequest.source(source, JSON);
-      CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, DEFAULT);
-      if (!createIndexResponse.isAcknowledged()) {
-        throw new IndexCreationException(indexName, new RuntimeException("Create index response is not acknowledged"));
+  public void createIndices() {
+    for (OpenSearchConfig.Index index : openSearchProperties.getIndices()) {
+      try {
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest(index.getName());
+        String source = readFileFromClasspath(index.getSource());
+        createIndexRequest.source(source, JSON);
+        CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, DEFAULT);
+        if (!createIndexResponse.isAcknowledged()) {
+          throw new IndexCreationException(index.getName(), new RuntimeException("Create index response is not acknowledged"));
+        }
+      } catch (IOException ioException) {
+        throw new IndexCreationException(index.getName(), ioException);
       }
-    } catch (IOException ioException) {
-      throw new IndexCreationException(indexName, ioException);
     }
   }
 
-  private boolean isIndexAlreadyPresent() throws IOException {
+  private boolean isIndexAlreadyPresent(String indexName) throws IOException {
     GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
     return restHighLevelClient.indices().exists(getIndexRequest, DEFAULT);
   }

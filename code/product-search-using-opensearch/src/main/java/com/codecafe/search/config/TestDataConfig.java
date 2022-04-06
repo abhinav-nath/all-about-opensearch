@@ -37,7 +37,7 @@ public class TestDataConfig {
   @PostConstruct
   public void init() {
     try {
-      openSearchService.deleteIndexIfExists();
+      openSearchService.deleteIndicesIfAlreadyPresent();
 
       ProductDocument[] productDocuments = objectMapper.readValue(testDataResource.getInputStream(), ProductDocument[].class);
 
@@ -47,7 +47,7 @@ public class TestDataConfig {
         indexRequests.add(indexRequest);
       }
 
-      openSearchService.createIndex();
+      openSearchService.createIndices();
       openSearchService.bulkDocWrite(indexRequests);
       log.info("Successfully ingested test data");
     } catch (Exception ex) {
