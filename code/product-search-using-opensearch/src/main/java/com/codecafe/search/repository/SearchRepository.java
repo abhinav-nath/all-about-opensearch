@@ -12,6 +12,7 @@ import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -49,6 +50,7 @@ public class SearchRepository {
     return null;
   }
 
+  @Async
   public void saveSearchQuery(String query) {
     try {
       IndexRequest indexRequest = searchRequestBuilder.buildSaveSearchQueryRequest(query);
