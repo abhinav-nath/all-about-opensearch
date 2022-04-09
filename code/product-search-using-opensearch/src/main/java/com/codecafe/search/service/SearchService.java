@@ -23,10 +23,9 @@ public class SearchService {
   }
 
   public SearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
+    searchRepository.saveSearchQuery(query);
     SearchResult searchResult = searchRepository.searchProducts(query, facets, page, size);
-
     log.info("Total search results returned: {}", searchResult.getTotalResults());
-
     return searchResult.toSearchResponse(modelMapper);
   }
 

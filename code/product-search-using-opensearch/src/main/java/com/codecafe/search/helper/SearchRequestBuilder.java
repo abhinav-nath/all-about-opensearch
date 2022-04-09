@@ -2,6 +2,7 @@ package com.codecafe.search.helper;
 
 import com.codecafe.search.config.OpenSearchConfig;
 import com.codecafe.search.model.FacetData;
+import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.index.query.*;
 import org.opensearch.search.builder.SearchSourceBuilder;
@@ -9,7 +10,9 @@ import org.opensearch.search.sort.FieldSortBuilder;
 import org.opensearch.search.sort.SortBuilder;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.opensearch.index.query.QueryBuilders.boolQuery;
 import static org.opensearch.search.sort.SortBuilders.fieldSort;
@@ -67,6 +70,17 @@ public class SearchRequestBuilder {
     FieldSortBuilder createdAtSortBuilder = fieldSort("createdAt").order(DESC);
     List<SortBuilder<? extends SortBuilder<?>>> sortOrders = List.of(scoreSort(), modifiedAtSortBuilder, createdAtSortBuilder);
     sortOrders.forEach(searchRequest.source()::sort);
+  }
+
+  public IndexRequest buildSaveSearchQueryRequest(String query) {
+    IndexRequest indexRequest =
+      new IndexRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(1).getName());
+
+    Map<String, Object> jsonMap = new HashMap<>();
+    jsonMap.put("query", query);
+
+    indexRequest.source(jsonMap);
+    return indexRequest;
   }
 
 }

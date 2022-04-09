@@ -5,15 +5,19 @@ import com.codecafe.search.helper.SearchResponseParser;
 import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.SearchResult;
 import lombok.extern.slf4j.Slf4j;
+import org.opensearch.action.index.IndexRequest;
+import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.opensearch.client.RequestOptions.DEFAULT;
+import static org.opensearch.rest.RestStatus.OK;
 
 @Slf4j
 @Repository
@@ -43,6 +47,19 @@ public class SearchRepository {
     }
 
     return null;
+  }
+
+  public void saveSearchQuery(String query) {
+    try {
+      IndexRequest indexRequest = searchRequestBuilder.buildSaveSearchQueryRequest(query);
+      IndexResponse indexResponse = restHighLevelClient.index(indexRequest, DEFAULT);
+      if (indexResponse != null && OK.equals(indexResponse.status())) {
+        log.info("Search query saved successfully!");
+      }
+    } catch (Exception ex) {
+      log.error("Error while storing the search query in opensearch", ex);
+    }
+
   }
 
 }

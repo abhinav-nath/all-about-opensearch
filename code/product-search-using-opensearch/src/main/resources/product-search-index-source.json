@@ -2,7 +2,7 @@
   "mappings": {
     "properties": {
       "query": {
-        "type": "text"
+        "type": "keyword"
       }
     }
   }
