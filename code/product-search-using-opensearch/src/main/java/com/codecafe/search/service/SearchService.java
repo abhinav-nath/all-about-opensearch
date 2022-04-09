@@ -1,6 +1,7 @@
 package com.codecafe.search.service;
 
 import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.PopularSearchResponse;
 import com.codecafe.search.model.SearchResponse;
 import com.codecafe.search.model.SearchResult;
 import com.codecafe.search.repository.SearchRepository;
@@ -27,6 +28,10 @@ public class SearchService {
     SearchResult searchResult = searchRepository.searchProducts(query, facets, page, size);
     log.info("Total search results returned: {}", searchResult.getTotalResults());
     return searchResult.toSearchResponse(modelMapper);
+  }
+
+  public PopularSearchResponse getSearchQueries() {
+    return searchRepository.getSearchQueries();
   }
 
 }

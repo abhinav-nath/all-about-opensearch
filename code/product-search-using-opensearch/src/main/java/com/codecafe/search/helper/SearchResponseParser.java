@@ -1,10 +1,7 @@
 package com.codecafe.search.helper;
 
 import com.codecafe.search.config.FacetsConfig;
-import com.codecafe.search.model.Facet;
-import com.codecafe.search.model.FacetValue;
-import com.codecafe.search.model.ProductHit;
-import com.codecafe.search.model.SearchResult;
+import com.codecafe.search.model.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.action.search.SearchResponse;
@@ -89,6 +86,25 @@ public class SearchResponseParser {
     }
 
     return facets;
+  }
+
+  public PopularSearchResponse parse(SearchResponse searchResponse) {
+    List<SearchQuery> searchQueries = new ArrayList<>(1);
+
+    if (searchResponse.getAggregations() == null) {
+      return null;
+    }
+
+    List<Aggregation> aggregations = searchResponse.getAggregations().asList();
+
+    for (Terms.Bucket bucket : ((Terms) aggregations.get(0)).getBuckets()) {
+      searchQueries.add(SearchQuery.builder()
+                                   .query(bucket.getKeyAsString())
+                                   .count(bucket.getDocCount())
+                                   .build());
+    }
+
+    return PopularSearchResponse.builder().searchQueries(searchQueries).build();
   }
 
 }

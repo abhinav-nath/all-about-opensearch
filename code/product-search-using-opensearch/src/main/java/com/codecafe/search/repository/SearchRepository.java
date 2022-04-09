@@ -3,6 +3,7 @@ package com.codecafe.search.repository;
 import com.codecafe.search.helper.SearchRequestBuilder;
 import com.codecafe.search.helper.SearchResponseParser;
 import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.PopularSearchResponse;
 import com.codecafe.search.model.SearchResult;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.action.index.IndexRequest;
@@ -13,7 +14,6 @@ import org.opensearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.opensearch.client.RequestOptions.DEFAULT;
@@ -60,6 +60,19 @@ public class SearchRepository {
       log.error("Error while storing the search query in opensearch", ex);
     }
 
+  }
+
+  public PopularSearchResponse getSearchQueries() {
+    SearchRequest searchRequest = searchRequestBuilder.buildSearchedTermsRequest();
+
+    try {
+      SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
+      return searchResponseParser.parse(searchResponse);
+    } catch (Exception ex) {
+      log.error("Error in OpenSearch query", ex);
+    }
+
+    return null;
   }
 
 }

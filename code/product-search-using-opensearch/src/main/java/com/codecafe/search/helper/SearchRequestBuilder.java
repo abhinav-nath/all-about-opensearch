@@ -5,6 +5,8 @@ import com.codecafe.search.model.FacetData;
 import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.index.query.*;
+import org.opensearch.search.aggregations.AggregationBuilder;
+import org.opensearch.search.aggregations.AggregationBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.sort.FieldSortBuilder;
 import org.opensearch.search.sort.SortBuilder;
@@ -81,6 +83,17 @@ public class SearchRequestBuilder {
 
     indexRequest.source(jsonMap);
     return indexRequest;
+  }
+
+  public SearchRequest buildSearchedTermsRequest() {
+    SearchRequest searchRequest = new SearchRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(1).getName());
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.version(true);
+
+    AggregationBuilder aggregationBuilder = AggregationBuilders.terms("searchedTerms").field("query").size(100);
+
+    sourceBuilder.aggregation(aggregationBuilder);
+    return searchRequest.source(sourceBuilder);
   }
 
 }

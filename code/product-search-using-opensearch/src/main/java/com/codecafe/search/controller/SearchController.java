@@ -1,6 +1,7 @@
 package com.codecafe.search.controller;
 
 import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.PopularSearchResponse;
 import com.codecafe.search.model.SearchResponse;
 import com.codecafe.search.service.SearchService;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,14 @@ public class SearchController {
     SearchResponse searchResponse = searchService.performTextSearch(query, facets, page, size);
 
     return ResponseEntity.ok(searchResponse);
+  }
+
+  @GetMapping("/popular")
+  public ResponseEntity<PopularSearchResponse> getPopularSearchedTerms() {
+
+    PopularSearchResponse popularSearchResponse = searchService.getSearchQueries();
+
+    return ResponseEntity.ok(popularSearchResponse);
   }
 
 }
