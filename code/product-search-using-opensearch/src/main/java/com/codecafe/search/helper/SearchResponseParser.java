@@ -30,7 +30,7 @@ public class SearchResponseParser {
     this.facetsConfig = facetsConfig;
   }
 
-  public SearchResult parseSearchResult(SearchResponse searchResponse) {
+  public SearchResult parseTextSearchResponse(SearchResponse searchResponse) {
     SearchResult.SearchResultBuilder searchResultBuilder = SearchResult.builder();
 
     long totalResults = searchResponse.getHits().getTotalHits().value;
@@ -88,10 +88,11 @@ public class SearchResponseParser {
     return facets;
   }
 
-  public PopularSearchResponse parse(SearchResponse searchResponse) {
+  public PopularSearchResponse parsePopularSearchResponse(SearchResponse searchResponse) {
     List<SearchQuery> searchQueries = new ArrayList<>(1);
 
-    if (searchResponse.getAggregations() == null) {
+    if (searchResponse.getAggregations() == null ||
+      (searchResponse.getAggregations() != null && isEmpty(searchResponse.getAggregations().asList()))) {
       return null;
     }
 

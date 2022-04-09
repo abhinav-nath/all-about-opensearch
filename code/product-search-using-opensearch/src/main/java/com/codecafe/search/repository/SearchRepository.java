@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static org.opensearch.client.RequestOptions.DEFAULT;
-import static org.opensearch.rest.RestStatus.OK;
+import static org.opensearch.rest.RestStatus.CREATED;
 
 @Slf4j
 @Repository
@@ -41,7 +41,7 @@ public class SearchRepository {
 
     try {
       SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
-      return searchResponseParser.parseSearchResult(searchResponse);
+      return searchResponseParser.parseTextSearchResponse(searchResponse);
     } catch (Exception ex) {
       log.error("Error in OpenSearch query", ex);
     }
@@ -53,7 +53,7 @@ public class SearchRepository {
     try {
       IndexRequest indexRequest = searchRequestBuilder.buildSaveSearchQueryRequest(query);
       IndexResponse indexResponse = restHighLevelClient.index(indexRequest, DEFAULT);
-      if (indexResponse != null && OK.equals(indexResponse.status())) {
+      if (indexResponse != null && CREATED.equals(indexResponse.status())) {
         log.info("Search query saved successfully!");
       }
     } catch (Exception ex) {
@@ -63,11 +63,11 @@ public class SearchRepository {
   }
 
   public PopularSearchResponse getSearchQueries(int top) {
-    SearchRequest searchRequest = searchRequestBuilder.buildSearchedTermsRequest(top);
+    SearchRequest searchRequest = searchRequestBuilder.buildPopularSearchRequest(top);
 
     try {
       SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
-      return searchResponseParser.parse(searchResponse);
+      return searchResponseParser.parsePopularSearchResponse(searchResponse);
     } catch (Exception ex) {
       log.error("Error in OpenSearch query", ex);
     }
