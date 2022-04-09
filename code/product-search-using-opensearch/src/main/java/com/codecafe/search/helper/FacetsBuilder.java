@@ -39,15 +39,18 @@ public class FacetsBuilder {
   AggregationBuilder buildAggregation(String facet, List<FacetData> filters) {
     AggregationBuilder aggregationBuilder = AggregationBuilders.terms(facet).field(String.format(AGGREGATION_FIELD, facet)).size(facetsSize);
 
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-    filters.stream()
-           .filter(filter -> !filter.getCode().equals(facet)) // filter out itself
-           .forEach(filter -> queryBuilder.filter(QueryBuilders.termsQuery(String.format(AGGREGATION_FIELD, filter.getCode()), filter.getValues())));
+    if (!isEmpty(filters)) {
+      BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+      filters.stream()
+             .filter(filter -> !filter.getCode().equals(facet)) // filter out itself
+             .forEach(filter -> queryBuilder.filter(QueryBuilders.termsQuery(String.format(AGGREGATION_FIELD, filter.getCode()), filter.getValues())));
 
-    //build a filter aggregation
-    if (!queryBuilder.filter().isEmpty()) {
-      aggregationBuilder = AggregationBuilders.filter(facet, queryBuilder).subAggregation(aggregationBuilder);
+      //build a filter aggregation
+      if (!queryBuilder.filter().isEmpty()) {
+        aggregationBuilder = AggregationBuilders.filter(facet, queryBuilder).subAggregation(aggregationBuilder);
+      }
     }
+
     return aggregationBuilder;
   }
 
