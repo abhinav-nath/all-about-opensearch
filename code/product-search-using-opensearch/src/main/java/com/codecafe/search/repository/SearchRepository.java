@@ -62,8 +62,8 @@ public class SearchRepository {
 
   }
 
-  public PopularSearchResponse getSearchQueries() {
-    SearchRequest searchRequest = searchRequestBuilder.buildSearchedTermsRequest();
+  public PopularSearchResponse getSearchQueries(int top) {
+    SearchRequest searchRequest = searchRequestBuilder.buildSearchedTermsRequest(top);
 
     try {
       SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);

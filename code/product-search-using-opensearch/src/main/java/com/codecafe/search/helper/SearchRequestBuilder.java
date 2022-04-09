@@ -85,12 +85,14 @@ public class SearchRequestBuilder {
     return indexRequest;
   }
 
-  public SearchRequest buildSearchedTermsRequest() {
+  public SearchRequest buildSearchedTermsRequest(int top) {
     SearchRequest searchRequest = new SearchRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(1).getName());
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.version(true);
+    sourceBuilder.from(0);
+    sourceBuilder.size(0);
 
-    AggregationBuilder aggregationBuilder = AggregationBuilders.terms("searchedTerms").field("query").size(100);
+    AggregationBuilder aggregationBuilder = AggregationBuilders.terms("searchedTerms").field("query").size(top);
 
     sourceBuilder.aggregation(aggregationBuilder);
     return searchRequest.source(sourceBuilder);

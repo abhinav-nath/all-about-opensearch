@@ -36,9 +36,9 @@ public class SearchController {
   }
 
   @GetMapping("/popular")
-  public ResponseEntity<PopularSearchResponse> getPopularSearchedTerms() {
+  public ResponseEntity<PopularSearchResponse> getPopularSearchedTerms(@RequestParam(value = "top", defaultValue = "100") final int top) {
 
-    PopularSearchResponse popularSearchResponse = searchService.getSearchQueries();
+    PopularSearchResponse popularSearchResponse = searchService.getSearchQueries(top);
 
     return ResponseEntity.ok(popularSearchResponse);
   }
