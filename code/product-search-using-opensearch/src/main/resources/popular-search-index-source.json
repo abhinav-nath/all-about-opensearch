@@ -3,6 +3,9 @@
     "properties": {
       "query": {
         "type": "keyword"
+      },
+      "timestamp": {
+        "type": "date"
       }
     }
   }
