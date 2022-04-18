@@ -53,6 +53,7 @@ public class SearchRepository {
   @Async
   public void saveSearchQuery(String query) {
     try {
+      Thread.sleep(2000);
       IndexRequest indexRequest = searchRequestBuilder.buildSaveSearchQueryRequest(query);
       IndexResponse indexResponse = restHighLevelClient.index(indexRequest, DEFAULT);
       if (indexResponse != null && CREATED.equals(indexResponse.status())) {
@@ -61,11 +62,12 @@ public class SearchRepository {
     } catch (Exception ex) {
       log.error("Error while storing the search query in opensearch", ex);
     }
-
   }
 
-  public PopularSearchResponse getSearchQueries(int top) {
+  public PopularSearchResponse getPopularSearchQueries(int top) {
     SearchRequest searchRequest = searchRequestBuilder.buildPopularSearchRequest(top);
+
+    log.info("Popular Search JSON query: {}", searchRequest.source().toString());
 
     try {
       SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
