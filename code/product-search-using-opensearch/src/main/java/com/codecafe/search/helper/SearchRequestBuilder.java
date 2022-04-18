@@ -10,8 +10,10 @@ import org.opensearch.search.aggregations.AggregationBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
 import org.opensearch.search.sort.FieldSortBuilder;
 import org.opensearch.search.sort.SortBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,9 @@ import static org.opensearch.search.sort.SortOrder.DESC;
 
 @Component
 public class SearchRequestBuilder {
+
+  @Value("${app.search.popular.from.days:-1}")
+  private int popularInLastNDays;
 
   private final OpenSearchConfig openSearchConfig;
   private final FacetsBuilder facetsBuilder;
@@ -80,6 +85,7 @@ public class SearchRequestBuilder {
 
     Map<String, Object> jsonMap = new HashMap<>();
     jsonMap.put("query", query);
+    jsonMap.put("timestamp", new Date());
 
     indexRequest.source(jsonMap);
     return indexRequest;
@@ -91,6 +97,12 @@ public class SearchRequestBuilder {
     sourceBuilder.version(true);
     sourceBuilder.from(0);
     sourceBuilder.size(0);
+
+    if (popularInLastNDays > -1) {
+      String fromDate = String.format("now-%dd/d", popularInLastNDays);
+      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder("timestamp").gte(fromDate);
+      sourceBuilder.query(rangeQueryBuilder);
+    }
 
     AggregationBuilder aggregationBuilder = AggregationBuilders.terms("searchQueries").field("query").size(top);
 

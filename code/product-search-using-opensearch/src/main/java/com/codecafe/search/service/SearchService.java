@@ -30,8 +30,8 @@ public class SearchService {
     return searchResult.toSearchResponse(modelMapper);
   }
 
-  public PopularSearchResponse getSearchQueries(int top) {
-    return searchRepository.getSearchQueries(top);
+  public PopularSearchResponse getPopularSearchQueries(int top) {
+    return searchRepository.getPopularSearchQueries(top);
   }
 
 }
