@@ -11,10 +11,7 @@ import org.opensearch.search.aggregations.bucket.filter.ParsedFilter;
 import org.opensearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -84,6 +81,8 @@ public class SearchResponseParser {
                         .facetValues(facetValues).build());
       }
     }
+
+    facets.sort(Comparator.comparing(facet -> facetsConfig.getFacets().get(facet.getCode()).getSequence()));
 
     return facets;
   }

@@ -23,6 +23,7 @@ public class FacetsConfig {
   @Setter
   public static class FacetInfo {
     private String displayName;
+    private int sequence;
   }
 
 }
