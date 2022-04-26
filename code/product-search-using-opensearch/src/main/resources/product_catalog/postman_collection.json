@@ -651,7 +651,7 @@
 					]
 				},
 				{
-					"name": "Get Index",
+					"name": "Get Index I",
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -671,14 +671,48 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:9200/product-catalog-v1",
+							"raw": "https://localhost:9200/product-catalog-index-v1",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "9200",
 							"path": [
-								"product-catalog-v1"
+								"product-catalog-index-v1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Index II",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9200/product-search-index-v1",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-search-index-v1"
 							]
 						}
 					},
@@ -807,7 +841,7 @@
 					"response": []
 				},
 				{
-					"name": "Get All Documents",
+					"name": "Get All Documents From Product Index",
 					"request": {
 						"auth": {
 							"type": "basic",
@@ -827,14 +861,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:9200/product-catalog-v1/_search?from=0&size=100",
+							"raw": "https://localhost:9200/product-catalog-index-v1/_search?from=0&size=100",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "9200",
 							"path": [
-								"product-catalog-v1",
+								"product-catalog-index-v1",
 								"_search"
 							],
 							"query": [
@@ -850,6 +884,95 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get All Documents From Popular Search Index",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:9200/popular-search-index-v1/_search?from=0&size=100",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"popular-search-index-v1",
+								"_search"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Popular Searches",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 0,\n    \"version\": true,\n    \"aggregations\": {\n        \"searchQueries\": {\n            \"terms\": {\n                \"field\": \"query\",\n                \"size\": 5,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/popular-search-index-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"popular-search-index-v1",
+								"_search"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -859,7 +982,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8027/v1/search?query=laptop&from=0&size=100",
+					"raw": "http://localhost:8027/v1/search?query=pencil&from=0&size=100",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -872,7 +995,7 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "laptop"
+							"value": "pencil"
 						},
 						{
 							"key": "from",
@@ -888,7 +1011,81 @@
 			"response": []
 		},
 		{
-			"name": "Search Text With Filters",
+			"name": "Get Popular Search Queries",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search/popular?top=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search",
+						"popular"
+					],
+					"query": [
+						{
+							"key": "top",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ROUGH",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"from\": 0,\n    \"size\": 100,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"laptop\",\n                            \"fuzziness\": \"AUTO\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"transpositions\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*laptop*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"post_filter\": {\n        \"bool\": {\n            \"filter\": [\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"brand.raw\": [\n                                        \"Apple\",\n                                        \"LG\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"color.raw\": [\n                                        \"Silver\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"modifiedAt\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"createdAt\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"department\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\",\n                                    \"LG\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        },\n                        {\n                            \"terms\": {\n                                \"color.raw\": [\n                                    \"Silver\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"department\": {\n                    \"terms\": {\n                        \"field\": \"department.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"color\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\",\n                                    \"LG\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"color\": {\n                    \"terms\": {\n                        \"field\": \"color.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"brand\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"color.raw\": [\n                                    \"Silver\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"brand\": {\n                    \"terms\": {\n                        \"field\": \"brand.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:9200/product-catalog-v1/_search",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "9200",
+					"path": [
+						"product-catalog-v1",
+						"_search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Text With Filters 1.0",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -923,7 +1120,439 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Before Multi-select Faceting",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8027/v1/search?query=laptop&facets=[{\"code\":\"brand\",\"values\":[\"Apple\"]}]&from=0&size=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8027",
+							"path": [
+								"v1",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "laptop"
+								},
+								{
+									"key": "facets",
+									"value": "[{\"code\":\"brand\",\"values\":[\"Apple\"]}]"
+								},
+								{
+									"key": "from",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Mar 2022 17:31:02 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"totalResults\": 4,\n    \"products\": [\n        {\n            \"code\": \"1\",\n            \"name\": \"Apple Macbook Pro 2019\",\n            \"description\": \"Apple Macbook Pro Laptop 2019 model\",\n            \"brand\": \"Apple\",\n            \"color\": \"Silver\",\n            \"department\": \"Productivity Laptops\"\n        },\n        {\n            \"code\": \"4\",\n            \"name\": \"Apple Macbook Air 2020\",\n            \"description\": \"Apple Macbook Air Laptop 2020 with Intel Chip\",\n            \"brand\": \"Apple\",\n            \"color\": \"Space Grey\",\n            \"department\": \"Productivity Laptops\"\n        },\n        {\n            \"code\": \"2\",\n            \"name\": \"Apple Macbook Pro 2021\",\n            \"description\": \"Apple Macbook Pro Laptop 2021 model with M1 Chip\",\n            \"brand\": \"Apple\",\n            \"color\": \"Space Grey\",\n            \"department\": \"Productivity Laptops\"\n        },\n        {\n            \"code\": \"3\",\n            \"name\": \"Apple Macbook Air 2021\",\n            \"description\": \"Apple Macbook Air Laptop 2021 model with M1 chip\",\n            \"brand\": \"Apple\",\n            \"color\": \"Silver\",\n            \"department\": \"Productivity Laptops\"\n        }\n    ],\n    \"facets\": [\n        {\n            \"code\": \"color\",\n            \"name\": \"Color\",\n            \"facetValues\": [\n                {\n                    \"name\": \"Silver\",\n                    \"count\": 2\n                },\n                {\n                    \"name\": \"Space Grey\",\n                    \"count\": 2\n                }\n            ]\n        },\n        {\n            \"code\": \"department\",\n            \"name\": \"Department\",\n            \"facetValues\": [\n                {\n                    \"name\": \"Productivity Laptops\",\n                    \"count\": 4\n                }\n            ]\n        },\n        {\n            \"code\": \"brand\",\n            \"name\": \"Brand\",\n            \"facetValues\": [\n                {\n                    \"name\": \"Apple\",\n                    \"count\": 4\n                }\n            ]\n        }\n    ]\n}"
+				},
+				{
+					"name": "After Multi-select Faceting",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8027/v1/search?query=laptop&facets=[{\"code\":\"brand\",\"values\":[\"Apple\"]}]&from=0&size=100",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8027",
+							"path": [
+								"v1",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "laptop"
+								},
+								{
+									"key": "facets",
+									"value": "[{\"code\":\"brand\",\"values\":[\"Apple\"]}]"
+								},
+								{
+									"key": "from",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Mar 2022 20:17:40 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"totalResults\": 4,\n    \"products\": [\n        {\n            \"code\": \"1\",\n            \"name\": \"Apple Macbook Pro 2019\",\n            \"description\": \"Apple Macbook Pro Laptop 2019 model\",\n            \"brand\": \"Apple\",\n            \"color\": \"Silver\",\n            \"department\": \"Productivity Laptops\"\n        },\n        {\n            \"code\": \"4\",\n            \"name\": \"Apple Macbook Air 2020\",\n            \"description\": \"Apple Macbook Air Laptop 2020 with Intel Chip\",\n            \"brand\": \"Apple\",\n            \"color\": \"Space Grey\",\n            \"department\": \"Productivity Laptops\"\n        },\n        {\n            \"code\": \"2\",\n            \"name\": \"Apple Macbook Pro 2021\",\n            \"description\": \"Apple Macbook Pro Laptop 2021 model with M1 Chip\",\n            \"brand\": \"Apple\",\n            \"color\": \"Space Grey\",\n            \"department\": \"Productivity Laptops\"\n        },\n        {\n            \"code\": \"3\",\n            \"name\": \"Apple Macbook Air 2021\",\n            \"description\": \"Apple Macbook Air Laptop 2021 model with M1 chip\",\n            \"brand\": \"Apple\",\n            \"color\": \"Silver\",\n            \"department\": \"Productivity Laptops\"\n        }\n    ],\n    \"facets\": [\n        {\n            \"code\": \"color\",\n            \"name\": \"Color\",\n            \"facetValues\": [\n                {\n                    \"name\": \"Silver\",\n                    \"count\": 2\n                },\n                {\n                    \"name\": \"Space Grey\",\n                    \"count\": 2\n                }\n            ]\n        },\n        {\n            \"code\": \"department\",\n            \"name\": \"Department\",\n            \"facetValues\": [\n                {\n                    \"name\": \"Productivity Laptops\",\n                    \"count\": 4\n                }\n            ]\n        },\n        {\n            \"code\": \"brand\",\n            \"name\": \"Brand\",\n            \"facetValues\": [\n                {\n                    \"name\": \"Apple\",\n                    \"count\": 4\n                },\n                {\n                    \"name\": \"Asus\",\n                    \"count\": 3\n                },\n                {\n                    \"name\": \"AmazonBasics\",\n                    \"count\": 1\n                },\n                {\n                    \"name\": \"LG\",\n                    \"count\": 1\n                }\n            ]\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Search Text With Filters 1.1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=laptop&facets=[{\"code\":\"brand\",\"values\":[\"Apple\", \"LG\"]}]&from=0&size=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "laptop"
+						},
+						{
+							"key": "facets",
+							"value": "[{\"code\":\"brand\",\"values\":[\"Apple\", \"LG\"]}]"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OS query",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 100,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"laptop\",\n                            \"fuzziness\": \"AUTO\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"transpositions\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*laptop*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"post_filter\": {\n        \"bool\": {\n            \"filter\": [\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"brand.raw\": [\n                                        \"Apple\",\n                                        \"LG\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"modifiedAt\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"createdAt\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"department\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\",\n                                    \"LG\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"department\": {\n                    \"terms\": {\n                        \"field\": \"department.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"color\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\",\n                                    \"LG\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"color\": {\n                    \"terms\": {\n                        \"field\": \"color.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"brand\": {\n            \"terms\": {\n                \"field\": \"brand.raw\",\n                \"size\": 100,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Mar 2022 20:17:40 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"took\": 12,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 5,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": null,\n        \"hits\": [\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1\",\n                \"_version\": 1,\n                \"_score\": 0.8701873,\n                \"_source\": {\n                    \"code\": \"1\",\n                    \"name\": \"Apple Macbook Pro 2019\",\n                    \"description\": \"Apple Macbook Pro Laptop 2019 model\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193417,\n                    \"modifiedAt\": 1647435193418\n                },\n                \"sort\": [\n                    0.8701873,\n                    1647435193418,\n                    1647435193417\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"4\",\n                \"_version\": 1,\n                \"_score\": 0.7636666,\n                \"_source\": {\n                    \"code\": \"4\",\n                    \"name\": \"Apple Macbook Air 2020\",\n                    \"description\": \"Apple Macbook Air Laptop 2020 with Intel Chip\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Space Grey\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193446,\n                    \"modifiedAt\": 1647435193446\n                },\n                \"sort\": [\n                    0.7636666,\n                    1647435193446,\n                    1647435193446\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"2\",\n                \"_version\": 1,\n                \"_score\": 0.7196218,\n                \"_source\": {\n                    \"code\": \"2\",\n                    \"name\": \"Apple Macbook Pro 2021\",\n                    \"description\": \"Apple Macbook Pro Laptop 2021 model with M1 Chip\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Space Grey\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193446,\n                    \"modifiedAt\": 1647435193446\n                },\n                \"sort\": [\n                    0.7196218,\n                    1647435193446,\n                    1647435193446\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"3\",\n                \"_version\": 1,\n                \"_score\": 0.7196218,\n                \"_source\": {\n                    \"code\": \"3\",\n                    \"name\": \"Apple Macbook Air 2021\",\n                    \"description\": \"Apple Macbook Air Laptop 2021 model with M1 chip\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193446,\n                    \"modifiedAt\": 1647435193446\n                },\n                \"sort\": [\n                    0.7196218,\n                    1647435193446,\n                    1647435193446\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"8\",\n                \"_version\": 1,\n                \"_score\": 0.68038046,\n                \"_source\": {\n                    \"code\": \"8\",\n                    \"name\": \"LG Gram\",\n                    \"description\": \"LG Gram Core i7 11th Gen Windows 10 Home Laptop\",\n                    \"brand\": \"LG\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193447,\n                    \"modifiedAt\": 1647435193447\n                },\n                \"sort\": [\n                    0.68038046,\n                    1647435193447,\n                    1647435193447\n                ]\n            }\n        ]\n    },\n    \"aggregations\": {\n        \"color\": {\n            \"doc_count\": 5,\n            \"color\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Silver\",\n                        \"doc_count\": 3\n                    },\n                    {\n                        \"key\": \"Space Grey\",\n                        \"doc_count\": 2\n                    }\n                ]\n            }\n        },\n        \"department\": {\n            \"doc_count\": 5,\n            \"department\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Productivity Laptops\",\n                        \"doc_count\": 5\n                    }\n                ]\n            }\n        },\n        \"brand\": {\n            \"doc_count_error_upper_bound\": 0,\n            \"sum_other_doc_count\": 0,\n            \"buckets\": [\n                {\n                    \"key\": \"Apple\",\n                    \"doc_count\": 4\n                },\n                {\n                    \"key\": \"Asus\",\n                    \"doc_count\": 3\n                },\n                {\n                    \"key\": \"AmazonBasics\",\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": \"LG\",\n                    \"doc_count\": 1\n                }\n            ]\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Search Text With Filters 1.2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=laptop&facets=[{\"code\":\"brand\",\"values\":[\"Apple\"]}, {\"code\":\"color\",\"values\":[\"Silver\"]}]&from=0&size=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "laptop"
+						},
+						{
+							"key": "facets",
+							"value": "[{\"code\":\"brand\",\"values\":[\"Apple\"]}, {\"code\":\"color\",\"values\":[\"Silver\"]}]"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OS query",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 100,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"laptop\",\n                            \"fuzziness\": \"AUTO\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"transpositions\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*laptop*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"post_filter\": {\n        \"bool\": {\n            \"filter\": [\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"brand.raw\": [\n                                        \"Apple\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"color.raw\": [\n                                        \"Silver\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"modifiedAt\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"createdAt\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"department\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        },\n                        {\n                            \"terms\": {\n                                \"color.raw\": [\n                                    \"Silver\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"department\": {\n                    \"terms\": {\n                        \"field\": \"department.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"color\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"color\": {\n                    \"terms\": {\n                        \"field\": \"color.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"brand\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"color.raw\": [\n                                    \"Silver\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"brand\": {\n                    \"terms\": {\n                        \"field\": \"brand.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Mar 2022 20:17:40 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"took\": 9,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 2,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": null,\n        \"hits\": [\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1\",\n                \"_version\": 1,\n                \"_score\": 0.8701873,\n                \"_source\": {\n                    \"code\": \"1\",\n                    \"name\": \"Apple Macbook Pro 2019\",\n                    \"description\": \"Apple Macbook Pro Laptop 2019 model\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193417,\n                    \"modifiedAt\": 1647435193418\n                },\n                \"sort\": [\n                    0.8701873,\n                    1647435193418,\n                    1647435193417\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"3\",\n                \"_version\": 1,\n                \"_score\": 0.7196218,\n                \"_source\": {\n                    \"code\": \"3\",\n                    \"name\": \"Apple Macbook Air 2021\",\n                    \"description\": \"Apple Macbook Air Laptop 2021 model with M1 chip\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193446,\n                    \"modifiedAt\": 1647435193446\n                },\n                \"sort\": [\n                    0.7196218,\n                    1647435193446,\n                    1647435193446\n                ]\n            }\n        ]\n    },\n    \"aggregations\": {\n        \"color\": {\n            \"doc_count\": 4,\n            \"color\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Silver\",\n                        \"doc_count\": 2\n                    },\n                    {\n                        \"key\": \"Space Grey\",\n                        \"doc_count\": 2\n                    }\n                ]\n            }\n        },\n        \"department\": {\n            \"doc_count\": 2,\n            \"department\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Productivity Laptops\",\n                        \"doc_count\": 2\n                    }\n                ]\n            }\n        },\n        \"brand\": {\n            \"doc_count\": 3,\n            \"brand\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Apple\",\n                        \"doc_count\": 2\n                    },\n                    {\n                        \"key\": \"LG\",\n                        \"doc_count\": 1\n                    }\n                ]\n            }\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Search Text With Filters 1.3",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=laptop&facets=[{\"code\":\"brand\",\"values\":[\"Apple\",\"LG\"]}, {\"code\":\"color\",\"values\":[\"Silver\"]}]&from=0&size=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "laptop"
+						},
+						{
+							"key": "facets",
+							"value": "[{\"code\":\"brand\",\"values\":[\"Apple\",\"LG\"]}, {\"code\":\"color\",\"values\":[\"Silver\"]}]"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OS query",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 100,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"laptop\",\n                            \"fuzziness\": \"AUTO\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"transpositions\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*laptop*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"post_filter\": {\n        \"bool\": {\n            \"filter\": [\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"brand.raw\": [\n                                        \"Apple\",\n                                        \"LG\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                },\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"terms\": {\n                                    \"color.raw\": [\n                                        \"Silver\"\n                                    ],\n                                    \"boost\": 1.0\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"modifiedAt\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"createdAt\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"department\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\",\n                                    \"LG\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        },\n                        {\n                            \"terms\": {\n                                \"color.raw\": [\n                                    \"Silver\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"department\": {\n                    \"terms\": {\n                        \"field\": \"department.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"color\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"brand.raw\": [\n                                    \"Apple\",\n                                    \"LG\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"color\": {\n                    \"terms\": {\n                        \"field\": \"color.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"brand\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"terms\": {\n                                \"color.raw\": [\n                                    \"Silver\"\n                                ],\n                                \"boost\": 1.0\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"brand\": {\n                    \"terms\": {\n                        \"field\": \"brand.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Mar 2022 20:17:40 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"took\": 11,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 3,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": null,\n        \"hits\": [\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1\",\n                \"_version\": 1,\n                \"_score\": 0.8701873,\n                \"_source\": {\n                    \"code\": \"1\",\n                    \"name\": \"Apple Macbook Pro 2019\",\n                    \"description\": \"Apple Macbook Pro Laptop 2019 model\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193417,\n                    \"modifiedAt\": 1647435193418\n                },\n                \"sort\": [\n                    0.8701873,\n                    1647435193418,\n                    1647435193417\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"3\",\n                \"_version\": 1,\n                \"_score\": 0.7196218,\n                \"_source\": {\n                    \"code\": \"3\",\n                    \"name\": \"Apple Macbook Air 2021\",\n                    \"description\": \"Apple Macbook Air Laptop 2021 model with M1 chip\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193446,\n                    \"modifiedAt\": 1647435193446\n                },\n                \"sort\": [\n                    0.7196218,\n                    1647435193446,\n                    1647435193446\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"8\",\n                \"_version\": 1,\n                \"_score\": 0.68038046,\n                \"_source\": {\n                    \"code\": \"8\",\n                    \"name\": \"LG Gram\",\n                    \"description\": \"LG Gram Core i7 11th Gen Windows 10 Home Laptop\",\n                    \"brand\": \"LG\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193447,\n                    \"modifiedAt\": 1647435193447\n                },\n                \"sort\": [\n                    0.68038046,\n                    1647435193447,\n                    1647435193447\n                ]\n            }\n        ]\n    },\n    \"aggregations\": {\n        \"color\": {\n            \"doc_count\": 5,\n            \"color\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Silver\",\n                        \"doc_count\": 3\n                    },\n                    {\n                        \"key\": \"Space Grey\",\n                        \"doc_count\": 2\n                    }\n                ]\n            }\n        },\n        \"department\": {\n            \"doc_count\": 3,\n            \"department\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Productivity Laptops\",\n                        \"doc_count\": 3\n                    }\n                ]\n            }\n        },\n        \"brand\": {\n            \"doc_count\": 3,\n            \"brand\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Apple\",\n                        \"doc_count\": 2\n                    },\n                    {\n                        \"key\": \"LG\",\n                        \"doc_count\": 1\n                    }\n                ]\n            }\n        }\n    }\n}"
+				}
+			]
 		}
 	],
 	"event": [
