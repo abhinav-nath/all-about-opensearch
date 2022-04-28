@@ -952,7 +952,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"from\": 0,\n    \"size\": 0,\n    \"version\": true,\n    \"aggregations\": {\n        \"searchQueries\": {\n            \"terms\": {\n                \"field\": \"query\",\n                \"size\": 5,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        }\n    }\n}",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 0,\n    \"query\": {\n        \"range\": {\n            \"timestamp\": {\n                \"from\": \"now-30d/d\",\n                \"to\": null,\n                \"include_lower\": true,\n                \"include_upper\": true,\n                \"boost\": 1.0\n            }\n        }\n    },\n    \"version\": true,\n    \"aggregations\": {\n        \"searchQueries\": {\n            \"terms\": {\n                \"field\": \"query\",\n                \"size\": 5,\n                \"min_doc_count\": 1,\n                \"shard_min_doc_count\": 0,\n                \"show_term_doc_count_error\": false,\n                \"order\": [\n                    {\n                        \"_count\": \"desc\"\n                    },\n                    {\n                        \"_key\": \"asc\"\n                    }\n                ]\n            }\n        }\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -982,7 +982,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8027/v1/search?query=pencil&from=0&size=100",
+					"raw": "http://localhost:8027/v1/search?query=apple&from=0&size=100",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -995,7 +995,7 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "pencil"
+							"value": "apple"
 						},
 						{
 							"key": "from",
