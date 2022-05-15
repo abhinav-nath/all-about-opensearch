@@ -3,7 +3,9 @@ package com.codecafe.search.helper;
 import com.codecafe.search.config.FacetsConfig;
 import com.codecafe.search.model.FacetData;
 import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.index.query.RangeQueryBuilder;
 import org.opensearch.search.aggregations.AggregationBuilder;
 import org.opensearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.opensearch.index.query.QueryBuilders.termsQuery;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
@@ -46,14 +50,14 @@ public class FacetsBuilder {
           1000).addRange(1000, 2000).addRange(2000, 3000).addRange(3000, 4000);
     } else {
       aggregationBuilder =
-        AggregationBuilders.terms(facet).field(String.format(AGGREGATION_FIELD, facet)).size(facetsSize).minDocCount(1);
+        AggregationBuilders.terms(facet).field(format(AGGREGATION_FIELD, facet)).size(facetsSize).minDocCount(1);
     }
 
     if (!isEmpty(filters)) {
       BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
       filters.stream()
              .filter(filter -> !filter.getCode().equals(facet)) // filter out itself
-             .forEach(filter -> queryBuilder.filter(QueryBuilders.termsQuery(String.format(AGGREGATION_FIELD, filter.getCode()), filter.getValues())));
+             .forEach(filter -> queryBuilder.filter(buildFilter(filter)));
 
       //build a filter aggregation
       if (!queryBuilder.filter().isEmpty()) {
@@ -71,7 +75,7 @@ public class FacetsBuilder {
       for (FacetData filter : facets) {
         BoolQueryBuilder orQueryBuilder = QueryBuilders.boolQuery();
 
-        orQueryBuilder.should(QueryBuilders.termsQuery(String.format(AGGREGATION_FIELD, filter.getCode()), filter.getValues()));
+        orQueryBuilder.should(buildFilter(filter));
 
         postFilterQuery.filter(orQueryBuilder);
       }
@@ -79,6 +83,18 @@ public class FacetsBuilder {
 
     postFilterQuery = postFilterQuery.filter().isEmpty() ? null : postFilterQuery;
     return postFilterQuery;
+  }
+
+  private QueryBuilder buildFilter(FacetData filter) {
+    if (filter.getCode().equals("price")) {
+      RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(filter.getCode());
+      for (String value : filter.getValues()) {
+        String[] range = value.split("-");
+        rangeQueryBuilder = rangeQueryBuilder.from(range[0]).to(range[1]);
+      }
+      return rangeQueryBuilder;
+    }
+    return termsQuery(format(AGGREGATION_FIELD, filter.getCode()), filter.getValues());
   }
 
 }
