@@ -75,22 +75,10 @@ public class SearchResponseParser {
       // check if sub-aggregation is present
       if (aggregation instanceof ParsedFilter) {
         for (Aggregation subAggregation : ((ParsedFilter) aggregation).getAggregations()) {
-          for (Terms.Bucket bucket : ((Terms) subAggregation).getBuckets()) {
-            facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
-          }
+          parseFacets(subAggregation, facetValues);
         }
       } else {
-        if (aggregation instanceof ParsedRange) {
-          for (Range.Bucket bucket : ((Range) aggregation).getBuckets()) {
-            if (bucket.getDocCount() > 0) {
-              facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
-            }
-          }
-        } else {
-          for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
-            facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
-          }
-        }
+        parseFacets(aggregation, facetValues);
       }
 
       if (!isEmpty(facetValues)) {
@@ -104,6 +92,20 @@ public class SearchResponseParser {
     facets.sort(Comparator.comparing(facet -> facetsConfig.getFacets().get(facet.getCode()).getSequence()));
 
     return facets;
+  }
+
+  private void parseFacets(Aggregation aggregation, List<FacetValue> facetValues) {
+    if (aggregation instanceof ParsedRange) {
+      for (Range.Bucket bucket : ((Range) aggregation).getBuckets()) {
+        if (bucket.getDocCount() > 0) {
+          facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+        }
+      }
+    } else {
+      for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
+        facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+      }
+    }
   }
 
   public PopularSearchResponse parsePopularSearchResponse(SearchResponse searchResponse) {
