@@ -1,17 +1,28 @@
 package com.codecafe.search.helper;
 
 import com.codecafe.search.config.FacetsConfig;
-import com.codecafe.search.model.*;
+import com.codecafe.search.model.Facet;
+import com.codecafe.search.model.FacetValue;
+import com.codecafe.search.model.PopularSearchResponse;
+import com.codecafe.search.model.ProductHit;
+import com.codecafe.search.model.SearchQuery;
+import com.codecafe.search.model.SearchResult;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.bucket.filter.ParsedFilter;
+import org.opensearch.search.aggregations.bucket.range.ParsedRange;
+import org.opensearch.search.aggregations.bucket.range.Range;
 import org.opensearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -69,8 +80,16 @@ public class SearchResponseParser {
           }
         }
       } else {
-        for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
-          facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+        if (aggregation instanceof ParsedRange) {
+          for (Range.Bucket bucket : ((Range) aggregation).getBuckets()) {
+            if (bucket.getDocCount() > 0) {
+              facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+            }
+          }
+        } else {
+          for (Terms.Bucket bucket : ((Terms) aggregation).getBuckets()) {
+            facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
+          }
         }
       }
 

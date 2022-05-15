@@ -37,7 +37,17 @@ public class FacetsBuilder {
   }
 
   AggregationBuilder buildAggregation(String facet, List<FacetData> filters) {
-    AggregationBuilder aggregationBuilder = AggregationBuilders.terms(facet).field(String.format(AGGREGATION_FIELD, facet)).size(facetsSize);
+    AggregationBuilder aggregationBuilder;
+
+    if ("price".equals(facet)) {
+      aggregationBuilder =
+        AggregationBuilders.range(facet).field(facet).addRange(0, 100).addRange(100, 200).addRange(200, 300).addRange(300,
+          400).addRange(400, 500).addRange(500, 600).addRange(600, 700).addRange(700, 800).addRange(800, 900).addRange(900,
+          1000).addRange(1000, 2000).addRange(2000, 3000).addRange(3000, 4000);
+    } else {
+      aggregationBuilder =
+        AggregationBuilders.terms(facet).field(String.format(AGGREGATION_FIELD, facet)).size(facetsSize).minDocCount(1);
+    }
 
     if (!isEmpty(filters)) {
       BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
