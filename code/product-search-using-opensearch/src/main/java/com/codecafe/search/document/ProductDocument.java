@@ -16,6 +16,7 @@ public class ProductDocument {
   private String color;
   private String department;
   private BigDecimal price;
+  private Boolean inStock;
   private Long createdAt;
   private Long modifiedAt;
 

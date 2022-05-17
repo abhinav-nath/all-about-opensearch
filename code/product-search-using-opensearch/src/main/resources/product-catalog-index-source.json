@@ -37,6 +37,9 @@
       "price": {
         "type": "double"
       },
+      "inStock": {
+        "type": "boolean"
+      },
       "createdAt": {
         "type": "long"
       },
