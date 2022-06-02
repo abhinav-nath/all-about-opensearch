@@ -34,10 +34,16 @@
           }
         }
       },
+      "length": {
+        "type": "double"
+      },
       "length_inches": {
         "type": "double"
       },
       "length_centimetres": {
+        "type": "double"
+      },
+      "width": {
         "type": "double"
       },
       "width_inches": {
@@ -46,10 +52,16 @@
       "width_centimetres": {
         "type": "double"
       },
+      "height": {
+        "type": "double"
+      },
       "height_inches": {
         "type": "double"
       },
       "height_centimetres": {
+        "type": "double"
+      },
+      "weight": {
         "type": "double"
       },
       "weight_pounds": {
