@@ -34,6 +34,30 @@
           }
         }
       },
+      "length_inches": {
+        "type": "double"
+      },
+      "length_centimetres": {
+        "type": "double"
+      },
+      "width_inches": {
+        "type": "double"
+      },
+      "width_centimetres": {
+        "type": "double"
+      },
+      "height_inches": {
+        "type": "double"
+      },
+      "height_centimetres": {
+        "type": "double"
+      },
+      "weight_pounds": {
+        "type": "double"
+      },
+      "weight_kilograms": {
+        "type": "double"
+      },
       "price": {
         "type": "double"
       },

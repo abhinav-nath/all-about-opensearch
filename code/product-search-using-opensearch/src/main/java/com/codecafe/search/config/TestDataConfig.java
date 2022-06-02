@@ -2,6 +2,7 @@ package com.codecafe.search.config;
 
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.service.OpenSearchService;
+import com.codecafe.search.utils.UnitConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.action.index.IndexRequest;
@@ -28,10 +29,13 @@ public class TestDataConfig {
   private final OpenSearchService openSearchService;
   private final ObjectMapper objectMapper;
 
+  private final UnitConverter unitConverter;
+
   @Autowired
-  public TestDataConfig(OpenSearchService openSearchService, ObjectMapper objectMapper) {
+  public TestDataConfig(OpenSearchService openSearchService, ObjectMapper objectMapper, UnitConverter unitConverter) {
     this.openSearchService = openSearchService;
     this.objectMapper = objectMapper;
+    this.unitConverter = unitConverter;
   }
 
   @PostConstruct
@@ -61,6 +65,16 @@ public class TestDataConfig {
 
     productDocument.setCreatedAt(Instant.now().toEpochMilli());
     productDocument.setModifiedAt(Instant.now().toEpochMilli());
+
+    productDocument.setLengthInInches(productDocument.getLength());
+    productDocument.setLengthInCentimetres(unitConverter.toCentimetres(productDocument.getLength()));
+    productDocument.setWidthInInches(productDocument.getWidth());
+    productDocument.setWidthInCentimetres(unitConverter.toCentimetres(productDocument.getWidth()));
+    productDocument.setHeightInInches(productDocument.getHeight());
+    productDocument.setHeightInCentimetres(unitConverter.toCentimetres(productDocument.getHeight()));
+    productDocument.setWeightInPounds(productDocument.getWeight());
+    productDocument.setWeightInKilograms(unitConverter.toKilograms(productDocument.getWeight()));
+
     String productDocumentStr = objectMapper.writeValueAsString(productDocument);
 
     indexRequest.source(productDocumentStr, JSON);
