@@ -4,6 +4,7 @@ plugins {
   id 'org.springframework.boot' version "${springBootVersion}"
   id 'io.spring.dependency-management' version "${springDependencyManagementPluginVersion}"
   id 'com.github.ben-manes.versions' version "${dependencyUpdatesPluginVersion}"
+  id 'org.flywaydb.flyway' version "${flywayPluginVersion}"
 }
 
 group = 'com.codecafe'
@@ -29,22 +30,36 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
   implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
   implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+  implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
   implementation("org.opensearch.client:opensearch-rest-high-level-client:${openSearchClientVersion}") {
     exclude(group: "org.apache.logging.log4j", module: "log4j-core")
   }
+  implementation "org.flywaydb:flyway-core:${flywayCoreVersion}"
   implementation "org.modelmapper:modelmapper:${modelmapperVersion}"
   implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
   implementation "org.apache.logging.log4j:log4j-to-slf4j:${log4jVersion}"
   implementation "org.apache.commons:commons-lang3:${commonsIoVersion}"
+  implementation 'com.vladmihalcea:hibernate-types-55:2.16.2'
+
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
   annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
   testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
   testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+  runtimeOnly "org.postgresql:postgresql:${postgresVersion}"
+
   testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
 }
 
 test {
   useJUnitPlatform()
+}
+
+flyway {
+  url = System.getenv("JDBC_DATABASE_URL") ?: 'jdbc:postgresql://localhost:5532/productSearchDb'
+  user = System.getenv("JDBC_DATABASE_USERNAME") ?: 'productSearchDbUser'
+  password = System.getenv("JDBC_DATABASE_PASSWORD") ?: 'productSearchDbPassword'
+  baselineOnMigrate = true
 }
 
 //-----------------------------------------------------CHECKSTYLE-------------------------------------------------------
