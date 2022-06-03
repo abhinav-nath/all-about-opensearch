@@ -1,14 +1,11 @@
 package com.codecafe.search.helper;
 
-import com.codecafe.search.config.FacetsConfig;
-import com.codecafe.search.model.Facet;
-import com.codecafe.search.model.FacetValue;
-import com.codecafe.search.model.PopularSearchResponse;
-import com.codecafe.search.model.ProductHit;
-import com.codecafe.search.model.SearchQuery;
-import com.codecafe.search.model.SearchResult;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.aggregations.Aggregation;
@@ -18,11 +15,15 @@ import org.opensearch.search.aggregations.bucket.range.Range;
 import org.opensearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import com.codecafe.search.config.FacetsConfiguration;
+import com.codecafe.search.model.Facet;
+import com.codecafe.search.model.FacetValue;
+import com.codecafe.search.model.PopularSearchResponse;
+import com.codecafe.search.model.ProductHit;
+import com.codecafe.search.model.SearchQuery;
+import com.codecafe.search.model.SearchResult;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -31,14 +32,14 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class SearchResponseParser {
 
   private final ObjectMapper objectMapper;
-  private final FacetsConfig facetsConfig;
+  private final FacetsConfiguration facetsConfiguration;
 
-  public SearchResponseParser(ObjectMapper objectMapper, FacetsConfig facetsConfig) {
+  public SearchResponseParser(ObjectMapper objectMapper, FacetsConfiguration facetsConfiguration) {
     this.objectMapper = objectMapper;
-    this.facetsConfig = facetsConfig;
+    this.facetsConfiguration = facetsConfiguration;
   }
 
-  public SearchResult parseTextSearchResponse(SearchResponse searchResponse) {
+  public SearchResult parseTextSearchResponse(SearchResponse searchResponse, String unitSystem) {
     SearchResult.SearchResultBuilder searchResultBuilder = SearchResult.builder();
 
     long totalResults = searchResponse.getHits().getTotalHits().value;
@@ -54,13 +55,13 @@ public class SearchResponseParser {
       });
 
       searchResultBuilder.productHits(matchedProducts)
-                         .facets(extractFacets(searchResponse));
+                         .facets(extractFacets(searchResponse, unitSystem));
     }
 
     return searchResultBuilder.build();
   }
 
-  private List<Facet> extractFacets(SearchResponse searchResponse) {
+  private List<Facet> extractFacets(SearchResponse searchResponse, String unitSystem) {
     List<Facet> facets = new ArrayList<>(1);
 
     if (searchResponse.getAggregations() == null) {
@@ -82,14 +83,20 @@ public class SearchResponseParser {
       }
 
       if (!isEmpty(facetValues)) {
-        facets.add(Facet.builder()
-                        .code(aggregation.getName())
-                        .name(facetsConfig.getFacets().get(aggregation.getName()).getDisplayName())
-                        .facetValues(facetValues).build());
+
+        Facet facet = Facet.builder()
+                           .code(aggregation.getName())
+                           .name(facetsConfiguration.getFacets().get(aggregation.getName()).getDisplayName())
+                           .facetValues(facetValues)
+                           .build();
+        if (facetsConfiguration.getFacets().get(aggregation.getName()).isMeasurement()) {
+          facet.setUnit(facetsConfiguration.getFacets().get(aggregation.getName()).getMeasurementUnits().getOrDefault(unitSystem, "default"));
+        }
+        facets.add(facet);
       }
     }
 
-    facets.sort(Comparator.comparing(facet -> facetsConfig.getFacets().get(facet.getCode()).getSequence()));
+    facets.sort(Comparator.comparing(facet -> facetsConfiguration.getFacets().get(facet.getCode()).getSequence()));
 
     return facets;
   }

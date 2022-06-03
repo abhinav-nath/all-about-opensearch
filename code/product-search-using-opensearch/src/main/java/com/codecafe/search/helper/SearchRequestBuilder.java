@@ -1,10 +1,19 @@
 package com.codecafe.search.helper;
 
-import com.codecafe.search.config.OpenSearchConfig;
-import com.codecafe.search.model.FacetData;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.search.SearchRequest;
-import org.opensearch.index.query.*;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.FuzzyQueryBuilder;
+import org.opensearch.index.query.MatchPhrasePrefixQueryBuilder;
+import org.opensearch.index.query.MatchQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.RangeQueryBuilder;
+import org.opensearch.index.query.WildcardQueryBuilder;
 import org.opensearch.search.aggregations.AggregationBuilder;
 import org.opensearch.search.aggregations.AggregationBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
@@ -13,10 +22,8 @@ import org.opensearch.search.sort.SortBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.codecafe.search.config.OpenSearchConfig;
+import com.codecafe.search.model.FacetData;
 
 import static org.opensearch.index.query.QueryBuilders.boolQuery;
 import static org.opensearch.search.sort.SortBuilders.fieldSort;
@@ -37,10 +44,10 @@ public class SearchRequestBuilder {
     this.facetsBuilder = facetsBuilder;
   }
 
-  public SearchRequest buildTextSearchRequest(String query, List<FacetData> facets, int page, int size) {
+  public SearchRequest buildTextSearchRequest(String query, List<FacetData> facets, String unitSystem, int page, int size) {
     QueryBuilder queryBuilder = buildBasicTextSearchQuery(query);
 
-    SearchRequest searchRequest = buildSearchRequestFrom(queryBuilder, facets, page, size);
+    SearchRequest searchRequest = buildSearchRequestFrom(queryBuilder, facets, unitSystem, page, size);
     addSorting(searchRequest);
     return searchRequest;
   }
@@ -54,7 +61,7 @@ public class SearchRequestBuilder {
       .should(new MatchPhrasePrefixQueryBuilder("name", query).boost(10.0f));
   }
 
-  private SearchRequest buildSearchRequestFrom(QueryBuilder queryBuilder, List<FacetData> facets, int page, int size) {
+  private SearchRequest buildSearchRequestFrom(QueryBuilder queryBuilder, List<FacetData> facets, String unitSystem, int page, int size) {
     SearchRequest searchRequest = new SearchRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(0).getName());
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.version(true);
@@ -64,7 +71,7 @@ public class SearchRequestBuilder {
     sourceBuilder.from((page - 1) * size);
     sourceBuilder.size(size);
 
-    facetsBuilder.buildAggregations(facets).forEach(sourceBuilder::aggregation);
+    facetsBuilder.buildAggregations(facets, unitSystem).forEach(sourceBuilder::aggregation);
 
     BoolQueryBuilder postFilterQuery = facetsBuilder.buildPostFilterIfApplicable(facets);
 

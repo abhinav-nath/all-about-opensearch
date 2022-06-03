@@ -5,6 +5,23 @@ logging:
   level:
     root: info
 
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5532/productSearchDb
+    username: productSearchDbUser
+    password: productSearchDbPassword
+  flyway:
+    user: "${spring.datasource.username}"
+    password: "${spring.datasource.password}"
+    url: "${spring.datasource.url}"
+    baselineOnMigrate: true
+
 app:
   search:
     ingestion:

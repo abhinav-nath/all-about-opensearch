@@ -1,7 +1,7 @@
 package com.codecafe.search.helper;
 
-import com.codecafe.search.config.FacetsConfig;
-import com.codecafe.search.model.FacetData;
+import java.util.List;
+
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
 import org.opensearch.index.query.QueryBuilders;
@@ -11,7 +11,8 @@ import org.opensearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.codecafe.search.config.FacetsConfiguration;
+import com.codecafe.search.model.FacetData;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -26,21 +27,21 @@ public class FacetsBuilder {
   @Value("${app.search.facets-size:100}")
   private int facetsSize;
 
-  private final FacetsConfig facetsConfig;
+  private final FacetsConfiguration facetsConfiguration;
 
-  public FacetsBuilder(FacetsConfig facetsConfig) {
-    this.facetsConfig = facetsConfig;
+  public FacetsBuilder(FacetsConfiguration facetsConfiguration) {
+    this.facetsConfiguration = facetsConfiguration;
   }
 
-  List<AggregationBuilder> buildAggregations(List<FacetData> facets) {
-    return facetsConfig.getFacets()
-                       .keySet()
-                       .stream()
-                       .map(facetCode -> buildAggregation(facetCode, facets))
-                       .collect(toList());
+  List<AggregationBuilder> buildAggregations(List<FacetData> facets, String unitSystem) {
+    return facetsConfiguration.getFacets()
+                              .keySet()
+                              .stream()
+                              .map(facetCode -> buildAggregation(facetCode, facets, unitSystem))
+                              .collect(toList());
   }
 
-  AggregationBuilder buildAggregation(String facet, List<FacetData> filters) {
+  AggregationBuilder buildAggregation(String facet, List<FacetData> filters, String unitSystem) {
     AggregationBuilder aggregationBuilder;
 
     if ("price".equals(facet)) {
@@ -49,8 +50,14 @@ public class FacetsBuilder {
           400).addRange(400, 500).addRange(500, 600).addRange(600, 700).addRange(700, 800).addRange(800, 900).addRange(900,
           1000).addRange(1000, 2000).addRange(2000, 3000).addRange(3000, 4000);
     } else {
-      aggregationBuilder =
-        AggregationBuilders.terms(facet).field(format(AGGREGATION_FIELD, facet)).size(facetsSize).minDocCount(1);
+      if (facetsConfiguration.getFacets().get(facet).isMeasurement()) {
+        String unit = facetsConfiguration.getFacets().get(facet).getMeasurementUnits().getOrDefault(unitSystem, "default");
+        aggregationBuilder =
+          AggregationBuilders.terms(facet).field(facet + "_" + unit).size(facetsSize).minDocCount(1);
+      } else {
+        aggregationBuilder =
+          AggregationBuilders.terms(facet).field(format(AGGREGATION_FIELD, facet)).size(facetsSize).minDocCount(1);
+      }
     }
 
     if (!isEmpty(filters)) {

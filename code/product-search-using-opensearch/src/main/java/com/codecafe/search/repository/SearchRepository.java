@@ -1,11 +1,7 @@
 package com.codecafe.search.repository;
 
-import com.codecafe.search.helper.SearchRequestBuilder;
-import com.codecafe.search.helper.SearchResponseParser;
-import com.codecafe.search.model.FacetData;
-import com.codecafe.search.model.PopularSearchResponse;
-import com.codecafe.search.model.SearchResult;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.opensearch.action.index.IndexRequest;
 import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.search.SearchRequest;
@@ -15,7 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
+import com.codecafe.search.helper.SearchRequestBuilder;
+import com.codecafe.search.helper.SearchResponseParser;
+import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.PopularSearchResponse;
+import com.codecafe.search.model.SearchResult;
 
 import static org.opensearch.client.RequestOptions.DEFAULT;
 import static org.opensearch.rest.RestStatus.CREATED;
@@ -35,14 +37,14 @@ public class SearchRepository {
     this.searchResponseParser = searchResponseParser;
   }
 
-  public SearchResult searchProducts(String query, List<FacetData> facets, int page, int size) {
-    SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, size);
+  public SearchResult searchProducts(String query, List<FacetData> facets, String unitSystem, int page, int size) {
+    SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, unitSystem, page, size);
 
     log.info("Search JSON query: {}", searchRequest.source().toString());
 
     try {
       SearchResponse searchResponse = restHighLevelClient.search(searchRequest, DEFAULT);
-      return searchResponseParser.parseTextSearchResponse(searchResponse);
+      return searchResponseParser.parseTextSearchResponse(searchResponse, unitSystem);
     } catch (Exception ex) {
       log.error("Error in OpenSearch query", ex);
     }
