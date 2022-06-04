@@ -1,27 +1,30 @@
 package com.codecafe.search.config;
 
-import com.codecafe.search.document.ProductDocument;
-import com.codecafe.search.service.OpenSearchService;
-import com.codecafe.search.utils.UnitConverter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.opensearch.action.index.IndexRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
+import com.codecafe.search.document.ProductDocument;
+import com.codecafe.search.service.OpenSearchService;
+import com.codecafe.search.utils.UnitConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.opensearch.common.xcontent.XContentType.JSON;
 
 @Slf4j
 @Component
-public class TestDataConfig {
+public class TestDataConfiguration {
 
   @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
   private Resource testDataResource;
@@ -32,7 +35,7 @@ public class TestDataConfig {
   private final UnitConverter unitConverter;
 
   @Autowired
-  public TestDataConfig(OpenSearchService openSearchService, ObjectMapper objectMapper, UnitConverter unitConverter) {
+  public TestDataConfiguration(OpenSearchService openSearchService, ObjectMapper objectMapper, UnitConverter unitConverter) {
     this.openSearchService = openSearchService;
     this.objectMapper = objectMapper;
     this.unitConverter = unitConverter;

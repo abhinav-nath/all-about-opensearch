@@ -1,7 +1,9 @@
 package com.codecafe.search.service;
 
-import com.codecafe.search.config.OpenSearchConfig;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 import org.opensearch.OpenSearchException;
 import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.opensearch.action.bulk.BulkRequest;
@@ -15,9 +17,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
+import com.codecafe.search.config.OpenSearchConfiguration;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.opensearch.client.RequestOptions.DEFAULT;
@@ -29,13 +31,13 @@ import static org.springframework.util.StreamUtils.copyToString;
 public class OpenSearchService {
 
   private final RestHighLevelClient restHighLevelClient;
-  private final OpenSearchConfig openSearchConfig;
-  private final OpenSearchConfig.OpenSearchProperties openSearchProperties;
+  private final OpenSearchConfiguration openSearchConfiguration;
+  private final OpenSearchConfiguration.OpenSearchProperties openSearchProperties;
 
-  public OpenSearchService(RestHighLevelClient restHighLevelClient, OpenSearchConfig openSearchConfig) {
+  public OpenSearchService(RestHighLevelClient restHighLevelClient, OpenSearchConfiguration openSearchConfiguration) {
     this.restHighLevelClient = restHighLevelClient;
-    this.openSearchConfig = openSearchConfig;
-    this.openSearchProperties = openSearchConfig.getOpenSearchProperties();
+    this.openSearchConfiguration = openSearchConfiguration;
+    this.openSearchProperties = openSearchConfiguration.getOpenSearchProperties();
   }
 
   public void bulkDocWrite(List<IndexRequest> indexRequests) {
@@ -56,7 +58,7 @@ public class OpenSearchService {
   }
 
   public void deleteIndicesIfAlreadyPresent() {
-    for (OpenSearchConfig.Index index : openSearchProperties.getIndices()) {
+    for (OpenSearchConfiguration.Index index : openSearchProperties.getIndices()) {
       try {
         if (isIndexAlreadyPresent(index.getName())) {
           deleteIndex(index.getName());
@@ -73,7 +75,7 @@ public class OpenSearchService {
   }
 
   public void createIndices() {
-    for (OpenSearchConfig.Index index : openSearchProperties.getIndices()) {
+    for (OpenSearchConfiguration.Index index : openSearchProperties.getIndices()) {
       try {
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(index.getName());
         String source = readFileFromClasspath(index.getSource());

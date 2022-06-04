@@ -1,8 +1,14 @@
 package com.codecafe.search.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -16,13 +22,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
 
@@ -30,7 +32,7 @@ import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
 @Getter
 @Setter
 @Configuration
-public class OpenSearchConfig {
+public class OpenSearchConfiguration {
 
   private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{
     new X509TrustManager() {
@@ -51,7 +53,7 @@ public class OpenSearchConfig {
   private final OpenSearchProperties openSearchProperties;
 
   @Autowired
-  public OpenSearchConfig(OpenSearchProperties openSearchProperties) {
+  public OpenSearchConfiguration(OpenSearchProperties openSearchProperties) {
     this.openSearchProperties = openSearchProperties;
   }
 

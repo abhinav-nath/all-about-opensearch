@@ -22,7 +22,7 @@ import org.opensearch.search.sort.SortBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.codecafe.search.config.OpenSearchConfig;
+import com.codecafe.search.config.OpenSearchConfiguration;
 import com.codecafe.search.model.FacetData;
 
 import static org.opensearch.index.query.QueryBuilders.boolQuery;
@@ -36,11 +36,11 @@ public class SearchRequestBuilder {
   @Value("${app.search.popular.from.days:-1}")
   private int popularInLastNDays;
 
-  private final OpenSearchConfig openSearchConfig;
+  private final OpenSearchConfiguration openSearchConfiguration;
   private final FacetsBuilder facetsBuilder;
 
-  public SearchRequestBuilder(OpenSearchConfig openSearchConfig, FacetsBuilder facetsBuilder) {
-    this.openSearchConfig = openSearchConfig;
+  public SearchRequestBuilder(OpenSearchConfiguration openSearchConfiguration, FacetsBuilder facetsBuilder) {
+    this.openSearchConfiguration = openSearchConfiguration;
     this.facetsBuilder = facetsBuilder;
   }
 
@@ -62,7 +62,7 @@ public class SearchRequestBuilder {
   }
 
   private SearchRequest buildSearchRequestFrom(QueryBuilder queryBuilder, List<FacetData> facets, String unitSystem, int page, int size) {
-    SearchRequest searchRequest = new SearchRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(0).getName());
+    SearchRequest searchRequest = new SearchRequest(openSearchConfiguration.getOpenSearchProperties().getIndices().get(0).getName());
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.version(true);
 
@@ -88,7 +88,7 @@ public class SearchRequestBuilder {
 
   public IndexRequest buildSaveSearchQueryRequest(String query) {
     IndexRequest indexRequest =
-      new IndexRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(1).getName());
+      new IndexRequest(openSearchConfiguration.getOpenSearchProperties().getIndices().get(1).getName());
 
     Map<String, Object> jsonMap = new HashMap<>();
     jsonMap.put("query", query);
@@ -99,7 +99,7 @@ public class SearchRequestBuilder {
   }
 
   public SearchRequest buildPopularSearchRequest(int top) {
-    SearchRequest searchRequest = new SearchRequest(openSearchConfig.getOpenSearchProperties().getIndices().get(1).getName());
+    SearchRequest searchRequest = new SearchRequest(openSearchConfiguration.getOpenSearchProperties().getIndices().get(1).getName());
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.version(true);
     sourceBuilder.from(0);
