@@ -39,7 +39,7 @@ dependencies {
   implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
   implementation "org.apache.logging.log4j:log4j-to-slf4j:${log4jVersion}"
   implementation "org.apache.commons:commons-lang3:${commonsIoVersion}"
-  implementation 'com.vladmihalcea:hibernate-types-55:2.16.2'
+  implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypes55Version}"
 
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
   annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
