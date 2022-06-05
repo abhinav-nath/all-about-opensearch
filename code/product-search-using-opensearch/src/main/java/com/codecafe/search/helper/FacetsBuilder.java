@@ -1,9 +1,6 @@
 package com.codecafe.search.helper;
 
-import com.codecafe.search.config.FacetsConfiguration;
-import com.codecafe.search.model.FacetData;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
@@ -14,7 +11,10 @@ import org.opensearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+
+import com.codecafe.search.config.FacetsConfiguration;
+import com.codecafe.search.model.FacetData;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -63,7 +63,7 @@ public class FacetsBuilder {
       BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
       filters.stream()
              .filter(filter -> !filter.getCode().equals(facet)) // filter out itself
-             .forEach(filter -> queryBuilder.filter(buildFilter(filter)));
+             .forEach(filter -> queryBuilder.filter(buildFilter(filter, unitSystem)));
 
       //build a filter aggregation
       if (!queryBuilder.filter().isEmpty()) {
@@ -74,14 +74,14 @@ public class FacetsBuilder {
     return aggregationBuilder;
   }
 
-  BoolQueryBuilder buildPostFilterIfApplicable(List<FacetData> facets) {
+  BoolQueryBuilder buildPostFilterIfApplicable(List<FacetData> facets, String unitSystem) {
     BoolQueryBuilder postFilterQuery = QueryBuilders.boolQuery();
 
     if (!isEmpty(facets)) {
       for (FacetData filter : facets) {
         BoolQueryBuilder orQueryBuilder = QueryBuilders.boolQuery();
 
-        orQueryBuilder.should(buildFilter(filter));
+        orQueryBuilder.should(buildFilter(filter, unitSystem));
 
         postFilterQuery.filter(orQueryBuilder);
       }
@@ -91,7 +91,7 @@ public class FacetsBuilder {
     return postFilterQuery;
   }
 
-  private QueryBuilder buildFilter(FacetData filter) {
+  private QueryBuilder buildFilter(FacetData filter, String unitSystem) {
     if (filter.getCode().equals("price")) {
       RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(filter.getCode());
       for (String value : filter.getValues()) {
@@ -99,6 +99,10 @@ public class FacetsBuilder {
         rangeQueryBuilder = rangeQueryBuilder.from(range[0]).to(range[1]);
       }
       return rangeQueryBuilder;
+    }
+    if (facetsConfiguration.getFacets().get(filter.getCode()).isMeasurement()) {
+      String unit = facetsConfiguration.getFacets().get(filter.getCode()).getMeasurementUnits().getOrDefault(unitSystem, "default");
+      return termsQuery((filter.getCode() + "_" + unit), filter.getValues());
     }
     return termsQuery(format(AGGREGATION_FIELD, filter.getCode()), filter.getValues());
   }

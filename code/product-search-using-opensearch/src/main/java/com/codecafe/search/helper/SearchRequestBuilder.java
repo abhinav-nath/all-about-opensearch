@@ -71,7 +71,7 @@ public class SearchRequestBuilder {
 
     facetsBuilder.buildAggregations(facets, unitSystem).forEach(sourceBuilder::aggregation);
 
-    BoolQueryBuilder postFilterQuery = facetsBuilder.buildPostFilterIfApplicable(facets);
+    BoolQueryBuilder postFilterQuery = facetsBuilder.buildPostFilterIfApplicable(facets, unitSystem);
 
     searchRequest.source(sourceBuilder.postFilter(postFilterQuery));
     return searchRequest;
