@@ -1,22 +1,22 @@
 package com.codecafe.search.config;
 
-import com.codecafe.search.model.FacetData;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+
+import com.codecafe.search.model.FacetData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Component
+@RequiredArgsConstructor
 public class FacetsConverter implements Converter<String, List<FacetData>> {
 
-  private ObjectMapper objectMapper;
-
-  public FacetsConverter(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
-  }
+  private final ObjectMapper objectMapper;
 
   @Override
   public List<FacetData> convert(String source) {

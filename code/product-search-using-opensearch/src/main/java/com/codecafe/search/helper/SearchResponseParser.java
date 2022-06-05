@@ -15,6 +15,8 @@ import org.opensearch.search.aggregations.bucket.range.Range;
 import org.opensearch.search.aggregations.bucket.terms.Terms;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+
 import com.codecafe.search.config.FacetsConfiguration;
 import com.codecafe.search.model.Facet;
 import com.codecafe.search.model.FacetValue;
@@ -29,15 +31,11 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
+@RequiredArgsConstructor
 public class SearchResponseParser {
 
   private final ObjectMapper objectMapper;
   private final FacetsConfiguration facetsConfiguration;
-
-  public SearchResponseParser(ObjectMapper objectMapper, FacetsConfiguration facetsConfiguration) {
-    this.objectMapper = objectMapper;
-    this.facetsConfiguration = facetsConfiguration;
-  }
 
   public SearchResult parseTextSearchResponse(SearchResponse searchResponse, String unitSystem) {
     SearchResult.SearchResultBuilder searchResultBuilder = SearchResult.builder();

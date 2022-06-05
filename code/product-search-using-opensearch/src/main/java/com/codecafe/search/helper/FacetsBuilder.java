@@ -1,6 +1,9 @@
 package com.codecafe.search.helper;
 
-import java.util.List;
+import com.codecafe.search.config.FacetsConfiguration;
+import com.codecafe.search.model.FacetData;
+
+import lombok.RequiredArgsConstructor;
 
 import org.opensearch.index.query.BoolQueryBuilder;
 import org.opensearch.index.query.QueryBuilder;
@@ -11,8 +14,7 @@ import org.opensearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.codecafe.search.config.FacetsConfiguration;
-import com.codecafe.search.model.FacetData;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -20,6 +22,7 @@ import static org.opensearch.index.query.QueryBuilders.termsQuery;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
+@RequiredArgsConstructor
 public class FacetsBuilder {
 
   private static final String AGGREGATION_FIELD = "%s.raw";
@@ -28,10 +31,6 @@ public class FacetsBuilder {
   private int facetsSize;
 
   private final FacetsConfiguration facetsConfiguration;
-
-  public FacetsBuilder(FacetsConfiguration facetsConfiguration) {
-    this.facetsConfiguration = facetsConfiguration;
-  }
 
   List<AggregationBuilder> buildAggregations(List<FacetData> facets, String unitSystem) {
     return facetsConfiguration.getFacets()

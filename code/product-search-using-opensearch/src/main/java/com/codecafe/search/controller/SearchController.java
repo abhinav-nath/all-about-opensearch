@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.PopularSearchResponse;
 import com.codecafe.search.model.SearchResponse;
@@ -16,14 +18,11 @@ import com.codecafe.search.service.SearchService;
 
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/v1/search")
 public class SearchController {
 
   private final SearchService searchService;
-
-  public SearchController(SearchService searchService) {
-    this.searchService = searchService;
-  }
 
   @GetMapping
   public ResponseEntity<SearchResponse> textSearch(@RequestParam("query") final String query,

@@ -17,12 +17,12 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestClientBuilder;
 import org.opensearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +32,7 @@ import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
 @Getter
 @Setter
 @Configuration
+@RequiredArgsConstructor
 public class OpenSearchConfiguration {
 
   private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{
@@ -51,11 +52,6 @@ public class OpenSearchConfiguration {
   };
 
   private final OpenSearchProperties openSearchProperties;
-
-  @Autowired
-  public OpenSearchConfiguration(OpenSearchProperties openSearchProperties) {
-    this.openSearchProperties = openSearchProperties;
-  }
 
   @Bean
   public RestHighLevelClient restHighLevelClient() {

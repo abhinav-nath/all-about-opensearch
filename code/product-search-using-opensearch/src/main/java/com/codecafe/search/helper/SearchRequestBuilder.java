@@ -22,6 +22,8 @@ import org.opensearch.search.sort.SortBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+
 import com.codecafe.search.config.OpenSearchConfiguration;
 import com.codecafe.search.model.FacetData;
 
@@ -31,18 +33,14 @@ import static org.opensearch.search.sort.SortBuilders.scoreSort;
 import static org.opensearch.search.sort.SortOrder.DESC;
 
 @Component
+@RequiredArgsConstructor
 public class SearchRequestBuilder {
 
   @Value("${app.search.popular.from.days:-1}")
   private int popularInLastNDays;
 
-  private final OpenSearchConfiguration openSearchConfiguration;
   private final FacetsBuilder facetsBuilder;
-
-  public SearchRequestBuilder(OpenSearchConfiguration openSearchConfiguration, FacetsBuilder facetsBuilder) {
-    this.openSearchConfiguration = openSearchConfiguration;
-    this.facetsBuilder = facetsBuilder;
-  }
+  private final OpenSearchConfiguration openSearchConfiguration;
 
   public SearchRequest buildTextSearchRequest(String query, List<FacetData> facets, String unitSystem, int page, int size) {
     QueryBuilder queryBuilder = buildBasicTextSearchQuery(query);

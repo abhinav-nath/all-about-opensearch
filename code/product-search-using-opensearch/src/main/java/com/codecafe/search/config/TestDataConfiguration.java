@@ -8,11 +8,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.opensearch.action.index.IndexRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.document.ProductDocument;
@@ -24,6 +24,7 @@ import static org.opensearch.common.xcontent.XContentType.JSON;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class TestDataConfiguration {
 
   @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
@@ -31,15 +32,7 @@ public class TestDataConfiguration {
 
   private final OpenSearchService openSearchService;
   private final ObjectMapper objectMapper;
-
   private final UnitConverter unitConverter;
-
-  @Autowired
-  public TestDataConfiguration(OpenSearchService openSearchService, ObjectMapper objectMapper, UnitConverter unitConverter) {
-    this.openSearchService = openSearchService;
-    this.objectMapper = objectMapper;
-    this.unitConverter = unitConverter;
-  }
 
   @PostConstruct
   public void init() {

@@ -7,10 +7,10 @@ import org.opensearch.action.index.IndexResponse;
 import org.opensearch.action.search.SearchRequest;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.helper.SearchRequestBuilder;
@@ -24,18 +24,12 @@ import static org.opensearch.rest.RestStatus.CREATED;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class SearchRepository {
 
   private final RestHighLevelClient restHighLevelClient;
   private final SearchRequestBuilder searchRequestBuilder;
   private final SearchResponseParser searchResponseParser;
-
-  @Autowired
-  public SearchRepository(RestHighLevelClient restHighLevelClient, SearchRequestBuilder searchRequestBuilder, SearchResponseParser searchResponseParser) {
-    this.restHighLevelClient = restHighLevelClient;
-    this.searchRequestBuilder = searchRequestBuilder;
-    this.searchResponseParser = searchResponseParser;
-  }
 
   public SearchResult searchProducts(String query, List<FacetData> facets, String unitSystem, int page, int size) {
     SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, unitSystem, page, size);
