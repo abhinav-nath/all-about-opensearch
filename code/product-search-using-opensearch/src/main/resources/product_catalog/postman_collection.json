@@ -1002,17 +1002,8 @@
 								}
 							]
 						},
-						"method": "PUT",
+						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"mappings\": {\n        \"properties\": {\n            \"code\": {\n                \"type\": \"text\"\n            },\n            \"name\": {\n                \"type\": \"text\"\n            },\n            \"brand\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"raw\": {\n                        \"type\": \"keyword\"\n                    }\n                }\n            },\n            \"description\": {\n                \"type\": \"text\"\n            },\n            \"department\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"raw\": {\n                        \"type\": \"keyword\"\n                    }\n                }\n            },\n            \"color\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"raw\": {\n                        \"type\": \"keyword\"\n                    }\n                }\n            },\n            \"price\": {\n                \"type\": \"double\"\n            },\n            \"createdAt\": {\n                \"type\": \"long\"\n            },\n            \"modifiedAt\": {\n                \"type\": \"long\"\n            }\n        }\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "https://localhost:9200/product-catalog-index-v1",
 							"protocol": "https",
@@ -1388,7 +1379,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8027/v1/search?query=sony&from=0&size=100",
+					"raw": "http://localhost:8027/v1/search?query=apple&from=0&size=100&unitSystem=metric",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1401,7 +1392,7 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "sony"
+							"value": "apple"
 						},
 						{
 							"key": "from",
@@ -1410,6 +1401,10 @@
 						{
 							"key": "size",
 							"value": "100"
+						},
+						{
+							"key": "unitSystem",
+							"value": "metric"
 						}
 					]
 				}
@@ -1992,6 +1987,111 @@
 						{
 							"key": "size",
 							"value": "100"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OS query",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from\": 0,\n    \"size\": 100,\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"match\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match\": {\n                        \"description\": {\n                            \"query\": \"laptop\",\n                            \"operator\": \"OR\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"fuzzy_transpositions\": true,\n                            \"lenient\": false,\n                            \"zero_terms_query\": \"NONE\",\n                            \"auto_generate_synonyms_phrase_query\": true,\n                            \"boost\": 1.0\n                        }\n                    }\n                },\n                {\n                    \"fuzzy\": {\n                        \"name\": {\n                            \"value\": \"laptop\",\n                            \"fuzziness\": \"AUTO\",\n                            \"prefix_length\": 0,\n                            \"max_expansions\": 50,\n                            \"transpositions\": true,\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"wildcard\": {\n                        \"name\": {\n                            \"wildcard\": \"*laptop*\",\n                            \"boost\": 10.0\n                        }\n                    }\n                },\n                {\n                    \"match_phrase_prefix\": {\n                        \"name\": {\n                            \"query\": \"laptop\",\n                            \"slop\": 0,\n                            \"max_expansions\": 50,\n                            \"zero_terms_query\": \"NONE\",\n                            \"boost\": 10.0\n                        }\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"post_filter\": {\n        \"bool\": {\n            \"filter\": [\n                {\n                    \"bool\": {\n                        \"should\": [\n                            {\n                                \"range\": {\n                                    \"price\": {\n                                        \"from\": \"1000.0\",\n                                        \"to\": \"2000.0\",\n                                        \"include_lower\": true,\n                                        \"include_upper\": true,\n                                        \"boost\": 1.0\n                                    }\n                                }\n                            }\n                        ],\n                        \"adjust_pure_negative\": true,\n                        \"boost\": 1.0\n                    }\n                }\n            ],\n            \"adjust_pure_negative\": true,\n            \"boost\": 1.0\n        }\n    },\n    \"version\": true,\n    \"sort\": [\n        {\n            \"_score\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"modifiedAt\": {\n                \"order\": \"desc\"\n            }\n        },\n        {\n            \"createdAt\": {\n                \"order\": \"desc\"\n            }\n        }\n    ],\n    \"aggregations\": {\n        \"price\": {\n            \"range\": {\n                \"field\": \"price\",\n                \"ranges\": [\n                    {\n                        \"from\": 0.0,\n                        \"to\": 100.0\n                    },\n                    {\n                        \"from\": 100.0,\n                        \"to\": 200.0\n                    },\n                    {\n                        \"from\": 200.0,\n                        \"to\": 300.0\n                    },\n                    {\n                        \"from\": 300.0,\n                        \"to\": 400.0\n                    },\n                    {\n                        \"from\": 400.0,\n                        \"to\": 500.0\n                    },\n                    {\n                        \"from\": 500.0,\n                        \"to\": 600.0\n                    },\n                    {\n                        \"from\": 600.0,\n                        \"to\": 700.0\n                    },\n                    {\n                        \"from\": 700.0,\n                        \"to\": 800.0\n                    },\n                    {\n                        \"from\": 800.0,\n                        \"to\": 900.0\n                    },\n                    {\n                        \"from\": 900.0,\n                        \"to\": 1000.0\n                    },\n                    {\n                        \"from\": 1000.0,\n                        \"to\": 2000.0\n                    },\n                    {\n                        \"from\": 2000.0,\n                        \"to\": 3000.0\n                    },\n                    {\n                        \"from\": 3000.0,\n                        \"to\": 4000.0\n                    }\n                ],\n                \"keyed\": false\n            }\n        },\n        \"color\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"range\": {\n                                \"price\": {\n                                    \"from\": \"1000.0\",\n                                    \"to\": \"2000.0\",\n                                    \"include_lower\": true,\n                                    \"include_upper\": true,\n                                    \"boost\": 1.0\n                                }\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"color\": {\n                    \"terms\": {\n                        \"field\": \"color.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"department\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"range\": {\n                                \"price\": {\n                                    \"from\": \"1000.0\",\n                                    \"to\": \"2000.0\",\n                                    \"include_lower\": true,\n                                    \"include_upper\": true,\n                                    \"boost\": 1.0\n                                }\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"department\": {\n                    \"terms\": {\n                        \"field\": \"department.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        },\n        \"brand\": {\n            \"filter\": {\n                \"bool\": {\n                    \"filter\": [\n                        {\n                            \"range\": {\n                                \"price\": {\n                                    \"from\": \"1000.0\",\n                                    \"to\": \"2000.0\",\n                                    \"include_lower\": true,\n                                    \"include_upper\": true,\n                                    \"boost\": 1.0\n                                }\n                            }\n                        }\n                    ],\n                    \"adjust_pure_negative\": true,\n                    \"boost\": 1.0\n                }\n            },\n            \"aggregations\": {\n                \"brand\": {\n                    \"terms\": {\n                        \"field\": \"brand.raw\",\n                        \"size\": 100,\n                        \"min_doc_count\": 1,\n                        \"shard_min_doc_count\": 0,\n                        \"show_term_doc_count_error\": false,\n                        \"order\": [\n                            {\n                                \"_count\": \"desc\"\n                            },\n                            {\n                                \"_key\": \"asc\"\n                            }\n                        ]\n                    }\n                }\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:9200/product-catalog-v1/_search",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"product-catalog-v1",
+								"_search"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 15 Mar 2022 20:17:40 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"took\": 11,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 3,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": null,\n        \"hits\": [\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1\",\n                \"_version\": 1,\n                \"_score\": 0.8701873,\n                \"_source\": {\n                    \"code\": \"1\",\n                    \"name\": \"Apple Macbook Pro 2019\",\n                    \"description\": \"Apple Macbook Pro Laptop 2019 model\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193417,\n                    \"modifiedAt\": 1647435193418\n                },\n                \"sort\": [\n                    0.8701873,\n                    1647435193418,\n                    1647435193417\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"3\",\n                \"_version\": 1,\n                \"_score\": 0.7196218,\n                \"_source\": {\n                    \"code\": \"3\",\n                    \"name\": \"Apple Macbook Air 2021\",\n                    \"description\": \"Apple Macbook Air Laptop 2021 model with M1 chip\",\n                    \"brand\": \"Apple\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193446,\n                    \"modifiedAt\": 1647435193446\n                },\n                \"sort\": [\n                    0.7196218,\n                    1647435193446,\n                    1647435193446\n                ]\n            },\n            {\n                \"_index\": \"product-catalog-v1\",\n                \"_type\": \"_doc\",\n                \"_id\": \"8\",\n                \"_version\": 1,\n                \"_score\": 0.68038046,\n                \"_source\": {\n                    \"code\": \"8\",\n                    \"name\": \"LG Gram\",\n                    \"description\": \"LG Gram Core i7 11th Gen Windows 10 Home Laptop\",\n                    \"brand\": \"LG\",\n                    \"color\": \"Silver\",\n                    \"department\": \"Productivity Laptops\",\n                    \"createdAt\": 1647435193447,\n                    \"modifiedAt\": 1647435193447\n                },\n                \"sort\": [\n                    0.68038046,\n                    1647435193447,\n                    1647435193447\n                ]\n            }\n        ]\n    },\n    \"aggregations\": {\n        \"color\": {\n            \"doc_count\": 5,\n            \"color\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Silver\",\n                        \"doc_count\": 3\n                    },\n                    {\n                        \"key\": \"Space Grey\",\n                        \"doc_count\": 2\n                    }\n                ]\n            }\n        },\n        \"department\": {\n            \"doc_count\": 3,\n            \"department\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Productivity Laptops\",\n                        \"doc_count\": 3\n                    }\n                ]\n            }\n        },\n        \"brand\": {\n            \"doc_count\": 3,\n            \"brand\": {\n                \"doc_count_error_upper_bound\": 0,\n                \"sum_other_doc_count\": 0,\n                \"buckets\": [\n                    {\n                        \"key\": \"Apple\",\n                        \"doc_count\": 2\n                    },\n                    {\n                        \"key\": \"LG\",\n                        \"doc_count\": 1\n                    }\n                ]\n            }\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Search Text With Filters 1.5",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8027/v1/search?query=apple&facets=[{\"code\":\"length\",\"values\":[12.31, 1.0]}, {\"code\":\"width\",\"values\":[8.71]}]&from=0&size=100&unitSystem=imperial",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8027",
+					"path": [
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "apple"
+						},
+						{
+							"key": "facets",
+							"value": "[{\"code\":\"length\",\"values\":[12.31, 1.0]}, {\"code\":\"width\",\"values\":[8.71]}]"
+						},
+						{
+							"key": "from",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						},
+						{
+							"key": "unitSystem",
+							"value": "imperial"
 						}
 					]
 				}
