@@ -39,7 +39,7 @@ dependencies {
   implementation "org.modelmapper:modelmapper:${modelmapperVersion}"
   implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
   implementation "org.apache.logging.log4j:log4j-to-slf4j:${log4jVersion}"
-  implementation "org.apache.commons:commons-lang3:${commonsIoVersion}"
+  implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
   implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypes55Version}"
 
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -63,7 +63,7 @@ flyway {
   baselineOnMigrate = true
 }
 
-//-----------------------------------------------------CHECKSTYLE-------------------------------------------------------
+//----------------------------------------------------CHECKSTYLE----------------------------------------------------
 checkstyle {
   toolVersion checkstyleVersion
   ignoreFailures = false
@@ -85,7 +85,7 @@ checkstyleTest {
   source = 'src/test/java'
 }
 
-//-----------------------------------------------------DEPENDENCY-UPDATES------------------------------------------------
+//------------------------------------------------DEPENDENCY-UPDATES------------------------------------------------
 dependencyUpdates {
   rejectVersionIf {
     !isStable(it.candidate.version) && isStable(it.currentVersion)
