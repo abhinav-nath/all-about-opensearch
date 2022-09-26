@@ -1,0 +1,87 @@
+{
+  "mappings": {
+    "properties": {
+      "code": {
+        "type": "text"
+      },
+      "name": {
+        "type": "text"
+      },
+      "brand": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "description": {
+        "type": "text"
+      },
+      "department": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "color": {
+        "type": "text",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "length": {
+        "type": "double"
+      },
+      "length_inches": {
+        "type": "double"
+      },
+      "length_centimetres": {
+        "type": "double"
+      },
+      "width": {
+        "type": "double"
+      },
+      "width_inches": {
+        "type": "double"
+      },
+      "width_centimetres": {
+        "type": "double"
+      },
+      "height": {
+        "type": "double"
+      },
+      "height_inches": {
+        "type": "double"
+      },
+      "height_centimetres": {
+        "type": "double"
+      },
+      "weight": {
+        "type": "double"
+      },
+      "weight_pounds": {
+        "type": "double"
+      },
+      "weight_kilograms": {
+        "type": "double"
+      },
+      "price": {
+        "type": "double"
+      },
+      "inStock": {
+        "type": "boolean"
+      },
+      "createdAt": {
+        "type": "long"
+      },
+      "modifiedAt": {
+        "type": "long"
+      }
+    }
+  }
+}
