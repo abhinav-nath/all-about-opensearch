@@ -1,1 +1,1 @@
-# all-about-elasticsearch
+# all-about-opensearch
