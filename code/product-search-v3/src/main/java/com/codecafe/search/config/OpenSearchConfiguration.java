@@ -3,7 +3,6 @@ package com.codecafe.search.config;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -15,8 +14,10 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensearch.client.RestClient;
-import org.opensearch.client.RestClientBuilder;
-import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.transport.OpenSearchTransport;
+import org.opensearch.client.transport.rest_client.RestClientTransport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,18 +55,19 @@ public class OpenSearchConfiguration {
   private final OpenSearchProperties openSearchProperties;
 
   @Bean
-  public RestHighLevelClient restHighLevelClient() {
+  public OpenSearchClient restHighLevelClient() {
     final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 
     credentialsProvider.setCredentials(AuthScope.ANY,
       new UsernamePasswordCredentials(openSearchProperties.getUsername(), openSearchProperties.getPassword()));
 
-    RestClientBuilder builder = RestClient.builder(new HttpHost(openSearchProperties.getHost(), openSearchProperties.getPort(), "https"))
-                                          .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
-                                            .setDefaultCredentialsProvider(credentialsProvider)
-                                            .setSSLHostnameVerifier(INSTANCE)
-                                            .setSSLContext(createSSLContext()));
-    return new RestHighLevelClient(builder);
+    RestClient restClient = RestClient.builder(new HttpHost(openSearchProperties.getHost(), openSearchProperties.getPort(), "https"))
+                                      .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
+                                                                                                         .setSSLHostnameVerifier(INSTANCE)
+                                                                                                         .setSSLContext(createSSLContext()))
+                                      .build();
+    OpenSearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+    return new OpenSearchClient(transport);
   }
 
   private SSLContext createSSLContext() {
@@ -88,14 +90,8 @@ public class OpenSearchConfiguration {
     private String password;
     private String host;
     private int port;
-    private List<Index> indices;
-  }
-
-  @Getter
-  @Setter
-  public static class Index {
-    private String name;
-    private String source;
+    private String indexName;
+    private String indexSource;
   }
 
 }

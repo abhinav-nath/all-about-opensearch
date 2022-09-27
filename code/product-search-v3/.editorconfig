@@ -1,3 +1,7 @@
+# EditorConfig is awesome: http://EditorConfig.org
+# Uses editorconfig to maintain consistent coding styles
+
+# top-most EditorConfig file
 root = true
 
 [*]
@@ -5,10 +9,13 @@ charset = utf-8
 end_of_line = lf
 indent_size = 2
 indent_style = space
-insert_final_newline = false
+insert_final_newline = true
 trim_trailing_whitespace = true
 max_line_length = 200
 tab_width = 4
+
+[*.md]
+trim_trailing_whitespace = false
 
 [*.java]
 # don't use wildcard for Java imports
@@ -24,6 +31,9 @@ ij_java_class_count_to_use_import_on_demand = 999
 ij_java_names_count_to_use_import_on_demand = 999
 ij_java_imports_layout = *, |, java.**, |, javax.**, |, io.**, |, org.**, |, lombok.**, |, com.**, |, $*
 ij_java_layout_static_imports_separately = true
+
+[*.json]
+insert_final_newline = false
 
 [*.xml]
 indent_size = 4

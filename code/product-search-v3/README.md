@@ -10,8 +10,7 @@ This small project demonstrates following functionalities and features:
 3. Pagination
 4. Popular Searches
 5. Basic sorting
-6. Handling of Measurement Systems
-7. Test data ingestion
+6. Test data ingestion
 
 ```shell
 docker-compose up -d

@@ -26,18 +26,11 @@ app:
   search:
     ingestion:
       test-data-file: products.json
-    popular:
-      from:
-        days: '30'
     facets-size: '100'
   opensearch:
     username: ${OPENSEARCH_USERNAME}
     host: localhost
     password: ${OPENSEARCH_PASSWORD}
     port: '9200'
-    indices[1]:
-      name: popular-search-index-v1
-      source: popular-search-index-source.json
-    indices[0]:
-      source: product-catalog-index-source.json
-      name: product-catalog-index-v1
+    index-name: product-catalog-index-v1
+    index-source: product-catalog-index-source.json

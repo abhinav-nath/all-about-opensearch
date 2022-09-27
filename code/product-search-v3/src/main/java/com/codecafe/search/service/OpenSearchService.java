@@ -1,18 +1,23 @@
 package com.codecafe.search.service;
 
+import jakarta.json.stream.JsonParser;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 
-import org.opensearch.OpenSearchException;
-import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.opensearch.action.bulk.BulkRequest;
-import org.opensearch.action.index.IndexRequest;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.client.indices.CreateIndexRequest;
-import org.opensearch.client.indices.CreateIndexResponse;
-import org.opensearch.client.indices.GetIndexRequest;
-import org.opensearch.indices.IndexCreationException;
+import org.opensearch.client.json.JsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.mapping.TypeMapping;
+import org.opensearch.client.opensearch.core.BulkRequest;
+import org.opensearch.client.opensearch.core.BulkResponse;
+import org.opensearch.client.opensearch.indices.CreateIndexRequest;
+import org.opensearch.client.opensearch.indices.CreateIndexResponse;
+import org.opensearch.client.opensearch.indices.DeleteIndexRequest;
+import org.opensearch.client.opensearch.indices.ExistsRequest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -21,78 +26,22 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.config.OpenSearchConfiguration;
 
+import static java.lang.Boolean.FALSE;
 import static java.nio.charset.Charset.defaultCharset;
-import static org.opensearch.client.RequestOptions.DEFAULT;
-import static org.opensearch.common.xcontent.XContentType.JSON;
 import static org.springframework.util.StreamUtils.copyToString;
 
 @Slf4j
 @Service
 public class OpenSearchService {
 
-  private final RestHighLevelClient restHighLevelClient;
+  private final OpenSearchClient openSearchClient;
   private final OpenSearchConfiguration openSearchConfiguration;
   private final OpenSearchConfiguration.OpenSearchProperties openSearchProperties;
 
-  public OpenSearchService(RestHighLevelClient restHighLevelClient, OpenSearchConfiguration openSearchConfiguration) {
-    this.restHighLevelClient = restHighLevelClient;
+  public OpenSearchService(OpenSearchClient openSearchClient, OpenSearchConfiguration openSearchConfiguration) {
+    this.openSearchClient = openSearchClient;
     this.openSearchConfiguration = openSearchConfiguration;
     this.openSearchProperties = openSearchConfiguration.getOpenSearchProperties();
-  }
-
-  public void bulkDocWrite(List<IndexRequest> indexRequests) {
-    BulkRequest bulkRequest = new BulkRequest(openSearchProperties.getIndices().get(0).getName());
-    try {
-      indexRequests.forEach(bulkRequest::add);
-      restHighLevelClient.bulk(bulkRequest, DEFAULT);
-            /* Use for debugging
-            if (bulkResponse != null) {
-                String failureMessage = bulkResponse.buildFailureMessage();
-                if (StringUtils.isNotEmpty(failureMessage)) {
-                    log.error("Bulk Request failed with error : {}", failureMessage);
-                }
-            }*/
-    } catch (Exception ex) {
-      throw new OpenSearchException("Failed to write bulk request for index {}", ex, openSearchProperties.getIndices().get(0).getName());
-    }
-  }
-
-  public void deleteIndicesIfAlreadyPresent() {
-    for (OpenSearchConfiguration.Index index : openSearchProperties.getIndices()) {
-      try {
-        if (isIndexAlreadyPresent(index.getName())) {
-          deleteIndex(index.getName());
-        }
-      } catch (IOException ioException) {
-        throw new OpenSearchException("Failed to delete index `{}`", ioException, index.getName());
-      }
-    }
-  }
-
-  public void deleteIndex(String indexName) throws IOException {
-    DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
-    restHighLevelClient.indices().delete(deleteIndexRequest, DEFAULT);
-  }
-
-  public void createIndices() {
-    for (OpenSearchConfiguration.Index index : openSearchProperties.getIndices()) {
-      try {
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest(index.getName());
-        String source = readFileFromClasspath(index.getSource());
-        createIndexRequest.source(source, JSON);
-        CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, DEFAULT);
-        if (!createIndexResponse.isAcknowledged()) {
-          throw new IndexCreationException(index.getName(), new RuntimeException("Create index response is not acknowledged"));
-        }
-      } catch (IOException ioException) {
-        throw new IndexCreationException(index.getName(), ioException);
-      }
-    }
-  }
-
-  private boolean isIndexAlreadyPresent(String indexName) throws IOException {
-    GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
-    return restHighLevelClient.indices().exists(getIndexRequest, DEFAULT);
   }
 
   @Nullable
@@ -104,6 +53,62 @@ public class OpenSearchService {
       log.error(String.format("Failed to load file from url: %s: %s", url, e.getMessage()));
       return null;
     }
+  }
+
+  public void bulkDocWrite(BulkRequest bulkRequest) {
+    try {
+      BulkResponse bulkResponse = openSearchClient.bulk(bulkRequest);
+      if (bulkResponse != null && bulkResponse.errors()) {
+        log.error("Bulk Request failed");
+      }
+    } catch (IOException e) {
+      log.error("Exception in Bulk operation");
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void deleteIndexIfAlreadyPresent() {
+    try {
+      if (isIndexAlreadyPresent(openSearchProperties.getIndexName())) {
+        deleteIndex(openSearchProperties.getIndexName());
+      }
+    } catch (IOException ioException) {
+      log.error("Failed to delete index {}", openSearchProperties.getIndexName());
+    }
+  }
+
+  public void deleteIndex(String indexName) throws IOException {
+    DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest.Builder().index(indexName).build();
+    openSearchClient.indices().delete(deleteIndexRequest);
+  }
+
+  public void createIndex() {
+    try {
+      String source = readFileFromClasspath(openSearchProperties.getIndexSource());
+      ClassPathResource classPathResource = new ClassPathResource(openSearchProperties.getIndexSource());
+
+      JsonpMapper mapper = openSearchClient._transport().jsonpMapper();
+      JsonParser parser = mapper.jsonProvider()
+                                .createParser(new StringReader(Files.readString(Path.of(Objects.requireNonNull(getClass()
+                                                                                                 .getClassLoader()
+                                                                                                 .getResource(openSearchProperties.getIndexSource()))
+                                                                                               .getPath()))));
+
+      CreateIndexRequest createIndexRequest = new CreateIndexRequest.Builder().index(openSearchProperties.getIndexName())
+                                                                              .mappings(TypeMapping._DESERIALIZER.deserialize(parser, mapper))
+                                                                              .build();
+      CreateIndexResponse createIndexResponse = openSearchClient.indices().create(createIndexRequest);
+      if (FALSE.equals(createIndexResponse.acknowledged())) {
+        throw new RuntimeException("Create index response is not acknowledged");
+      }
+    } catch (Exception ex) {
+      throw new RuntimeException("Failed to create index");
+    }
+  }
+
+  private boolean isIndexAlreadyPresent(String indexName) throws IOException {
+    ExistsRequest existsRequest = new ExistsRequest.Builder().index(indexName).build();
+    return openSearchClient.indices().exists(existsRequest).value();
   }
 
 }

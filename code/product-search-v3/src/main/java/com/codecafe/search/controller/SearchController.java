@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import com.codecafe.search.model.FacetData;
-import com.codecafe.search.model.PopularSearchResponse;
 import com.codecafe.search.model.SearchResponse;
 import com.codecafe.search.service.SearchService;
 
@@ -27,21 +26,12 @@ public class SearchController {
   @GetMapping
   public ResponseEntity<SearchResponse> textSearch(@RequestParam("query") final String query,
                                                    @RequestParam(value = "facets", required = false) final List<FacetData> facets,
-                                                   @RequestParam(value = "unitSystem", defaultValue = "default") final String unitSystem,
                                                    @RequestParam(value = "page", defaultValue = "1") final int page,
                                                    @RequestParam(value = "size", defaultValue = "5") final int size) {
 
-    SearchResponse searchResponse = searchService.performTextSearch(query, facets, unitSystem, page, size);
+    SearchResponse searchResponse = searchService.performTextSearch(query, facets, page, size);
 
     return ResponseEntity.ok(searchResponse);
-  }
-
-  @GetMapping("/popular")
-  public ResponseEntity<PopularSearchResponse> getPopularSearchQueries(@RequestParam(value = "top", defaultValue = "5") final int top) {
-
-    PopularSearchResponse popularSearchResponse = searchService.getPopularSearchQueries(top);
-
-    return ResponseEntity.ok(popularSearchResponse);
   }
 
 }

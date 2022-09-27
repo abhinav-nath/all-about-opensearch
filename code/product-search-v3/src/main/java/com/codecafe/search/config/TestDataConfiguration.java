@@ -7,7 +7,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.opensearch.action.index.IndexRequest;
+import org.opensearch.client.opensearch.core.BulkRequest;
+import org.opensearch.client.opensearch.core.bulk.BulkOperation;
+import org.opensearch.client.opensearch.core.bulk.CreateOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -17,64 +19,54 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.service.OpenSearchService;
-import com.codecafe.search.utils.UnitConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.opensearch.common.xcontent.XContentType.JSON;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class TestDataConfiguration {
 
-  @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
-  private Resource testDataResource;
-
   private final OpenSearchService openSearchService;
   private final ObjectMapper objectMapper;
-  private final UnitConverter unitConverter;
+  private final OpenSearchConfiguration openSearchConfiguration;
+  private final OpenSearchConfiguration.OpenSearchProperties openSearchProperties;
+
+
+  @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
+  private Resource testDataResource;
 
   @PostConstruct
   public void init() {
     try {
-      openSearchService.deleteIndicesIfAlreadyPresent();
+      openSearchService.deleteIndexIfAlreadyPresent();
 
       ProductDocument[] productDocuments = objectMapper.readValue(testDataResource.getInputStream(), ProductDocument[].class);
 
-      List<IndexRequest> indexRequests = new ArrayList<>();
+      List<BulkOperation> bulkOperations = new ArrayList<>();
       for (ProductDocument productDocument : productDocuments) {
-        IndexRequest indexRequest = prepareIndexDocumentRequest(productDocument);
-        indexRequests.add(indexRequest);
+        BulkOperation createOperation = prepareCreateOperation(productDocument)._toBulkOperation();
+        bulkOperations.add(createOperation);
       }
 
-      openSearchService.createIndices();
-      openSearchService.bulkDocWrite(indexRequests);
+      BulkRequest bulkRequest = new BulkRequest.Builder().operations(bulkOperations)
+                                                         .index(openSearchProperties.getIndexName())
+                                                         .build();
+
+      openSearchService.createIndex();
+      openSearchService.bulkDocWrite(bulkRequest);
       log.info("Successfully ingested test data");
     } catch (Exception ex) {
       log.error("Failed to create test data. Reason : {}", ex.getMessage());
     }
   }
 
-  private IndexRequest prepareIndexDocumentRequest(ProductDocument productDocument) throws IOException {
-    final IndexRequest indexRequest = new IndexRequest();
-    indexRequest.id(String.valueOf(productDocument.getCode()));
-
+  private CreateOperation<ProductDocument> prepareCreateOperation(ProductDocument productDocument) throws IOException {
     productDocument.setCreatedAt(Instant.now().toEpochMilli());
     productDocument.setModifiedAt(Instant.now().toEpochMilli());
 
-    productDocument.setLengthInInches(productDocument.getLength());
-    productDocument.setLengthInCentimetres(unitConverter.toCentimetres(productDocument.getLength()));
-    productDocument.setWidthInInches(productDocument.getWidth());
-    productDocument.setWidthInCentimetres(unitConverter.toCentimetres(productDocument.getWidth()));
-    productDocument.setHeightInInches(productDocument.getHeight());
-    productDocument.setHeightInCentimetres(unitConverter.toCentimetres(productDocument.getHeight()));
-    productDocument.setWeightInPounds(productDocument.getWeight());
-    productDocument.setWeightInKilograms(unitConverter.toKilograms(productDocument.getWeight()));
-
-    String productDocumentStr = objectMapper.writeValueAsString(productDocument);
-
-    indexRequest.source(productDocumentStr, JSON);
-    return indexRequest;
+    return new CreateOperation.Builder<ProductDocument>().id(String.valueOf(productDocument.getCode()))
+                                                         .document(productDocument)
+                                                         .build();
   }
 
 }
