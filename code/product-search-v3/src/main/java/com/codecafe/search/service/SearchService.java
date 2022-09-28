@@ -24,7 +24,7 @@ public class SearchService {
 
   public TextSearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
     SearchResponse<ProductDocument> searchResponse = searchRepository.searchProducts(query, facets, page, size);
-    log.info("Total search results returned: {}", searchResponse.hits().total());
+    log.info("Total search results returned: {}", searchResponse.hits().total().value());
     return searchResponseParser.toTextSearchResponse(searchResponse);
   }
 
