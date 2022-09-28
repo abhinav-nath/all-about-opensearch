@@ -3,7 +3,6 @@ package com.codecafe.search.service;
 import jakarta.json.stream.JsonParser;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,8 +17,6 @@ import org.opensearch.client.opensearch.indices.CreateIndexRequest;
 import org.opensearch.client.opensearch.indices.CreateIndexResponse;
 import org.opensearch.client.opensearch.indices.DeleteIndexRequest;
 import org.opensearch.client.opensearch.indices.ExistsRequest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,32 +24,17 @@ import lombok.extern.slf4j.Slf4j;
 import com.codecafe.search.config.OpenSearchConfiguration;
 
 import static java.lang.Boolean.FALSE;
-import static java.nio.charset.Charset.defaultCharset;
-import static org.springframework.util.StreamUtils.copyToString;
 
 @Slf4j
 @Service
 public class OpenSearchService {
 
   private final OpenSearchClient openSearchClient;
-  private final OpenSearchConfiguration openSearchConfiguration;
   private final OpenSearchConfiguration.OpenSearchProperties openSearchProperties;
 
   public OpenSearchService(OpenSearchClient openSearchClient, OpenSearchConfiguration openSearchConfiguration) {
     this.openSearchClient = openSearchClient;
-    this.openSearchConfiguration = openSearchConfiguration;
     this.openSearchProperties = openSearchConfiguration.getOpenSearchProperties();
-  }
-
-  @Nullable
-  private static String readFileFromClasspath(String url) {
-    ClassPathResource classPathResource = new ClassPathResource(url);
-    try (InputStream is = classPathResource.getInputStream()) {
-      return copyToString(is, defaultCharset());
-    } catch (Exception e) {
-      log.error(String.format("Failed to load file from url: %s: %s", url, e.getMessage()));
-      return null;
-    }
   }
 
   public void bulkDocWrite(BulkRequest bulkRequest) {
@@ -84,9 +66,6 @@ public class OpenSearchService {
 
   public void createIndex() {
     try {
-      String source = readFileFromClasspath(openSearchProperties.getIndexSource());
-      ClassPathResource classPathResource = new ClassPathResource(openSearchProperties.getIndexSource());
-
       JsonpMapper mapper = openSearchClient._transport().jsonpMapper();
       JsonParser parser = mapper.jsonProvider()
                                 .createParser(new StringReader(Files.readString(Path.of(Objects.requireNonNull(getClass()
