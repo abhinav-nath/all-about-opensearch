@@ -2,8 +2,10 @@ package com.codecafe.search.helper;
 
 import java.util.List;
 
+import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
+import org.opensearch.client.opensearch._types.query_dsl.Query;
 import org.opensearch.client.opensearch.core.SearchRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -18,12 +20,16 @@ public class SearchRequestBuilder {
   private final FacetsBuilder facetsBuilder;
   private final OpenSearchConfiguration openSearchConfiguration;
 
-  @Value("${app.search.popular.from.days:-1}")
-  private int popularInLastNDays;
+  public SearchRequest buildTextSearchRequest(String searchText, List<FacetData> facets, int page, int size) {
 
-  public SearchRequest buildTextSearchRequest(String query, List<FacetData> facets, int page, int size) {
+    Query byName = MatchQuery.of(m -> m
+      .field("name")
+      .query(FieldValue.of(searchText))
+    )._toQuery();
 
-    return new SearchRequest.Builder().build();
+    return new SearchRequest.Builder()
+      .query(q -> q.bool(b -> b.should(byName)))
+      .build();
   }
 
 }
