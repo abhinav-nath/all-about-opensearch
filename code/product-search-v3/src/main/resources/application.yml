@@ -27,6 +27,12 @@ app:
     ingestion:
       test-data-file: products.json
     facets-size: '100'
+    query-boost-fields: '{
+                           codeBoost: 30.0,
+                           nameBoost: 25.0,
+                           fuzzinessBoost: 5.0,
+                           wildcardBoost: 3.0
+                         }'
   opensearch:
     username: ${OPENSEARCH_USERNAME}
     host: localhost
