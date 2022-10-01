@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import com.codecafe.search.model.AutoSuggestResponse;
 import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.TextSearchResponse;
 import com.codecafe.search.service.SearchService;
+
+import static org.apache.commons.lang3.StringUtils.normalizeSpace;
 
 @Validated
 @RestController
@@ -22,6 +25,13 @@ import com.codecafe.search.service.SearchService;
 public class SearchController {
 
   private final SearchService searchService;
+
+  @GetMapping(value = "/suggestions")
+  public ResponseEntity<AutoSuggestResponse> getSuggestions(@RequestParam(value = "query") String query) {
+    AutoSuggestResponse autoSuggestResponse = searchService.getAutocompleteSuggestions(normalizeSpace(query));
+
+    return ResponseEntity.ok(autoSuggestResponse);
+  }
 
   @GetMapping
   public ResponseEntity<TextSearchResponse> textSearch(@RequestParam("query") final String query,

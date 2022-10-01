@@ -5,7 +5,7 @@
         "type": "text"
       },
       "name": {
-        "type": "text"
+        "type": "search_as_you_type"
       },
       "brand": {
         "type": "text",
