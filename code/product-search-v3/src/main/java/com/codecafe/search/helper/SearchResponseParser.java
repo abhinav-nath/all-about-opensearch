@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.config.FacetsConfiguration;
 import com.codecafe.search.document.ProductDocument;
+import com.codecafe.search.model.AutoSuggestResponse;
 import com.codecafe.search.model.ProductData;
 import com.codecafe.search.model.TextSearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +25,23 @@ public class SearchResponseParser {
   private final ObjectMapper objectMapper;
   private final FacetsConfiguration facetsConfiguration;
 
+  public AutoSuggestResponse toAutosuggestResponse(SearchResponse<ProductDocument> searchResponse) {
+    List<String> autosuggestions = new ArrayList<>();
+    List<Hit<ProductDocument>> hits = searchResponse.hits().hits();
+
+    for (Hit<ProductDocument> hit : hits) {
+      ProductDocument product = hit.source();
+      autosuggestions.add(product.getName());
+    }
+
+    return AutoSuggestResponse.builder().suggestions(autosuggestions).build();
+  }
+
   public TextSearchResponse toTextSearchResponse(SearchResponse<ProductDocument> searchResponse) {
 
     List<ProductData> productDataList = new ArrayList<>();
     List<Hit<ProductDocument>> hits = searchResponse.hits().hits();
+
     for (Hit<ProductDocument> hit : hits) {
       ProductDocument product = hit.source();
       log.info("Found product " + product.getName() + ", score " + hit.score());

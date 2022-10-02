@@ -39,7 +39,18 @@ public class SearchRepository {
     log.info("Search JSON query: {}", writer);
   }
 
-  public void getAutocompleteSuggestions(String query) {
+  public SearchResponse<ProductDocument> getAutocompleteSuggestions(String query) {
+    SearchRequest searchRequest = searchRequestBuilder.buildSuggestionsRequest(query);
+
+    printQueryJson(searchRequest);
+
+    try {
+      return openSearchClient.search(searchRequest, ProductDocument.class);
+    } catch (Exception ex) {
+      log.error("Error in OpenSearch query", ex);
+    }
+
+    return null;
   }
 
   public SearchResponse<ProductDocument> searchProducts(String query, List<FacetData> facets, int page, int size) {
