@@ -23,14 +23,15 @@ public class SearchService {
   private final SearchRepository searchRepository;
   private final SearchResponseParser searchResponseParser;
 
+  public AutoSuggestResponse getAutocompleteSuggestions(String query) {
+    searchRepository.getAutocompleteSuggestions(query);
+    return new AutoSuggestResponse();
+  }
+
   public TextSearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
     SearchResponse<ProductDocument> searchResponse = searchRepository.searchProducts(query, facets, page, size);
     log.info("Total search results returned: {}", searchResponse.hits().total().value());
     return searchResponseParser.toTextSearchResponse(searchResponse);
-  }
-
-  public AutoSuggestResponse getAutocompleteSuggestions(String query) {
-    return new AutoSuggestResponse();
   }
 
 }

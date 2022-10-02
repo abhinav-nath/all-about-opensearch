@@ -39,6 +39,9 @@ public class SearchRepository {
     log.info("Search JSON query: {}", writer);
   }
 
+  public void getAutocompleteSuggestions(String query) {
+  }
+
   public SearchResponse<ProductDocument> searchProducts(String query, List<FacetData> facets, int page, int size) {
     SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, size);
 
