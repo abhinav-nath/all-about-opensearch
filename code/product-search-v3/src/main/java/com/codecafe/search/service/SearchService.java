@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.helper.SearchResponseParser;
 import com.codecafe.search.model.AutoSuggestResponse;
-import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.Filter;
 import com.codecafe.search.model.TextSearchResponse;
 import com.codecafe.search.repository.SearchRepository;
 
@@ -29,7 +29,7 @@ public class SearchService {
     return searchResponseParser.toAutosuggestResponse(searchResponse);
   }
 
-  public TextSearchResponse performTextSearch(String query, List<FacetData> facets, int page, int pageSize) {
+  public TextSearchResponse performTextSearch(String query, List<Filter> facets, int page, int pageSize) {
     SearchResponse<ProductDocument> searchResponse = searchRepository.searchProducts(query, facets, page, pageSize);
     log.info("Total search results returned: {}", searchResponse.hits().total().value());
     return searchResponseParser.toTextSearchResponse(searchResponse);

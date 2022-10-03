@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.aggregations.Aggregation;
 import org.opensearch.client.opensearch._types.query_dsl.MatchPhrasePrefixQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 import com.codecafe.search.config.OpenSearchConfiguration;
-import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.Filter;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class SearchRequestBuilder {
     return new SearchRequest.Builder().query(multiMatch).build();
   }
 
-  public SearchRequest buildTextSearchRequest(String searchText, List<FacetData> facets, int page, int pageSize) {
+  public SearchRequest buildTextSearchRequest(String searchText, List<Filter> filters, int page, int pageSize) {
 
     Query matchCode = MatchQuery.of(m -> m.field("code")
                                           .query(FieldValue.of(searchText))
@@ -65,13 +66,16 @@ public class SearchRequestBuilder {
                                                                   .boost(queryBoostFields.get("nameBoost"))
     )._toQuery();
 
-    return new SearchRequest.Builder().query(q -> q.bool(b -> b.should(matchCode)
+    Map<String, Aggregation> aggregations = facetsBuilder.buildAggregations(filters);
+
+    return new SearchRequest.Builder().from((page - 1) * pageSize)
+                                      .size(pageSize)
+                                      .query(q -> q.bool(b -> b.should(matchCode)
                                                                .should(matchCodeWildcard)
                                                                .should(matchName)
                                                                .should(matchNameWildcard)
                                                                .should(matchNamePhrasePrefix)))
-                                      .from((page - 1) * pageSize)
-                                      .size(pageSize)
+                                      .aggregations(aggregations)
                                       .build();
   }
 

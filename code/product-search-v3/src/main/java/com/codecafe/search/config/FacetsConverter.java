@@ -9,19 +9,19 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.Filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @RequiredArgsConstructor
-public class FacetsConverter implements Converter<String, List<FacetData>> {
+public class FacetsConverter implements Converter<String, List<Filter>> {
 
   private final ObjectMapper objectMapper;
 
   @Override
-  public List<FacetData> convert(String source) {
+  public List<Filter> convert(String source) {
     try {
-      return Arrays.asList(objectMapper.readValue(source, FacetData[].class));
+      return Arrays.asList(objectMapper.readValue(source, Filter[].class));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.helper.SearchRequestBuilder;
 import com.codecafe.search.helper.SearchResponseParser;
-import com.codecafe.search.model.FacetData;
+import com.codecafe.search.model.Filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
@@ -53,7 +53,7 @@ public class SearchRepository {
     return null;
   }
 
-  public SearchResponse<ProductDocument> searchProducts(String query, List<FacetData> facets, int page, int pageSize) {
+  public SearchResponse<ProductDocument> searchProducts(String query, List<Filter> facets, int page, int pageSize) {
     SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, pageSize);
 
     printQueryJson(searchRequest);
