@@ -29,8 +29,8 @@ public class SearchService {
     return searchResponseParser.toAutosuggestResponse(searchResponse);
   }
 
-  public TextSearchResponse performTextSearch(String query, List<FacetData> facets, int page, int size) {
-    SearchResponse<ProductDocument> searchResponse = searchRepository.searchProducts(query, facets, page, size);
+  public TextSearchResponse performTextSearch(String query, List<FacetData> facets, int page, int pageSize) {
+    SearchResponse<ProductDocument> searchResponse = searchRepository.searchProducts(query, facets, page, pageSize);
     log.info("Total search results returned: {}", searchResponse.hits().total().value());
     return searchResponseParser.toTextSearchResponse(searchResponse);
   }

@@ -37,7 +37,7 @@ public class SearchRequestBuilder {
     return new SearchRequest.Builder().query(multiMatch).build();
   }
 
-  public SearchRequest buildTextSearchRequest(String searchText, List<FacetData> facets, int page, int size) {
+  public SearchRequest buildTextSearchRequest(String searchText, List<FacetData> facets, int page, int pageSize) {
 
     Query matchCode = MatchQuery.of(m -> m.field("code")
                                           .query(FieldValue.of(searchText))
@@ -57,6 +57,8 @@ public class SearchRequestBuilder {
     return new SearchRequest.Builder().query(q -> q.bool(b -> b.should(matchCode)
                                                                .should(matchName)
                                                                .should(matchNameWildcard)))
+                                      .from((page - 1) * pageSize)
+                                      .size(pageSize)
                                       .build();
   }
 

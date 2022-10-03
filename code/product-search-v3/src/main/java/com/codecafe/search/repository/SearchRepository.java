@@ -53,8 +53,8 @@ public class SearchRepository {
     return null;
   }
 
-  public SearchResponse<ProductDocument> searchProducts(String query, List<FacetData> facets, int page, int size) {
-    SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, size);
+  public SearchResponse<ProductDocument> searchProducts(String query, List<FacetData> facets, int page, int pageSize) {
+    SearchRequest searchRequest = searchRequestBuilder.buildTextSearchRequest(query, facets, page, pageSize);
 
     printQueryJson(searchRequest);
 
