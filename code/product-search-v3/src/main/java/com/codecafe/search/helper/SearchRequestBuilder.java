@@ -44,17 +44,23 @@ public class SearchRequestBuilder {
                                           .boost(queryBoostFields.get("codeBoost"))
     )._toQuery();
 
+    Query matchCodeWildcard = WildcardQuery.of(m -> m.field("code")
+                                                     .value("*" + searchText + "*")
+                                                     .boost(queryBoostFields.get("wildcardBoost"))
+    )._toQuery();
+
     Query matchName = MatchQuery.of(m -> m.field("name")
                                           .query(FieldValue.of(searchText))
                                           .boost(queryBoostFields.get("nameBoost"))
     )._toQuery();
 
     Query matchNameWildcard = WildcardQuery.of(m -> m.field("name")
-                                                     .boost(queryBoostFields.get("wildcardBoost"))
                                                      .value("*" + searchText + "*")
+                                                     .boost(queryBoostFields.get("wildcardBoost"))
     )._toQuery();
 
     return new SearchRequest.Builder().query(q -> q.bool(b -> b.should(matchCode)
+                                                               .should(matchCodeWildcard)
                                                                .should(matchName)
                                                                .should(matchNameWildcard)))
                                       .from((page - 1) * pageSize)
