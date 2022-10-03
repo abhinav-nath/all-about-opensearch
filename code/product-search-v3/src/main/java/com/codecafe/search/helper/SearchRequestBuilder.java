@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.query_dsl.MatchPhrasePrefixQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
@@ -59,10 +60,16 @@ public class SearchRequestBuilder {
                                                      .boost(queryBoostFields.get("wildcardBoost"))
     )._toQuery();
 
+    Query matchNamePhrasePrefix = MatchPhrasePrefixQuery.of(m -> m.field("name")
+                                                                  .query(searchText)
+                                                                  .boost(queryBoostFields.get("nameBoost"))
+    )._toQuery();
+
     return new SearchRequest.Builder().query(q -> q.bool(b -> b.should(matchCode)
                                                                .should(matchCodeWildcard)
                                                                .should(matchName)
-                                                               .should(matchNameWildcard)))
+                                                               .should(matchNameWildcard)
+                                                               .should(matchNamePhrasePrefix)))
                                       .from((page - 1) * pageSize)
                                       .size(pageSize)
                                       .build();
