@@ -2,7 +2,10 @@ package com.codecafe.search.helper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.opensearch.client.opensearch._types.aggregations.Aggregate;
+import org.opensearch.client.opensearch._types.aggregations.StringTermsBucket;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.stereotype.Component;
@@ -13,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.codecafe.search.config.FacetsConfiguration;
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.model.AutoSuggestResponse;
+import com.codecafe.search.model.Facet;
+import com.codecafe.search.model.FacetValue;
 import com.codecafe.search.model.ProductData;
 import com.codecafe.search.model.TextSearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,27 +45,59 @@ public class SearchResponseParser {
   public TextSearchResponse toTextSearchResponse(SearchResponse<ProductDocument> searchResponse) {
 
     List<ProductData> productDataList = new ArrayList<>();
-    List<Hit<ProductDocument>> hits = searchResponse.hits().hits();
+    long totalResults = searchResponse.hits().total().value();
 
-    for (Hit<ProductDocument> hit : hits) {
-      ProductDocument product = hit.source();
-      log.info("Found product " + product.getName() + ", score " + hit.score());
+    if (totalResults > 0) {
+      List<Hit<ProductDocument>> hits = searchResponse.hits().hits();
 
-      ProductData productData = ProductData.builder()
-                                           .code(product.getCode())
-                                           .name(product.getName())
-                                           .description(product.getDescription())
-                                           .brand(product.getBrand())
-                                           .color(product.getColor())
-                                           .department(product.getDepartment())
-                                           .build();
-      productDataList.add(productData);
+      for (Hit<ProductDocument> hit : hits) {
+        ProductDocument product = hit.source();
+        log.info("Found product " + product.getName() + ", score " + hit.score());
+
+        ProductData productData = ProductData.builder()
+                                             .code(product.getCode())
+                                             .name(product.getName())
+                                             .description(product.getDescription())
+                                             .brand(product.getBrand())
+                                             .color(product.getColor())
+                                             .department(product.getDepartment())
+                                             .build();
+        productDataList.add(productData);
+      }
     }
 
     return TextSearchResponse.builder()
-                             .totalResults(searchResponse.hits().total().value())
+                             .totalResults(totalResults)
                              .products(productDataList)
+                             .facets(searchResponse.aggregations() != null ? extractFacets(searchResponse.aggregations()) : null)
                              .build();
+  }
+
+  private List<Facet> extractFacets(Map<String, Aggregate> aggregations) {
+    List<Facet> facets = new ArrayList<>(1);
+
+    for (Map.Entry<String, Aggregate> entry : aggregations.entrySet()) {
+      List<FacetValue> facetValues = extractFacetValues(entry.getValue());
+
+      Facet facet = Facet.builder()
+                         .code(entry.getKey())
+                         .name(facetsConfiguration.getFacets().get(entry.getKey()).getDisplayName())
+                         .facetValues(facetValues)
+                         .build();
+      facets.add(facet);
+    }
+
+    return facets;
+  }
+
+  private List<FacetValue> extractFacetValues(Aggregate aggregate) {
+    List<FacetValue> facetValues = new ArrayList<>(1);
+
+    for (StringTermsBucket bucket : aggregate.sterms().buckets().array()) {
+      facetValues.add(FacetValue.builder().name(bucket.key()).count(bucket.docCount()).build());
+    }
+
+    return facetValues;
   }
 
 }

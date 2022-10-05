@@ -14,6 +14,5 @@ public class Facet {
   private String code;
   private String name;
   private List<FacetValue> facetValues;
-  private String unit;
 
 }
