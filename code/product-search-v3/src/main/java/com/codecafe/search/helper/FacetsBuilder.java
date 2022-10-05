@@ -3,7 +3,9 @@ package com.codecafe.search.helper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.aggregations.Aggregation;
 import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
 import org.opensearch.client.opensearch._types.query_dsl.Query;
@@ -63,7 +65,7 @@ public class FacetsBuilder {
     return aggregation;
   }
 
-  BoolQuery buildPostFilterIfApplicable(List<Filter> filters) {
+  Query buildPostFilterIfApplicable(List<Filter> filters) {
     BoolQuery.Builder postFilterQueryBuilder = new BoolQuery.Builder();
 
     if (!isEmpty(filters)) {
@@ -75,12 +77,20 @@ public class FacetsBuilder {
 
     BoolQuery postFilterQuery = postFilterQueryBuilder.build();
     postFilterQuery = postFilterQuery.filter().isEmpty() ? null : postFilterQuery;
-    return postFilterQuery;
+    return postFilterQuery != null ? postFilterQuery._toQuery() : null;
   }
 
   private Query buildFilter(Filter filter) {
-    return new TermsQuery.Builder().field(format(AGGREGATION_FIELD)).queryName(filter.getCode())
-                                   .build()._toQuery();
+    if (filter != null && !isEmpty(filter.getValues())) {
+      List<FieldValue> fieldValues = filter.getValues().stream()
+                                           .map(FieldValue::of)
+                                           .collect(Collectors.toList());
+
+      return new TermsQuery.Builder().field(format(AGGREGATION_FIELD, filter.getCode()))
+                                     .terms(t -> t.value(fieldValues))
+                                     .build()._toQuery();
+    }
+    return null;
   }
 
 }

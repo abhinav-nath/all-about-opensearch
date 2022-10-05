@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opensearch.client.opensearch._types.FieldValue;
-import org.opensearch.client.opensearch._types.aggregations.Aggregation;
 import org.opensearch.client.opensearch._types.query_dsl.MatchPhrasePrefixQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery;
@@ -66,7 +65,9 @@ public class SearchRequestBuilder {
                                                                   .boost(queryBoostFields.get("nameBoost"))
     )._toQuery();
 
-    Map<String, Aggregation> aggregations = facetsBuilder.buildAggregations(filters);
+    Query matchDescription = MatchQuery.of(m -> m.field("description")
+                                                 .query(FieldValue.of(searchText))
+    )._toQuery();
 
     return new SearchRequest.Builder().from((page - 1) * pageSize)
                                       .size(pageSize)
@@ -74,8 +75,10 @@ public class SearchRequestBuilder {
                                                                .should(matchCodeWildcard)
                                                                .should(matchName)
                                                                .should(matchNameWildcard)
-                                                               .should(matchNamePhrasePrefix)))
-                                      .aggregations(aggregations)
+                                                               .should(matchNamePhrasePrefix)
+                                                               .should(matchDescription)))
+                                      .postFilter(facetsBuilder.buildPostFilterIfApplicable(filters))
+                                      .aggregations(facetsBuilder.buildAggregations(filters))
                                       .build();
   }
 
