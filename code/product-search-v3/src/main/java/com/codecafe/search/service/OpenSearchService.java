@@ -1,16 +1,8 @@
 package com.codecafe.search.service;
 
-import jakarta.json.stream.JsonParser;
-
 import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Objects;
 
-import org.opensearch.client.json.JsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
-import org.opensearch.client.opensearch._types.mapping.TypeMapping;
 import org.opensearch.client.opensearch.core.BulkRequest;
 import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.indices.CreateIndexRequest;
@@ -19,23 +11,22 @@ import org.opensearch.client.opensearch.indices.DeleteIndexRequest;
 import org.opensearch.client.opensearch.indices.ExistsRequest;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.config.OpenSearchConfiguration;
+import com.codecafe.search.helper.IndexBuilder;
 
 import static java.lang.Boolean.FALSE;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OpenSearchService {
 
+  private final IndexBuilder indexBuilder;
   private final OpenSearchClient openSearchClient;
   private final OpenSearchConfiguration.OpenSearchProperties openSearchProperties;
-
-  public OpenSearchService(OpenSearchClient openSearchClient, OpenSearchConfiguration openSearchConfiguration) {
-    this.openSearchClient = openSearchClient;
-    this.openSearchProperties = openSearchConfiguration.getOpenSearchProperties();
-  }
 
   public void bulkDocWrite(BulkRequest bulkRequest) {
     try {
@@ -66,16 +57,7 @@ public class OpenSearchService {
 
   public void createIndex() {
     try {
-      JsonpMapper mapper = openSearchClient._transport().jsonpMapper();
-      JsonParser parser = mapper.jsonProvider()
-                                .createParser(new StringReader(Files.readString(Path.of(Objects.requireNonNull(getClass()
-                                                                                                 .getClassLoader()
-                                                                                                 .getResource(openSearchProperties.getIndexSource()))
-                                                                                               .getPath()))));
-
-      CreateIndexRequest createIndexRequest = new CreateIndexRequest.Builder().index(openSearchProperties.getIndexName())
-                                                                              .mappings(TypeMapping._DESERIALIZER.deserialize(parser, mapper))
-                                                                              .build();
+      CreateIndexRequest createIndexRequest = indexBuilder.buildCreateIndexRequest();
       CreateIndexResponse createIndexResponse = openSearchClient.indices().create(createIndexRequest);
       if (FALSE.equals(createIndexResponse.acknowledged())) {
         throw new RuntimeException("Create index response is not acknowledged");
