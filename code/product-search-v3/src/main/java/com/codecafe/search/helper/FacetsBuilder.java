@@ -1,9 +1,9 @@
 package com.codecafe.search.helper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.codecafe.search.config.FacetsConfiguration;
+import com.codecafe.search.model.Filter;
+
+import lombok.RequiredArgsConstructor;
 
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.aggregations.Aggregation;
@@ -13,10 +13,10 @@ import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-
-import com.codecafe.search.config.FacetsConfiguration;
-import com.codecafe.search.model.Filter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -58,7 +58,9 @@ public class FacetsBuilder {
 
       //build a filter aggregation
       if (!boolQuery.filter().isEmpty()) {
-        aggregation = new Aggregation.Builder().filter(f -> f.bool(boolQuery)).build();
+        aggregation = new Aggregation.Builder().aggregations(Map.of(facetCode, aggregation))
+                                               .filter(f -> f.bool(boolQuery))
+                                               .build();
       }
     }
 
