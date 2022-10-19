@@ -22,6 +22,8 @@ import com.codecafe.search.model.ProductData;
 import com.codecafe.search.model.TextSearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -76,15 +78,30 @@ public class SearchResponseParser {
   private List<Facet> extractFacets(Map<String, Aggregate> aggregations) {
     List<Facet> facets = new ArrayList<>(1);
 
-    for (Map.Entry<String, Aggregate> entry : aggregations.entrySet()) {
-      List<FacetValue> facetValues = extractFacetValues(entry.getValue());
+    if (aggregations == null) {
+      return facets;
+    }
 
-      Facet facet = Facet.builder()
-                         .code(entry.getKey())
-                         .name(facetsConfiguration.getFacets().get(entry.getKey()).getDisplayName())
-                         .facetValues(facetValues)
-                         .build();
-      facets.add(facet);
+    for (Map.Entry<String, Aggregate> entry : aggregations.entrySet()) {
+      Aggregate aggregate = entry.getValue();
+      List<FacetValue> facetValues = null;
+
+      if (aggregate.isFilter()) {
+        for(Map.Entry<String, Aggregate> agg : aggregate.filter().aggregations().entrySet()) {
+          facetValues = extractFacetValues(agg.getValue()._get()._toAggregate());
+        }
+      } else {
+        facetValues = extractFacetValues(aggregate);
+      }
+
+      if (!isEmpty(facetValues)) {
+        Facet facet = Facet.builder()
+                           .code(entry.getKey())
+                           .name(facetsConfiguration.getFacets().get(entry.getKey()).getDisplayName())
+                           .facetValues(facetValues)
+                           .build();
+        facets.add(facet);
+      }
     }
 
     return facets;
