@@ -1,9 +1,9 @@
 package com.codecafe.search.helper;
 
-import com.codecafe.search.config.FacetsConfiguration;
-import com.codecafe.search.model.Filter;
-
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.aggregations.Aggregation;
@@ -13,10 +13,10 @@ import org.opensearch.client.opensearch._types.query_dsl.TermsQuery;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+
+import com.codecafe.search.config.FacetsConfiguration;
+import com.codecafe.search.model.Filter;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
