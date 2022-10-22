@@ -5,7 +5,7 @@
         "type": "text"
       },
       "name": {
-        "type": "text"
+        "type": "search_as_you_type"
       },
       "brand": {
         "type": "text",
@@ -33,42 +33,6 @@
             "type": "keyword"
           }
         }
-      },
-      "length": {
-        "type": "double"
-      },
-      "length_inches": {
-        "type": "double"
-      },
-      "length_centimetres": {
-        "type": "double"
-      },
-      "width": {
-        "type": "double"
-      },
-      "width_inches": {
-        "type": "double"
-      },
-      "width_centimetres": {
-        "type": "double"
-      },
-      "height": {
-        "type": "double"
-      },
-      "height_inches": {
-        "type": "double"
-      },
-      "height_centimetres": {
-        "type": "double"
-      },
-      "weight": {
-        "type": "double"
-      },
-      "weight_pounds": {
-        "type": "double"
-      },
-      "weight_kilograms": {
-        "type": "double"
       },
       "price": {
         "type": "double"
