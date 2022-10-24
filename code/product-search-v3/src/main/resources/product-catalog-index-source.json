@@ -7,32 +7,17 @@
       "name": {
         "type": "search_as_you_type"
       },
-      "brand": {
-        "type": "text",
-        "fields": {
-          "raw": {
-            "type": "keyword"
-          }
-        }
-      },
       "description": {
         "type": "text"
       },
+      "brand": {
+        "type": "keyword"
+      },
       "department": {
-        "type": "text",
-        "fields": {
-          "raw": {
-            "type": "keyword"
-          }
-        }
+        "type": "keyword"
       },
       "color": {
-        "type": "text",
-        "fields": {
-          "raw": {
-            "type": "keyword"
-          }
-        }
+        "type": "keyword"
       },
       "price": {
         "type": "double"
