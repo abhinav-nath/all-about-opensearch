@@ -1,4 +1,4 @@
-## Product Search using OpenSearch - Java client
+## Product Search using OpenSearch Java client
 
 This small project demonstrates following functionalities and features:
 
