@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 import com.codecafe.search.config.FacetsConfiguration;
-import com.codecafe.search.model.Filter;
+import com.codecafe.search.model.FacetData;
 import com.codecafe.search.mustache.model.Aggregation;
-import com.codecafe.search.mustache.model.AggregationFilter;
+import com.codecafe.search.mustache.model.Filter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,12 +24,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 public class FacetsBuilder {
 
-  private static final String AGGREGATION_FIELD = "%s.raw";
-
   private final FacetsConfiguration facetsConfiguration;
   private final ObjectMapper objectMapper;
 
-  public List<Map> buildFacets(List<Filter> filters) {
+  public List<Map> buildFacets(List<FacetData> filters) {
     List<Aggregation> aggregations = facetsConfiguration.getFacets()
                                                         .keySet()
                                                         .stream()
@@ -42,30 +40,30 @@ public class FacetsBuilder {
     });
   }
 
-  private Aggregation buildFacet(String code, List<Filter> filters) {
-    List<AggregationFilter> aggregationFilters = Optional.ofNullable(filters)
-                                                         .orElseGet(Collections::emptyList)
-                                                         .stream()
-                                                         .filter(filter -> !filter.getCode().equals(code))
-                                                         .map(filter -> new AggregationFilter(filter.getCode(),
-                                                           filter.getValues(),
-                                                           false))
-                                                         .collect(toList());
+  private Aggregation buildFacet(String code, List<FacetData> filters) {
+    List<Filter> aggregationFilters = Optional.ofNullable(filters)
+                                              .orElseGet(Collections::emptyList)
+                                              .stream()
+                                              .filter(filter -> !filter.getCode().equals(code))
+                                              .map(filter -> new Filter(filter.getCode(),
+                                                filter.getValues(),
+                                                false))
+                                              .collect(toList());
     if (isEmpty(aggregationFilters)) {
       return new Aggregation(code, false, false);
     } else {
       aggregationFilters.get(aggregationFilters.size() - 1).setLast(true);
-      return new Aggregation(code, code, false, true, aggregationFilters);
+      return new Aggregation(code, false, true, aggregationFilters);
     }
   }
 
-  public List<Map> buildFilters(List<Filter> selectedFilters) {
-    if (!isEmpty(selectedFilters)) {
-      List<AggregationFilter> aggregationFilters = selectedFilters.stream()
-                                                                  .map(filter -> new AggregationFilter(filter.getCode(),
-                                                                    filter.getValues(),
-                                                                    false))
-                                                                  .collect(toList());
+  public List<Map> buildFilters(List<FacetData> filters) {
+    if (!isEmpty(filters)) {
+      List<Filter> aggregationFilters = filters.stream()
+                                               .map(filter -> new Filter(filter.getCode(),
+                                                 filter.getValues(),
+                                                 false))
+                                               .collect(toList());
       aggregationFilters.get(aggregationFilters.size() - 1).setLast(true);
       return objectMapper.convertValue(aggregationFilters, new TypeReference<>() {
       });

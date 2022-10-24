@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import com.codecafe.search.model.Filter;
+import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.TextSearchResponse;
 import com.codecafe.search.service.SearchService;
 
@@ -25,7 +25,7 @@ public class SearchController {
 
   @GetMapping
   public ResponseEntity<TextSearchResponse> textSearch(@RequestParam("query") final String query,
-                                                       @RequestParam(value = "filters", required = false) final List<Filter> filters,
+                                                       @RequestParam(value = "filters", required = false) final List<FacetData> filters,
                                                        @RequestParam(value = "page", defaultValue = "1") final int page,
                                                        @RequestParam(value = "pageSize", defaultValue = "5") final int pageSize) {
 

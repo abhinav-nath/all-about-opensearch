@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.codecafe.search.model.Filter;
+import com.codecafe.search.model.FacetData;
 
 import static com.codecafe.search.utils.Constants.PARAM_AGGREGATIONS;
 import static com.codecafe.search.utils.Constants.PARAM_FACETS_SIZE;
@@ -35,7 +35,7 @@ public class SearchTemplateParamsBuilder {
     this.facetsBuilder = facetsBuilder;
   }
 
-  public Map<String, Object> buildTextSearchParams(String query, List<Filter> filters, int page, int pageSize) {
+  public Map<String, Object> buildTextSearchParams(String query, List<FacetData> filters, int page, int pageSize) {
     Map<String, Object> params = new HashMap<>(queryBoostFields);
 
     params.put(PARAM_QUERY_STRING, query);
@@ -45,7 +45,7 @@ public class SearchTemplateParamsBuilder {
     return params;
   }
 
-  private void addAggregationParams(List<Filter> filters, Map<String, Object> params) {
+  private void addAggregationParams(List<FacetData> filters, Map<String, Object> params) {
     params.put(PARAM_AGGREGATIONS, facetsBuilder.buildFacets(filters));
     params.put(PARAM_FILTERS, facetsBuilder.buildFilters(filters));
     params.put(PARAM_FACETS_SIZE, facetsSize);

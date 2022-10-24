@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.helper.SearchResponseParser;
 import com.codecafe.search.helper.SearchTemplateParamsBuilder;
-import com.codecafe.search.model.Filter;
+import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.SearchResult;
 import com.codecafe.search.service.SearchTemplateService;
 
@@ -26,7 +26,7 @@ public class SearchRepository {
   private final SearchResponseParser responseParser;
   private final SearchTemplateService searchTemplateService;
 
-  public SearchResult searchProducts(String query, List<Filter> filters, int page, int pageSize) {
+  public SearchResult searchProducts(String query, List<FacetData> filters, int page, int pageSize) {
     Map<String, Object> searchTemplateParams = searchTemplateParamsBuilder.buildTextSearchParams(query, filters, page, pageSize);
 
     SearchResponse searchResponse = searchTemplateService.executeTemplate(TEXT_SEARCH_TEMPLATE, searchTemplateParams);
