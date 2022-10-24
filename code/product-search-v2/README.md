@@ -1,4 +1,4 @@
-## Product Search using OpenSearch - Java high-level REST client
+## Product Search using OpenSearch Java high-level REST client
 
 This small project demonstrates following functionalities and features:
 
