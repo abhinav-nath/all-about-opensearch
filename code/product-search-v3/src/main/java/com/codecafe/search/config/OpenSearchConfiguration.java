@@ -3,7 +3,6 @@ package com.codecafe.search.config;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -88,14 +87,8 @@ public class OpenSearchConfiguration {
     private String password;
     private String host;
     private int port;
-    private List<Index> indices;
-  }
-
-  @Getter
-  @Setter
-  public static class Index {
-    private String name;
-    private String source;
+    private String indexName;
+    private String indexSource;
   }
 
 }

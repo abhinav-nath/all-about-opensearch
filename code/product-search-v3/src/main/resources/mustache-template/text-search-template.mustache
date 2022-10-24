@@ -1,0 +1,139 @@
+{
+  "from": {{from}},
+  "size": {{size}},
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "exists": {
+            "field": "name"
+          }
+        }
+      ],
+      "should": [
+        {
+          "match": {
+            "name": {
+              "query": "{{queryString}}",
+              "boost": {{nameBoost}}
+            }
+          }
+        },
+        {
+          "match": {
+            "code": {
+              "query": "{{queryString}}",
+              "boost": {{codeBoost}}
+            }
+          }
+        },
+        {
+          "match": {
+            "description": {
+              "query": "{{queryString}}",
+              "boost": {{descriptionBoost}}
+            }
+          }
+        },
+        {
+          "fuzzy": {
+            "name": {
+              "value": "{{queryString}}",
+              "fuzziness": "{{fuzzinessValue}}",
+              "boost": {{fuzzinessBoost}}
+            }
+          }
+        },
+        {
+          "wildcard": {
+            "name": {
+              "wildcard": "*{{queryString}}*",
+              "case_insensitive": true,
+              "boost": {{wildcardBoost}}
+            }
+          }
+        },
+        {
+          "wildcard": {
+            "code": {
+              "wildcard": "*{{queryString}}*",
+              "case_insensitive": true,
+              "boost": {{wildcardBoost}}
+            }
+          }
+        },
+        {
+          "match_phrase_prefix": {
+            "name": {
+              "query": "{{queryString}}",
+              "boost": {{nameBoost}}
+            }
+          }
+        }
+      ],
+      "minimum_should_match": "1"
+    }
+  },
+  "post_filter": {
+    "bool": {
+      "filter": [
+        {{#filters}}
+          {
+            "bool": {
+              "should": [
+                {
+                  "terms": {
+                  "{{code}}": {{#toJson}}values{{/toJson}}
+                  }
+                }
+              ]
+            }
+          }
+          {{^last}},{{/last}}
+        {{/filters}}
+      ]
+    }
+  },
+  "version": true,
+  "aggregations": {
+    {{#aggregations}}
+      {{^hasSubAggregation}}
+        "{{code}}": {
+          "terms": {
+            "field": "{{field}}",
+            "size": {{facetsSize}},
+            "min_doc_count": 1
+          }
+        }
+      {{/hasSubAggregation}}
+      {{#hasSubAggregation}}
+        "{{code}}": {
+          "filter": {
+            "bool": {
+              "filter": [
+                {{#aggregationFilters}}
+                  {
+                    "terms": {
+                    "{{code}}": {{#toJson}}values{{/toJson}}
+                    }
+                  }
+                  {{^last}},{{/last}}
+                {{/aggregationFilters}}
+              ]
+            }
+          },
+          "aggregations": {
+            "{{code}}": {
+              "terms": {
+                "field": "{{field}}",
+                "size": {{facetsSize}},
+                "min_doc_count": 1
+              }
+            }
+          }
+        }
+      {{/hasSubAggregation}}
+      {{^last}},{{/last}}
+    {{/aggregations}}
+  }
+}

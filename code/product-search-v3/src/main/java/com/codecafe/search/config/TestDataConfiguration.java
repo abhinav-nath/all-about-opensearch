@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.document.ProductDocument;
 import com.codecafe.search.service.OpenSearchService;
-import com.codecafe.search.utils.UnitConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.opensearch.common.xcontent.XContentType.JSON;
@@ -27,17 +26,16 @@ import static org.opensearch.common.xcontent.XContentType.JSON;
 @RequiredArgsConstructor
 public class TestDataConfiguration {
 
-  @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
-  private Resource testDataResource;
-
   private final OpenSearchService openSearchService;
   private final ObjectMapper objectMapper;
-  private final UnitConverter unitConverter;
+
+  @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
+  private Resource testDataResource;
 
   @PostConstruct
   public void init() {
     try {
-      openSearchService.deleteIndicesIfAlreadyPresent();
+      openSearchService.deleteIndexIfAlreadyPresent();
 
       ProductDocument[] productDocuments = objectMapper.readValue(testDataResource.getInputStream(), ProductDocument[].class);
 
@@ -47,7 +45,7 @@ public class TestDataConfiguration {
         indexRequests.add(indexRequest);
       }
 
-      openSearchService.createIndices();
+      openSearchService.createIndex();
       openSearchService.bulkDocWrite(indexRequests);
       log.info("Successfully ingested test data");
     } catch (Exception ex) {
@@ -61,15 +59,6 @@ public class TestDataConfiguration {
 
     productDocument.setCreatedAt(Instant.now().toEpochMilli());
     productDocument.setModifiedAt(Instant.now().toEpochMilli());
-
-    productDocument.setLengthInInches(productDocument.getLength());
-    productDocument.setLengthInCentimetres(unitConverter.toCentimetres(productDocument.getLength()));
-    productDocument.setWidthInInches(productDocument.getWidth());
-    productDocument.setWidthInCentimetres(unitConverter.toCentimetres(productDocument.getWidth()));
-    productDocument.setHeightInInches(productDocument.getHeight());
-    productDocument.setHeightInCentimetres(unitConverter.toCentimetres(productDocument.getHeight()));
-    productDocument.setWeightInPounds(productDocument.getWeight());
-    productDocument.setWeightInKilograms(unitConverter.toKilograms(productDocument.getWeight()));
 
     String productDocumentStr = objectMapper.writeValueAsString(productDocument);
 

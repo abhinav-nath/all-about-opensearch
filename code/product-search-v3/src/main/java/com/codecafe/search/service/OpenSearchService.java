@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import com.codecafe.search.config.OpenSearchConfiguration;
+import com.codecafe.search.config.OpenSearchConfiguration.OpenSearchProperties;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.opensearch.client.RequestOptions.DEFAULT;
@@ -31,68 +32,11 @@ import static org.springframework.util.StreamUtils.copyToString;
 public class OpenSearchService {
 
   private final RestHighLevelClient restHighLevelClient;
-  private final OpenSearchConfiguration openSearchConfiguration;
-  private final OpenSearchConfiguration.OpenSearchProperties openSearchProperties;
+  private final OpenSearchProperties openSearchProperties;
 
   public OpenSearchService(RestHighLevelClient restHighLevelClient, OpenSearchConfiguration openSearchConfiguration) {
     this.restHighLevelClient = restHighLevelClient;
-    this.openSearchConfiguration = openSearchConfiguration;
     this.openSearchProperties = openSearchConfiguration.getOpenSearchProperties();
-  }
-
-  public void bulkDocWrite(List<IndexRequest> indexRequests) {
-    BulkRequest bulkRequest = new BulkRequest(openSearchProperties.getIndices().get(0).getName());
-    try {
-      indexRequests.forEach(bulkRequest::add);
-      restHighLevelClient.bulk(bulkRequest, DEFAULT);
-            /* Use for debugging
-            if (bulkResponse != null) {
-                String failureMessage = bulkResponse.buildFailureMessage();
-                if (StringUtils.isNotEmpty(failureMessage)) {
-                    log.error("Bulk Request failed with error : {}", failureMessage);
-                }
-            }*/
-    } catch (Exception ex) {
-      throw new OpenSearchException("Failed to write bulk request for index {}", ex, openSearchProperties.getIndices().get(0).getName());
-    }
-  }
-
-  public void deleteIndicesIfAlreadyPresent() {
-    for (OpenSearchConfiguration.Index index : openSearchProperties.getIndices()) {
-      try {
-        if (isIndexAlreadyPresent(index.getName())) {
-          deleteIndex(index.getName());
-        }
-      } catch (IOException ioException) {
-        throw new OpenSearchException("Failed to delete index `{}`", ioException, index.getName());
-      }
-    }
-  }
-
-  public void deleteIndex(String indexName) throws IOException {
-    DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
-    restHighLevelClient.indices().delete(deleteIndexRequest, DEFAULT);
-  }
-
-  public void createIndices() {
-    for (OpenSearchConfiguration.Index index : openSearchProperties.getIndices()) {
-      try {
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest(index.getName());
-        String source = readFileFromClasspath(index.getSource());
-        createIndexRequest.source(source, JSON);
-        CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, DEFAULT);
-        if (!createIndexResponse.isAcknowledged()) {
-          throw new IndexCreationException(index.getName(), new RuntimeException("Create index response is not acknowledged"));
-        }
-      } catch (IOException ioException) {
-        throw new IndexCreationException(index.getName(), ioException);
-      }
-    }
-  }
-
-  private boolean isIndexAlreadyPresent(String indexName) throws IOException {
-    GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
-    return restHighLevelClient.indices().exists(getIndexRequest, DEFAULT);
   }
 
   @Nullable
@@ -104,6 +48,57 @@ public class OpenSearchService {
       log.error(String.format("Failed to load file from url: %s: %s", url, e.getMessage()));
       return null;
     }
+  }
+
+  public void bulkDocWrite(List<IndexRequest> indexRequests) {
+    BulkRequest bulkRequest = new BulkRequest(openSearchProperties.getIndexName());
+    try {
+      indexRequests.forEach(bulkRequest::add);
+      restHighLevelClient.bulk(bulkRequest, DEFAULT);
+            /* Use for debugging
+            if (bulkResponse != null) {
+                String failureMessage = bulkResponse.buildFailureMessage();
+                if (StringUtils.isNotEmpty(failureMessage)) {
+                    log.error("Bulk Request failed with error : {}", failureMessage);
+                }
+            }*/
+    } catch (Exception ex) {
+      throw new OpenSearchException("Failed to write bulk request for index {}", ex, openSearchProperties.getIndexName());
+    }
+  }
+
+  public void deleteIndexIfAlreadyPresent() {
+    try {
+      if (isIndexAlreadyPresent(openSearchProperties.getIndexName())) {
+        deleteIndex(openSearchProperties.getIndexName());
+      }
+    } catch (IOException ioException) {
+      log.error("Failed to delete index {}", openSearchProperties.getIndexName());
+    }
+  }
+
+  public void deleteIndex(String indexName) throws IOException {
+    DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
+    restHighLevelClient.indices().delete(deleteIndexRequest, DEFAULT);
+  }
+
+  public void createIndex() {
+    try {
+      CreateIndexRequest createIndexRequest = new CreateIndexRequest(openSearchProperties.getIndexName());
+      String source = readFileFromClasspath(openSearchProperties.getIndexSource());
+      createIndexRequest.source(source, JSON);
+      CreateIndexResponse createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, DEFAULT);
+      if (!createIndexResponse.isAcknowledged()) {
+        throw new IndexCreationException(openSearchProperties.getIndexName(), new RuntimeException("Create index response is not acknowledged"));
+      }
+    } catch (IOException ioException) {
+      throw new IndexCreationException(openSearchProperties.getIndexName(), ioException);
+    }
+  }
+
+  private boolean isIndexAlreadyPresent(String indexName) throws IOException {
+    GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
+    return restHighLevelClient.indices().exists(getIndexRequest, DEFAULT);
   }
 
 }

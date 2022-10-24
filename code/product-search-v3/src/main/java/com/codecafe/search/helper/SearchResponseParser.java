@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.lucene.search.TotalHits;
 import org.opensearch.action.search.SearchResponse;
 import org.opensearch.search.SearchHit;
 import org.opensearch.search.aggregations.Aggregation;
@@ -20,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 import com.codecafe.search.config.FacetsConfiguration;
 import com.codecafe.search.model.Facet;
 import com.codecafe.search.model.FacetValue;
-import com.codecafe.search.model.PopularSearchResponse;
 import com.codecafe.search.model.ProductHit;
-import com.codecafe.search.model.SearchQuery;
 import com.codecafe.search.model.SearchResult;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,10 +37,14 @@ public class SearchResponseParser {
   private final ObjectMapper objectMapper;
   private final FacetsConfiguration facetsConfiguration;
 
-  public SearchResult parseTextSearchResponse(SearchResponse searchResponse, String unitSystem) {
+  public SearchResult parseSearchResult(SearchResponse searchResponse) {
     SearchResult.SearchResultBuilder searchResultBuilder = SearchResult.builder();
+    long totalResults = 0L;
+    TotalHits totalHits = searchResponse.getHits().getTotalHits();
 
-    long totalResults = searchResponse.getHits().getTotalHits().value;
+    if (Objects.nonNull(totalHits)) {
+      totalResults = totalHits.value;
+    }
 
     searchResultBuilder.totalResults(totalResults);
 
@@ -53,13 +57,13 @@ public class SearchResponseParser {
       });
 
       searchResultBuilder.productHits(matchedProducts)
-                         .facets(extractFacets(searchResponse, unitSystem));
+                         .facets(extractFacets(searchResponse));
     }
 
     return searchResultBuilder.build();
   }
 
-  private List<Facet> extractFacets(SearchResponse searchResponse, String unitSystem) {
+  private List<Facet> extractFacets(SearchResponse searchResponse) {
     List<Facet> facets = new ArrayList<>(1);
 
     if (searchResponse.getAggregations() == null) {
@@ -87,9 +91,7 @@ public class SearchResponseParser {
                            .name(facetsConfiguration.getFacets().get(aggregation.getName()).getDisplayName())
                            .facetValues(facetValues)
                            .build();
-        if (facetsConfiguration.getFacets().get(aggregation.getName()).isMeasurement()) {
-          facet.setUnit(facetsConfiguration.getFacets().get(aggregation.getName()).getMeasurementUnits().getOrDefault(unitSystem, "default"));
-        }
+
         facets.add(facet);
       }
     }
@@ -111,26 +113,6 @@ public class SearchResponseParser {
         facetValues.add(FacetValue.builder().name(bucket.getKeyAsString()).count(bucket.getDocCount()).build());
       }
     }
-  }
-
-  public PopularSearchResponse parsePopularSearchResponse(SearchResponse searchResponse) {
-    List<SearchQuery> searchQueries = new ArrayList<>(1);
-
-    if (searchResponse.getAggregations() == null ||
-      (searchResponse.getAggregations() != null && isEmpty(searchResponse.getAggregations().asList()))) {
-      return null;
-    }
-
-    List<Aggregation> aggregations = searchResponse.getAggregations().asList();
-
-    for (Terms.Bucket bucket : ((Terms) aggregations.get(0)).getBuckets()) {
-      searchQueries.add(SearchQuery.builder()
-                                   .query(bucket.getKeyAsString())
-                                   .count(bucket.getDocCount())
-                                   .build());
-    }
-
-    return PopularSearchResponse.builder().searchQueries(searchQueries).build();
   }
 
 }

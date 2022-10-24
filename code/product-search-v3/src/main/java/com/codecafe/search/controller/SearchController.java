@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import com.codecafe.search.model.FacetData;
-import com.codecafe.search.model.PopularSearchResponse;
-import com.codecafe.search.model.SearchResponse;
+import com.codecafe.search.model.Filter;
+import com.codecafe.search.model.TextSearchResponse;
 import com.codecafe.search.service.SearchService;
 
 @Validated
@@ -25,23 +24,14 @@ public class SearchController {
   private final SearchService searchService;
 
   @GetMapping
-  public ResponseEntity<SearchResponse> textSearch(@RequestParam("query") final String query,
-                                                   @RequestParam(value = "facets", required = false) final List<FacetData> facets,
-                                                   @RequestParam(value = "unitSystem", defaultValue = "default") final String unitSystem,
-                                                   @RequestParam(value = "page", defaultValue = "1") final int page,
-                                                   @RequestParam(value = "size", defaultValue = "5") final int size) {
+  public ResponseEntity<TextSearchResponse> textSearch(@RequestParam("query") final String query,
+                                                       @RequestParam(value = "filters", required = false) final List<Filter> filters,
+                                                       @RequestParam(value = "page", defaultValue = "1") final int page,
+                                                       @RequestParam(value = "pageSize", defaultValue = "5") final int pageSize) {
 
-    SearchResponse searchResponse = searchService.performTextSearch(query, facets, unitSystem, page, size);
+    TextSearchResponse textSearchResponse = searchService.performTextSearch(query, filters, page, pageSize);
 
-    return ResponseEntity.ok(searchResponse);
-  }
-
-  @GetMapping("/popular")
-  public ResponseEntity<PopularSearchResponse> getPopularSearchQueries(@RequestParam(value = "top", defaultValue = "5") final int top) {
-
-    PopularSearchResponse popularSearchResponse = searchService.getPopularSearchQueries(top);
-
-    return ResponseEntity.ok(popularSearchResponse);
+    return ResponseEntity.ok(textSearchResponse);
   }
 
 }
