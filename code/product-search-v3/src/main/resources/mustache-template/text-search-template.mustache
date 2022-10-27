@@ -12,11 +12,13 @@
       ],
       "should": [
         {
-          "match": {
-            "name": {
-              "query": "{{queryString}}",
-              "boost": {{nameBoost}}
-            }
+          "multi_match": {
+            "fields": [
+              "fullTextBoosted^10",
+              "fullText^2"
+            ],
+            "type": "cross_fields",
+            "query": "{{queryString}}"
           }
         },
         {
@@ -28,45 +30,11 @@
           }
         },
         {
-          "match": {
-            "description": {
-              "query": "{{queryString}}",
-              "boost": {{descriptionBoost}}
-            }
-          }
-        },
-        {
-          "fuzzy": {
-            "name": {
-              "value": "{{queryString}}",
-              "fuzziness": "{{fuzzinessValue}}",
-              "boost": {{fuzzinessBoost}}
-            }
-          }
-        },
-        {
-          "wildcard": {
-            "name": {
-              "wildcard": "*{{queryString}}*",
-              "case_insensitive": true,
-              "boost": {{wildcardBoost}}
-            }
-          }
-        },
-        {
           "wildcard": {
             "code": {
               "wildcard": "*{{queryString}}*",
               "case_insensitive": true,
               "boost": {{wildcardBoost}}
-            }
-          }
-        },
-        {
-          "match_phrase_prefix": {
-            "name": {
-              "query": "{{queryString}}",
-              "boost": {{nameBoost}}
             }
           }
         }
