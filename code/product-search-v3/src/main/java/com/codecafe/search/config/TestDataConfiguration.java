@@ -60,6 +60,8 @@ public class TestDataConfiguration {
     productDocument.setCreatedAt(Instant.now().toEpochMilli());
     productDocument.setModifiedAt(Instant.now().toEpochMilli());
 
+    productDocument.setFullTexts();
+
     String productDocumentStr = objectMapper.writeValueAsString(productDocument);
 
     indexRequest.source(productDocumentStr, JSON);
