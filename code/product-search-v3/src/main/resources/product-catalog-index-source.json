@@ -10,6 +10,12 @@
       "description": {
         "type": "text"
       },
+      "fullText": {
+        "type": "text"
+      },
+      "fullTextBoosted": {
+        "type": "text"
+      },
       "brand": {
         "type": "keyword"
       },
