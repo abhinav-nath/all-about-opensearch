@@ -207,5 +207,32 @@
     "description": "Get the HP 1200w Wireless black and white Printer and bid goodbye to your printing woes. Equipped with a laser imaging drum, this printer lets you print up to 5X pages before the toner levels need to be restored",
     "color": "White",
     "price": 23500
+  },
+  {
+    "code": "24",
+    "name": "Canon G3020 Multi-function WiFi Color Printer",
+    "department": "Printers",
+    "brand": "Canon",
+    "description": "Designed for high volume printing, this affordable wireless 3-in-1 printer combines low-cost printing with easy wireless setup and convenient maintenance.",
+    "color": "Black",
+    "price": 16599
+  },
+  {
+    "code": "25",
+    "name": "Canon EOS 90D",
+    "department": "Cameras",
+    "brand": "Canon",
+    "description": "The Canon EOS 90D is designed for those who are out to sharpen their photography skills. The camera lets you shoot high-quality 4K videos, derive images from 4K videos, shoot time-lapse videos, and more. Its 32.5 MP APS-C size sensor allows you to capture images that have intricate details and are crisp and sharp. To top it off, the EOS 90D also takes great photographs in low-light settings too.",
+    "color": "Black",
+    "price": 124990
+  },
+  {
+    "code": "26",
+    "name": "SONY Alpha ILCE-6400L Mirrorless Camera",
+    "department": "Cameras",
+    "brand": "Sony",
+    "description": "Bring out the photographer in you and experiment with filmmaking with this Sony Alpha ILCE-6400L Mirrorless camera. It offers exceptional AF performance, high-quality images with low noise, Innovative Image-processing System, and many other features that make filming videos and capturing images a lot more exciting.",
+    "color": "Black",
+    "price": 82990
   }
 ]
