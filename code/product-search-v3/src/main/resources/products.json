@@ -252,5 +252,23 @@
     "description": "If you do not want to disturb your partner while reading or working on your desk late at night, then you can take help of this Mi Smart LED lamp. It is easy to operate. It is also compatible with Google Assistant, Alexa, and more, so you can control it via them. You can fold it too. What’s more, it features a knob for easy usage.",
     "color": "White",
     "price": 2999
+  },
+  {
+    "code": "29",
+    "name": "Harman Kardon Aura Studio 3",
+    "department": "Speakers",
+    "brand": "Harman Kardon",
+    "description": "Harman Kardon Aura Studio 3, Award Winning, Elegant Design, 360-Degree Immersive Sound, 130 W Bluetooth Speaker (Black, Stereo Channel)",
+    "color": "Black",
+    "price": 27999
+  },
+  {
+    "code": "30",
+    "name": "JBL PartyBox Encore Essential",
+    "department": "Speakers",
+    "brand": "JBL",
+    "description": "JBL PartyBox Encore Essential, Music Synced Strobe Lightshow, JBL PartyBox App 100 W Bluetooth Party Speaker (Black, Stereo Channel)",
+    "color": "Black",
+    "price": 24999
   }
 ]
