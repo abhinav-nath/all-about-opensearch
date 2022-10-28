@@ -11,10 +11,14 @@
         "type": "text"
       },
       "fullText": {
-        "type": "text"
+        "type": "text",
+        "analyzer": "default",
+        "search_analyzer": "en_search_analyzer"
       },
       "fullTextBoosted": {
-        "type": "text"
+        "type": "text",
+        "analyzer": "en_default_analyzer_with_stemmer",
+        "search_analyzer": "en_search_analyzer_with_stemmer"
       },
       "brand": {
         "type": "keyword"
@@ -36,6 +40,58 @@
       },
       "modifiedAt": {
         "type": "long"
+      }
+    }
+  },
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "analysis": {
+        "filter": {
+          "en_stemmer": {
+            "type": "stemmer",
+            "language": "english"
+          }
+        },
+        "analyzer": {
+          "en_search_analyzer": {
+            "filter": [
+              "lowercase"
+            ],
+            "char_filter": [
+              "char_mapping_filter"
+            ],
+            "tokenizer": "standard"
+          },
+          "en_default_analyzer_with_stemmer": {
+            "filter": [
+              "lowercase",
+              "en_stemmer"
+            ],
+            "char_filter": [
+              "char_mapping_filter"
+            ],
+            "tokenizer": "standard"
+          },
+          "en_search_analyzer_with_stemmer": {
+            "filter": [
+              "lowercase",
+              "en_stemmer"
+            ],
+            "char_filter": [
+              "char_mapping_filter"
+            ],
+            "tokenizer": "standard"
+          }
+        },
+        "char_filter": {
+          "char_mapping_filter": {
+            "type": "mapping",
+            "mappings": [
+              "& => and"
+            ]
+          }
+        }
       }
     }
   }

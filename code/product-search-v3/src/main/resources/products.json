@@ -198,5 +198,14 @@
     "description": "Sony Playstation 5",
     "color": "White",
     "price": 499.99
+  },
+  {
+    "code": "23",
+    "name": "HP 1200w Multi-function WiFi black and white Laser Printer",
+    "department": "Printers",
+    "brand": "HP",
+    "description": "Get the HP 1200w Wireless black and white Printer and bid goodbye to your printing woes. Equipped with a laser imaging drum, this printer lets you print up to 5X pages before the toner levels need to be restored",
+    "color": "White",
+    "price": 23500
   }
 ]
