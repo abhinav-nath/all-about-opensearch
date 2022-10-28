@@ -234,5 +234,23 @@
     "description": "Bring out the photographer in you and experiment with filmmaking with this Sony Alpha ILCE-6400L Mirrorless camera. It offers exceptional AF performance, high-quality images with low noise, Innovative Image-processing System, and many other features that make filming videos and capturing images a lot more exciting.",
     "color": "Black",
     "price": 82990
+  },
+  {
+    "code": "27",
+    "name": "Mi Bedside Lamp 2",
+    "department": "Smart Lighting",
+    "brand": "Mi",
+    "description": "Are you looking for a bedside lamp that has the adjustable brightness feature? If yes, bring home the Mi Smart Bedside Lamp 2 that gives you the freedom of choosing colours as well as brightness levels. This lamp is Wifi-enabled and can be controlled using voice assistants such as Alexa and Google Assistant. You can also control it with the Mi Home app.",
+    "color": "White",
+    "price": 2999
+  },
+  {
+    "code": "28",
+    "name": "Mi Smart LED 1S Table Lamp",
+    "department": "Smart Lighting",
+    "brand": "Mi",
+    "description": "If you do not want to disturb your partner while reading or working on your desk late at night, then you can take help of this Mi Smart LED lamp. It is easy to operate. It is also compatible with Google Assistant, Alexa, and more, so you can control it via them. You can fold it too. What’s more, it features a knob for easy usage.",
+    "color": "White",
+    "price": 2999
   }
 ]
