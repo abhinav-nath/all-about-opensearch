@@ -51,12 +51,32 @@
           "en_stemmer": {
             "type": "stemmer",
             "language": "english"
+          },
+          "en_synonym": {
+            "updateable": "true",
+            "type": "synonym_graph",
+            "lenient": "true",
+            "synonyms": [
+              "ipad, i-pad, i pad",
+              "iphone, i-phone, i phone",
+              "ps3, playstation 3, play station 3",
+              "ps4, playstation 4, play station 4",
+              "ps5, playstation 5, play station 5",
+              "b&w, black and white",
+              "rog, republic of gamers",
+              "gen, generation",
+              "gen, generation",
+              "xm4, 1000xm4",
+              "xm5, 1000xm5",
+              "xm5, 1000xm5"
+            ]
           }
         },
         "analyzer": {
           "en_search_analyzer": {
             "filter": [
-              "lowercase"
+              "lowercase",
+              "en_synonym"
             ],
             "char_filter": [
               "char_mapping_filter"
@@ -76,7 +96,8 @@
           "en_search_analyzer_with_stemmer": {
             "filter": [
               "lowercase",
-              "en_stemmer"
+              "en_stemmer",
+              "en_synonym"
             ],
             "char_filter": [
               "char_mapping_filter"
