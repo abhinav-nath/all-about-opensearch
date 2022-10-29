@@ -3,14 +3,14 @@
 This small project demonstrates following functionalities and features:
 
 1. Text search
+2. OpenSearch query using [Search Template](./src/main/resources/mustache-template/text-search-template.mustache)
 2. Facets
    1. Dynamic multi-select facets
    2. Search Filters
-   3. Range Facets
 3. Pagination
-4. Popular Searches
-5. Basic sorting
-6. Handling of Measurement Systems
+4. Synonyms
+5. Stemmers
+6. Stop words
 7. Test data ingestion
 
 ```shell
