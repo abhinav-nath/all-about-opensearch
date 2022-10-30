@@ -104,4 +104,20 @@
       {{^last}},{{/last}}
     {{/aggregations}}
   }
+{{#queryString}},
+  "suggest": {
+    "phrase-suggestions": {
+      "text": "{{queryString}}",
+      "phrase": {
+        "field": "fullTextBoosted.trigram",
+        "real_word_error_likelihood": 0.95,
+        "confidence": 1.0,
+        "separator": " ",
+        "max_errors": 0.99,
+        "force_unigrams": true,
+        "token_limit": 10
+      }
+    }
+  }
+{{/queryString}}
 }
