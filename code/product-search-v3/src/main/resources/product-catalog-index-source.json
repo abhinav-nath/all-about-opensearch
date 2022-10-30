@@ -18,7 +18,13 @@
       "fullTextBoosted": {
         "type": "text",
         "analyzer": "en_default_analyzer_with_stemmer",
-        "search_analyzer": "en_search_analyzer_with_stemmer"
+        "search_analyzer": "en_search_analyzer_with_stemmer",
+        "fields": {
+          "trigram": {
+            "type": "text",
+            "analyzer": "did_you_mean_analyzer"
+          }
+        }
       },
       "brand": {
         "type": "keyword"
@@ -51,6 +57,11 @@
           "en_stemmer": {
             "type": "stemmer",
             "language": "english"
+          },
+          "shingle": {
+            "max_shingle_size": "3",
+            "min_shingle_size": "2",
+            "type": "shingle"
           },
           "en_default_stop_word": {
             "ignore_case": "true",
@@ -769,6 +780,13 @@
             ],
             "char_filter": [
               "char_mapping_filter"
+            ],
+            "tokenizer": "standard"
+          },
+          "did_you_mean_analyzer": {
+            "filter": [
+              "lowercase",
+              "shingle"
             ],
             "tokenizer": "standard"
           }
