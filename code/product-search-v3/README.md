@@ -11,7 +11,8 @@ This small project demonstrates following functionalities and features:
 4. Synonyms
 5. Stemmers
 6. Stop words
-7. Test data ingestion
+7. Did you mean
+8. Test data ingestion
 
 ```shell
 docker-compose up -d
