@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class TextSearchResponse {
 
   private long totalResults;
+  private List<String> didYouMean;
   private List<ProductData> products;
   private List<Facet> facets;
 

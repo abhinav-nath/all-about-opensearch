@@ -27,6 +27,8 @@ import com.codecafe.search.model.SearchResult;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static com.codecafe.search.utils.Constants.PHRASE_SUGGESTION_NAME;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -46,7 +48,8 @@ public class SearchResponseParser {
       totalResults = totalHits.value;
     }
 
-    searchResultBuilder.totalResults(totalResults);
+    searchResultBuilder.totalResults(totalResults)
+                       .didYouMean(extractPhraseSuggestions(searchResponse));
 
     if (totalResults > 0) {
       List<Map<String, Object>> sourceMaps = Arrays.stream(searchResponse.getHits().getHits())
@@ -61,6 +64,22 @@ public class SearchResponseParser {
     }
 
     return searchResultBuilder.build();
+  }
+
+  private List<String> extractPhraseSuggestions(SearchResponse searchResponse) {
+    if (searchResponse.getSuggest() != null && searchResponse.getSuggest().getSuggestion(PHRASE_SUGGESTION_NAME) != null) {
+      return searchResponse.getSuggest().getSuggestion(PHRASE_SUGGESTION_NAME)
+                           .getEntries()
+                           .stream()
+                           .findFirst()
+                           .map(suggestionResponse -> suggestionResponse
+                             .getOptions()
+                             .stream()
+                             .map((o -> o.getText().string()))
+                             .collect(toList()))
+                           .orElse(null);
+    }
+    return emptyList();
   }
 
   private List<Facet> extractFacets(SearchResponse searchResponse) {
