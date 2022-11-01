@@ -32,6 +32,8 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
   implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
   implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+  implementation "org.springframework.data:spring-data-redis:${springBootVersion}"
+  implementation "redis.clients:jedis:${jedisVersion}"
   implementation("org.opensearch.client:opensearch-rest-high-level-client:${openSearchClientVersion}") {
     exclude(group: "org.apache.logging.log4j", module: "log4j-core")
   }
