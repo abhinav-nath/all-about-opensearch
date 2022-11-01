@@ -12,10 +12,13 @@ import lombok.RequiredArgsConstructor;
 import com.codecafe.search.entity.FacetsConfig;
 import com.codecafe.search.repository.FacetsConfigRepository;
 
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableJpaRepositories("com.codecafe.search.repository")
 public class FacetsConfiguration {
 
   private final Map<String, FacetsConfig> facets;
