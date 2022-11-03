@@ -26,8 +26,8 @@ import static org.opensearch.common.xcontent.XContentType.JSON;
 @RequiredArgsConstructor
 public class TestDataConfiguration {
 
-  private final OpenSearchService openSearchService;
   private final ObjectMapper objectMapper;
+  private final OpenSearchService openSearchService;
 
   @Value("classpath:${app.search.ingestion.test-data-file:products.json}")
   private Resource testDataResource;

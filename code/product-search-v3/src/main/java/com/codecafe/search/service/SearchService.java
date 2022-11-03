@@ -3,14 +3,13 @@ package com.codecafe.search.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.codecafe.search.entity.SearchFilter;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.codecafe.search.entity.SearchFilter;
 import com.codecafe.search.model.FacetData;
 import com.codecafe.search.model.SearchResult;
 import com.codecafe.search.model.TextSearchResponse;
@@ -39,9 +38,7 @@ public class SearchService {
       log.info("SearchFilter saved successfully!");
 
       Optional<SearchFilter> retrievedSearchFilter = searchFilterRepository.findById("hello");
-      if (retrievedSearchFilter.isPresent()) {
-        log.info("Successfully retrieved SearchFilter {}:{}", searchFilter.getSearchFilter(), searchFilter.getSearchField());
-      }
+      retrievedSearchFilter.ifPresent(f -> log.info("Successfully retrieved SearchFilter {}:{}", f.getSearchFilter(), f.getSearchField()));
     }
 
     SearchResult searchResult = searchRepository.searchProducts(query, filters, page, pageSize);
