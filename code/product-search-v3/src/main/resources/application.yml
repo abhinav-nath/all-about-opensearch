@@ -30,10 +30,13 @@ app:
     fuzzinessValue: "AUTO:2,100"
     query-boost-fields: '{
                             codeBoost: 30.0,
-                            nameBoost: 25.0,
+                            nameBoost: 20.0,
                             descriptionBoost: 1.0,
                             fuzzinessBoost: 5.0,
-                            wildcardBoost: 3.0
+                            wildcardBoost: 3.0,
+                            colorBoost:25.0,
+                            brandBoost:25.0,
+                            departmentBoost:25.0
                           }'
   opensearch:
     username: ${OPENSEARCH_USERNAME}
