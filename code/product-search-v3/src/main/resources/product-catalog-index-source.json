@@ -5,35 +5,57 @@
         "type": "text"
       },
       "name": {
-        "type": "search_as_you_type"
-      },
-      "description": {
-        "type": "text"
-      },
-      "fullText": {
-        "type": "text",
-        "analyzer": "default",
-        "search_analyzer": "en_search_analyzer"
-      },
-      "fullTextBoosted": {
         "type": "text",
         "analyzer": "en_default_analyzer_with_stemmer",
         "search_analyzer": "en_search_analyzer_with_stemmer",
         "fields": {
+          "autocomplete": {
+            "type": "search_as_you_type"
+          },
+          "raw": {
+            "type": "keyword",
+            "normalizer": "lowercase"
+          },
           "trigram": {
             "type": "text",
             "analyzer": "did_you_mean_analyzer"
           }
         }
       },
+      "description": {
+        "type": "text",
+        "analyzer": "default",
+        "search_analyzer": "en_search_analyzer"
+      },
       "brand": {
-        "type": "keyword"
+        "type": "text",
+        "analyzer": "en_default_analyzer_with_stemmer",
+        "search_analyzer": "en_search_analyzer_with_stemmer",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
       },
       "department": {
-        "type": "keyword"
+        "type": "text",
+        "analyzer": "en_default_analyzer_with_stemmer",
+        "search_analyzer": "en_search_analyzer_with_stemmer",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
       },
       "color": {
-        "type": "keyword"
+        "type": "text",
+        "analyzer": "en_default_analyzer_with_stemmer",
+        "search_analyzer": "en_search_analyzer_with_stemmer",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
       },
       "price": {
         "type": "double"
