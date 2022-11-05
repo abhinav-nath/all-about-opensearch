@@ -12,13 +12,11 @@
       ],
       "should": [
         {
-          "multi_match": {
-            "fields": [
-              "fullTextBoosted^10",
-              "fullText^2"
-            ],
-            "type": "cross_fields",
-            "query": "{{queryString}}"
+          "match": {
+            "name": {
+              "query": "{{queryString}}",
+              "boost": {{nameBoost}}
+            }
           }
         },
         {
@@ -30,11 +28,69 @@
           }
         },
         {
+          "match": {
+            "description": {
+              "query": "{{queryString}}",
+              "boost": {{descriptionBoost}}
+            }
+          }
+        },
+        {
+          "fuzzy": {
+            "name": {
+              "value": "{{queryString}}",
+              "fuzziness": "{{fuzzinessValue}}",
+              "boost": {{fuzzinessBoost}}
+            }
+          }
+        },
+        {
+          "wildcard": {
+            "name": {
+              "wildcard": "*{{queryString}}*",
+              "case_insensitive": true,
+              "boost": {{wildcardBoost}}
+            }
+          }
+        },
+        {
           "wildcard": {
             "code": {
               "wildcard": "*{{queryString}}*",
               "case_insensitive": true,
               "boost": {{wildcardBoost}}
+            }
+          }
+        },
+        {
+          "match_phrase_prefix": {
+            "name": {
+              "query": "{{queryString}}",
+              "boost": {{nameBoost}}
+            }
+          }
+        },
+        {
+          "match": {
+            "color": {
+              "query": "{{queryString}}",
+              "boost": {{colorBoost}}
+            }
+          }
+        },
+        {
+          "match": {
+            "brand": {
+              "query": "{{queryString}}",
+              "boost": {{brandBoost}}
+            }
+          }
+        },
+        {
+          "match": {
+            "department": {
+              "query": "{{queryString}}",
+              "boost": {{departmentBoost}}
             }
           }
         }
@@ -51,7 +107,7 @@
               "should": [
                 {
                   "terms": {
-                  "{{code}}": {{#toJson}}values{{/toJson}}
+                  "{{code}}.raw": {{#toJson}}values{{/toJson}}
                   }
                 }
               ]
@@ -68,7 +124,7 @@
       {{^hasSubAggregation}}
         "{{code}}": {
           "terms": {
-            "field": "{{field}}",
+            "field": "{{field}}.raw",
             "size": {{facetsSize}},
             "min_doc_count": 1
           }
@@ -93,7 +149,7 @@
           "aggregations": {
             "{{code}}": {
               "terms": {
-                "field": "{{field}}",
+                "field": "{{field}}.raw",
                 "size": {{facetsSize}},
                 "min_doc_count": 1
               }
@@ -104,20 +160,4 @@
       {{^last}},{{/last}}
     {{/aggregations}}
   }
-{{#queryString}},
-  "suggest": {
-    "phrase-suggestions": {
-      "text": "{{queryString}}",
-      "phrase": {
-        "field": "fullTextBoosted.trigram",
-        "real_word_error_likelihood": 0.95,
-        "confidence": 1.0,
-        "separator": " ",
-        "max_errors": 0.99,
-        "force_unigrams": true,
-        "token_limit": 10
-      }
-    }
-  }
-{{/queryString}}
 }
