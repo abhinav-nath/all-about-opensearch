@@ -6,6 +6,12 @@
 - [Inspecting the cluster](notes/inspecting-the-cluster.md)
 - [Autocomplete functionality](notes/opensearch-autocomplete-functionality.md)
 
+## APIs
+
+- [Index APIs](notes/apis/index-apis.md)
+- [Document APIs](notes/apis/document-apis.md)
+- [Search](notes/apis/search.md)
+
 ## Code
 
 - [product-search-v1](code/product-search-v1) : using [Spring Data Elasticsearch](https://spring.io/projects/spring-data-elasticsearch)
