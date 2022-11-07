@@ -9,8 +9,8 @@
 
 There are 2 types of mapping:
 
-1. Explicit mapping
-  - We define the field mappings ourselves
+1. **Explicit mapping**
+   - We define the field mappings ourselves
 
-2. Dynamic mapping
-  - ES generates fields mappings for us
+2. **Dynamic mapping**
+   - ES generates fields mappings for us
