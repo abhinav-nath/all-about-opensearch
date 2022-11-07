@@ -1,4 +1,10 @@
-# all-about-opensearch
+# All about OpenSearch (or ElasticSearch)
+
+- [Analysis](notes/analysis.md)
+- [Inverted Indices](notes/inverted-indices.md)
+- [Index Mappings](notes/mapping.md)
+- [Inspecting the cluster](notes/inspecting-the-cluster.md)
+- [Autocomplete functionality](notes/opensearch-autocomplete-functionality.md)
 
 ## Code
 
