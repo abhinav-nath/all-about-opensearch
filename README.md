@@ -4,6 +4,8 @@
 - [Inverted Indices](notes/inverted-indices.md)
 - [Index Mappings](notes/mapping.md)
 - [Inspecting the cluster](notes/inspecting-the-cluster.md)
+- [`object` field type](notes/object-field-type.md)
+- [Array of objects and `nested` field type](notes/array-of-objects.md)
 - [Autocomplete functionality](notes/opensearch-autocomplete-functionality.md)
 
 ## APIs
