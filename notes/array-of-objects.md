@@ -182,3 +182,5 @@ GET my-index-000001/_search
   }
 }
 ```
+
+https://opster.com/guides/elasticsearch/data-structuring/elasticsearch-nested-field-object-field/
