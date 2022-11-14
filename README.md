@@ -22,3 +22,5 @@ I have written multiple implementations of a dummy e-commerce search service usi
 - [product-search-v2](code/product-search-v2) : using [OpenSearch Java high-level REST client](https://opensearch.org/docs/latest/clients/java-rest-high-level/)
 - [product-search-v3](code/product-search-v3) : using [OpenSearch Java high-level REST client](https://opensearch.org/docs/1.3/clients/java-rest-high-level/) and [Search Templates](https://opensearch.org/docs/1.3/opensearch/search-template/)
 - [product-search-v4](code/product-search-v4) : using [OpenSearch Java client](https://opensearch.org/docs/latest/clients/java/)
+
+[product-search-service](https://github.com/abhinav-nath/product-search-service) is a stand-alone project which I use for trying out new things.
