@@ -24,3 +24,8 @@ I have written multiple implementations of a dummy e-commerce search service usi
 - [product-search-v4](code/product-search-v4) : using [OpenSearch Java client](https://opensearch.org/docs/latest/clients/java/)
 
 [product-search-service](https://github.com/abhinav-nath/product-search-service) is a stand-alone project which I use for trying out new things.
+
+---
+<p align="center">
+  ⭐ Star this repository — it helps!
+</p>
